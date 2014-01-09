@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<meta charset="UTF-8" />
+<meta name="viewport" content="initial-scale=1.0,user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="HandheldFriendly" content="True" />
+<meta name="MobileOptimized" content="width" />
+<title>Ajankäyttölomake</title>
+<style>
+ body {
+  color: #333;
+  font-family: 'Unicode Sans','Lucida Sans Unicode',Helvetica,Arial,Verdana,sans-serif;
+  font-size: 13px;
+ }
+ fieldset {
+  border-width: 0px;
+  max-width: 90%;
+ }
+ label {
+  font-weight: 500;
+  display: block;
+ }
+ .check label {
+  display: inline;
+ }
+ input, select, option {
+  background: -moz-linear-gradient(#EEE, #DDD);
+  background: -webkit-linear-gradient(#EEE, #DDD);
+  background: -o-linear-gradient(#EEE, #DDD);
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#EEE', endColorstr='#DDD')";
+  background: linear-gradient(#EEE, #DDD); /* the standard */  
+ }
+ input {
+  border-color: #FFF;
+ }
+ #description {
+  max-width: 90%;
+ }
+ select {
+  border-color: #CCC;
+ }
+ #table {
+  border-collapse: collapse;
+  clear: both;
+  max-width: 95%;
+ }
+ #table th, #table td {
+  padding: 0 0.25em;
+  text-align: left;
+ }
+ #table tr.unspecified td {
+  background-color: #CCC;
+ }
+ #table tr.alert td.starttime {
+  border: 2px solid #F60;
+ }
+ #table td.starttime, #table td.endtime {
+  font-size: smaller;
+  text-align: right !important;
+  white-space: nowrap;
+ }
+ th.mainaction, td.mainaction, th.sideaction, td.sideaction {
+  max-width: 8.5em;
+  overflow: hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
+ }
+ th.with {
+  white-space: nowrap;
+ }
+ .with .with, .with .rating, .with .description {
+  display: block;
+  float: left;
+  margin: 0 0.5em;
+ }
+ .with .description {
+  font-style: italic;
+  max-width: 30em;
+  overflow: hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
+ }
+ tr:hover .with .description {
+  max-width: none;
+  white-space: normal;
+ }
+ @media screen and (max-width: 40em) {
+  th.endtime, td.endtime, td .description {
+   display: none;
+  }
+ }
+ @media screen and (min-width: 30em) {
+  fieldset {
+   float: left;
+   height: 2.5em;
+  }
+  .check {
+   clear: left;
+   height: 1em;
+  }
+  .extra {
+/*
+   float: right;
+*/
+  }
+  #description {
+   width: 30em;
+  }
+  .submit {
+   clear: both;
+   float: left;
+  }
+ }
+ @media screen and (min-width: 60em) {
+  h1 {
+   color: #666;
+   font-family: Impact,Verdana,sans-serif;
+   font-size: 3em;
+   font-weight: 900;
+   left: 2em;
+   letter-spacing: 0.5em;
+   line-height: 1;
+   position: absolute;
+   text-shadow: 0.1em 0.1em 0.15em #CCF;
+   text-transform: uppercase;
+   top: 0.25em;
+  }
+  fieldset {
+   float: left;
+   height: 3em;
+   margin: 7em 0 0 0;
+   padding: 0 0.25em;
+   width: auto;
+  }
+  .check {
+   clear: none;
+   height: auto;
+   position: relative;
+   width: 1.5em;
+  }
+  .check input {
+   margin-top: 2em;
+  }
+  .check label {
+   left: -2.75em;
+   position: absolute;
+   top: -3em;
+   transform: rotate(-90deg); 
+   -moz-transform: rotate(-90deg);	
+   -webkit-transform: rotate(-90deg);
+   white-space: nowrap;
+   width: 7em;
+  }
+  .extra {
+   clear: none;
+   float: left;
+   margin: 1em 0 0 0;
+  }
+  #description {
+   width: 50em;
+  }
+  #table thead th {
+   padding: 2em 0.5em 0 0.5em;
+  }
+  th.mainaction, td.mainaction, th.sideaction, td.sideaction, td.with {
+   max-width: none;
+  }
+ }
+</style>
+<h1>Ajankäyttö</h1>
+<form id="add" method="POST" action="put.php">
+<input type="hidden" name="id" id="hiddenid" />
+<fieldset>
+<label for="starttime">Alkoi</label>
+<input id="starttime" name="starttime" type="datetime" step="600" />
+</fieldset>
+<fieldset>
+<label for="endtime">Päättyi</label>
+<input id="endtime" name="endtime" type="datetime" step="600" />
+</fieldset>
+<fieldset>
+<label for="mainaction">Pääasiallinen toiminta</label>
+<select id="mainaction" name="mainaction">
+<optgroup label="01–02 Ansiotyö">
+<option value="01">01 Ansiotyö</option>
+<option value="02">02 Työmatkat</option>
+<optgroup label="03–08 Kotityö">
+<option value="03">03 Kotitaloustyö</option>
+<option value="04">04 Huoltotyö</option>
+<option value="05">05 Muut kotityöt</option>
+<option value="06">06 Lasten hoito</option>
+<option value="07">07 Ostokset ja asiointi</option>
+<option value="08">08 Kotityöhön liittyvät matkat</option>
+</optgroup>
+<optgroup label="09–11 Henkilökohtaiset tarpeet">
+<option value="09">09 Nukkuminen</option>
+<option value="10">10 Ruokailu</option>
+<option value="11">11 Peseytyminen, pukeutuminen</option>
+</optgroup>
+<optgroup label="12–14 Opiskelu">
+<option value="12">12 Koulunkäynti ja opiskelu</option>
+<option value="13">13 Koulumatkat</option>
+<option value="14">14 Vapaa-ajan opiskelu</option>
+</optgroup>
+<optgroup label="15–25 Vapaa-aika">
+<option value="15">15 Osallistuva toiminta</option>
+<option value="16">16 Liikunta ja ulkoilu</option>
+<option value="17">17 Kulttuuri- ja huvitilaisuudet</option>
+<option value="18">18 Lukeminen</option>
+<option value="19">19 Radion kuuntelu</option>
+<option value="20">20 Television katselu</option>
+<option value="21">21 Seurustelu perheen kanssa</option>
+<option value="22">22 Seurustelu tuttavien kanssa</option>
+<option value="23">23 Harrastukset</option>
+<option value="33">33 Atk-harrastus</option>
+<option value="24">24 Muu vapaa-aika</option>
+<option value="25">25 Vapaa-ajan matkat</option>
+</optgroup>
+<option value="26">26 Erittelemätön</option>
+</select>
+</fieldset>
+<fieldset>
+<label for="sideaction">Samaan aikaan</label>
+<select id="sideaction" name="sideaction">
+<option value=""></option>
+<optgroup label="01–02 Ansiotyö">
+<option value="01">01 Ansiotyö</option>
+<option value="02">02 Työmatkat</option>
+<optgroup label="03–08 Kotityö">
+<option value="03">03 Kotitaloustyö</option>
+<option value="04">04 Huoltotyö</option>
+<option value="05">05 Muut kotityöt</option>
+<option value="06">06 Lasten hoito</option>
+<option value="07">07 Ostokset ja asiointi</option>
+<option value="08">08 Kotityöhön liittyvät matkat</option>
+</optgroup>
+<optgroup label="09–11 Henkilökohtaiset tarpeet">
+<option value="09">09 Nukkuminen</option>
+<option value="10">10 Ruokailu</option>
+<option value="11">11 Peseytyminen, pukeutuminen</option>
+</optgroup>
+<optgroup label="12–14 Opiskelu">
+<option value="12">12 Koulunkäynti ja opiskelu</option>
+<option value="13">13 Koulumatkat</option>
+<option value="14">14 Vapaa-ajan opiskelu</option>
+</optgroup>
+<optgroup label="15–25 Vapaa-aika">
+<option value="15">15 Osallistuva toiminta</option>
+<option value="16">16 Liikunta ja ulkoilu</option>
+<option value="17">17 Kulttuuri- ja huvitilaisuudet</option>
+<option value="18">18 Lukeminen</option>
+<option value="19">19 Radion kuuntelu</option>
+<option value="20">20 Television katselu</option>
+<option value="21">21 Seurustelu perheen kanssa</option>
+<option value="22">22 Seurustelu tuttavien kanssa</option>
+<option value="23">23 Harrastukset</option>
+<option value="33">33 Atk-harrastus</option>
+<option value="24">24 Muu vapaa-aika</option>
+<option value="25">25 Vapaa-ajan matkat</option>
+</optgroup>
+<option value="26">26 Erittelemätön</option>
+</select>
+</fieldset>
+<fieldset class="check">
+<input id="alone" name="with[]" value="0" type="checkbox" checked="checked" />
+<label for="alone">Yksin</label>
+</fieldset>
+<fieldset class="check">
+<input id="withkids" name="with[]" value="1" type="checkbox" />
+<label for="withkids">Lasten kanssa</label>
+</fieldset>
+<fieldset class="check">
+<input id="withfamily" name="with[]" value="2" type="checkbox" />
+<label for="withfamily">Perheen kanssa</label>
+</fieldset>
+<fieldset class="check">
+<input id="withothers" name="with[]" value="4" type="checkbox" />
+<label for="withothers">Muiden kanssa</label>
+</fieldset>
+<fieldset class="extra description">
+<label for="description">Kuvaus</label>
+<input id="description" name="description" type="text" size="40" maxlength="255" />
+</fieldset>
+<fieldset class="extra rating">
+<label for="rating">Arvio <span id="star1">&#9734;</span><span id="star2">&#9734;</span><span id="star3">&#9734;</span><span id="star4">&#9734;</span><span id="star5">&#9734;</span></label>
+<input id="rating" name="rating" type="range" min="0" max="5" step="1" value="0" />
+</fieldset>
+<fieldset class="extra submit">
+ <input type="submit" id="submit" value="Tallenna" />
+</fieldset>
+</form>
+<table id="table">
+<thead>
+<tr><th class="starttime">Alkoi</th><th class="endtime">Päättyi</th><th class="mainaction">Pääasiallinen toiminta</th><th class="sideaction">Samaan aikaan</th><th class="with">Kuvaus</th></tr>
+</thead>
+<tbody id="results">
+</tbody>
+</table>
+<script>
+
+ var GET_URI = './get.php';
+
+ var xhr = new XMLHttpRequest();
+ xhr.onload = showRows;
+
+ var stars = [];
+ for (var i=1; i<=5; i++) {
+  var str = document.getElementById('star' + i);
+  str.ontap = str.onclick = setRating;
+  stars[i] = str;
+ }
+
+ var tb = document.getElementById('results');
+ var f = document.getElementById('add');
+ var et = document.getElementById('endtime');
+ var st = document.getElementById('starttime');
+ var h = document.getElementById('hiddenid');
+ var sub = document.getElementById('submit');
+ var rat = document.getElementById('rating');
+
+ rat.onchange = updateStars;
+
+ f.onsubmit = function(e) {
+  e.preventDefault();
+  xhr.abort();
+  xhr.open(f.method, f.action, true);
+  // xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+  xhr.send(new FormData (f));
+ };
+ 
+ var boxes = [];
+ var ips = document.getElementsByTagName('input');
+ for (var i=0; i<ips.length; i++) {
+  if (ips[i].type == 'checkbox') {
+   boxes.push(ips[i]);
+   ips[i].onchange = checkBoxes;
+  }
+ }
+
+/*
+ var labels = {};
+ var lbs = document.getElementsByTagName('label');
+ for (var i=0; i<lbs.length; i++) {
+  var tmp = lbs[i].textContent;
+  labels[lbs[i].getAttribute('for')] = tmp;
+ }
+*/
+ var labels = ['yksin', 'lapset', 'perhe', '', 'muut'];
+
+ var keys = ['starttime', 'endtime', 'mainaction', 'sideaction', 'with'];
+
+ var acts = {null: '', 'undefined': ''};
+ var opts = document.getElementById('sideaction').options;
+ for (var i=0; i<opts.length; i++) {
+  acts[opts[i].value] = opts[i].text.substr(3);
+ }
+
+ getLatest();
+ resetEndDate();
+ window.setInterval(resetEndDate, 60 * 10 * 1000);
+
+ function resetEndDate() {
+  var d = new Date();
+  et.value = d.getFullYear() + '-' + 
+             pad(d.getMonth()+1) + '-' + 
+             pad(d.getDate()) + ' ' +
+             pad(d.getHours()) + ':' + 
+             pad(10*Math.floor(d.getMinutes()/10)) + ':00';
+  hilite(et, 15, 12, 7)
+ }
+
+ function hilite(el, r, g, b) {
+  el.style.borderColor = '#' + r.toString(16) + g.toString(16) + b.toString(16);
+  var diff = 45 - r - g - b;
+  if (diff) {
+   window.setTimeout(function() {hilite(el, r, g, b);}, 200 - (4 * diff));
+  }
+  r = (r < 15) ? ++r : r;
+  g = (g < 15) ? ++g : g;
+  b = (b < 15) ? ++b : b;
+ }
+ 
+ function setRating() {
+  rat.value = this.id.substr(-1, 1);
+  updateStars();
+ }
+ 
+ function updateStars() {
+  var val = rat.value;
+  for (var i=1; i<=5; i++) {
+   stars[i].innerHTML = (val >= i) ? '\u2605' : '\u2606';
+  }
+ }
+
+ function checkBoxes() {
+  if ((this.id == 'alone') && this.checked) {
+   for (var i=1; i<boxes.length; i++) {
+    boxes[i].checked = false;
+   }
+   return;
+  }
+  else if (this.checked) {
+   boxes[0].checked = false;
+  }
+ }
+
+ function getLatest() {
+  xhr.abort();
+  var href = GET_URI + '?latest=15';
+  xhr.open('GET', href, true);
+  xhr.send(null);
+ }
+
+ function showRows() {
+  var values = JSON.parse(this.responseText);
+  if (!values.length) {
+   return false;
+  }
+  st.value = values[0]['endtime'];
+  resetEndDate();
+  var currEnd = '';
+  for (var i=values.length-1; i>=0; i--) {
+   if (currEnd && (values[i]['starttime'] > currEnd)) {
+    tmp = {'starttime': currEnd,
+           'endtime': values[i]['starttime'], 
+           'mainaction': 26,
+           'with': 0};
+    addRow(tmp);
+   }
+   var tr = addRow(values[i]);
+   if (currEnd && (values[i]['starttime'] < currEnd)) {
+    tr.className += ' alert';
+   }   
+   currEnd = values[i]['endtime'];
+  }
+ }
+
+ function addRow(values) {
+  var tr = document.createElement('tr');
+  tr.id = 'id' + values['id'];
+  if (values['mainaction'] == 26) {
+   tr.className = ' unspecified';
+  }
+  tr.ontap = tr.ondblclick = function() {
+   h.value = values['id'] || null;
+   st.value = values['starttime'];
+   et.value = values['endtime'];
+   f.mainaction.value = values['mainaction'];
+   f.sideaction.value = values['sideaction'];
+   f.description.value = values['description'] || '';
+   rat.value = values['rating'];
+   updateStars();   
+   sub.value = 'Muokkaa';
+   hilite(sub, 15, 12, 7)
+   for (var i=0; i<boxes.length; i++) {
+    var val = boxes[i].value;
+    if ((val == values['with']) || (val & values['with'])) {
+     boxes[i].checked = true;
+    }
+    else {
+     boxes[i].checked = false;
+    }
+   }  
+  }
+  for (var i=0; i<keys.length; i++) {
+   key = keys[i];
+   var val = values[key];
+   var td = document.createElement('td');
+   var cellval;
+   td.className = key;
+   if ((key == 'starttime') || (key == 'endtime')) {
+    var cellval = document.createElement('time');
+    cellval.datetime = val;
+    var dt = val.split(' ');
+    var d = dt[0].split('-');
+    var t = dt[1].split(':');
+    val = '' + parseInt(d[2]) + '.' + parseInt(d[1]) +
+                  '. ' + parseInt(t[0]) + ':' + t[1];
+    cellval.appendChild(document.createTextNode(val));
+   }
+   else if ((key == 'mainaction') || (key == 'sideaction')) {
+    val = acts[val] || '';
+    cellval = document.createTextNode(val);
+   }
+   else if (key == 'with') {
+    cellval = document.createElement('span');
+    var span = document.createElement('span');
+    span.className = 'with';
+    var tmp = [];
+    for (var i=0; i<boxes.length; i++) {
+     var val = boxes[i].value;
+     if ((val == values['with']) || (val & values['with'])) {
+      tmp.push(labels[boxes[i].value]);
+     }
+    }
+    val = tmp.join(', ');
+    span.appendChild(document.createTextNode(val));
+    cellval.appendChild(span);
+    var rv = parseInt(values['rating']);
+    if (rv > 0) {
+     val = new Array(rv+1).join('\u2605');
+     meter = document.createElement('span');
+     meter.className = 'rating';
+     // meter.min = 0;
+     // meter.max = 5;
+     meter.title = rv;
+     meter.appendChild(document.createTextNode(val));
+     cellval.appendChild(document.createTextNode(' '));
+     cellval.appendChild(meter);
+    }
+    if (values['description']) {
+     // tr.title = values['description'];
+     val = values['description'];
+     span = document.createElement('span');
+     span.className = 'description';
+     span.appendChild(document.createTextNode(val));
+     cellval.appendChild(document.createTextNode(' '));
+     cellval.appendChild(span);
+    }
+   }
+   td.appendChild(cellval);
+   tr.appendChild(td);
+  }
+  var added;
+  console.log(values['endtime']);
+  if (values['id']) {
+   var previous = document.getElementById('id' + values['id']);
+   if (previous) {
+    previous.parentNode.removeChild(previous);
+    var times = tb.getElementsByTagName('tr');
+    for (var j=1; j<times.length; j++) {
+     var start = times[j].firstChild.firstChild.datetime;
+     if (start >= values['endtime']) {
+      console.log('insert ' + values['endtime'] + ' before ' + start);
+      added = tb.insertBefore(tr, times[j]);
+      break;
+     }
+    }
+   }
+  }
+  if (!added) {
+   tb.appendChild(tr);
+  }
+  return tr;
+ }
+
+ function pad(val) {
+  if (val < 10) {
+   return '0' + '' + val;
+  }
+  return val;
+ }
+
+</script>
