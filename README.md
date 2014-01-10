@@ -41,11 +41,13 @@ Get files
 
     git clone https://github.com/samuelmr/tracktime.git
 
-You can put all files in the same web folder (e.g. ~/public_html/tracktime/).
+You can put all files in the same web folder (e.g. ~/public_html/tracktime/
+or ~/Sites/tracktime).
 
 Create a database config based on the sample file.
 
-    cp dbconfig-sample.php to dbconfig.php
+    cd ~/Sites/tracktime
+    cp dbconfig-sample.php dbconfig.php
 
 Edit the file.
 
