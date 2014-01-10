@@ -28,7 +28,7 @@
    $with = intval(array_sum($_REQUEST['with']));
   }
   elseif (is_numeric($_REQUEST['with'])) {
-   $with = intval$_REQUEST['with']);
+   $with = intval($_REQUEST['with']);
   }
  }
  $values['with'] = $with;
