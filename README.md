@@ -15,8 +15,8 @@ server, you can use e.g. phpMyAdmin to create a new database.
 
 Or you can use the command line as follows:
 
-    $SQLUSER=myusernametobecreated
-    $SQLDB=mydatabasetobecreated
+    SQLUSER=usertocreate
+    SQLDB=databasecreate
     read -p 'type your SQL password: ' SQLPW
 
 The last command allows you to store the password into a variable so that it
