@@ -521,7 +521,6 @@
    tr.appendChild(td);
   }
   var added;
-  console.log(values['endtime']);
   if (values['id']) {
    var previous = document.getElementById('id' + values['id']);
    if (previous) {
@@ -530,7 +529,6 @@
     for (var j=1; j<times.length; j++) {
      var start = times[j].firstChild.firstChild.datetime;
      if (start >= values['endtime']) {
-      console.log('insert ' + values['endtime'] + ' before ' + start);
       added = tb.insertBefore(tr, times[j]);
       break;
      }
