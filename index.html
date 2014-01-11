@@ -524,20 +524,19 @@
    tr.appendChild(td);
   }
   var added;
-  if (values['id']) {
-   if (isSingle) {
-    var previous = document.getElementById('id' + values['id']);
-    if (previous) {
-     previous.parentNode.removeChild(previous);
-     // TODO: check siblings of previous for warnings, clear if necessary
-    }
-    var times = tb.getElementsByTagName('tr');
-    for (var j=times.length-1; j>=0; j--) {
-     var end = times[j].childNodes[1].firstChild.datetime;
-     if (end <= values['starttime']) {
-      added = tb.insertBefore(tr, times[j]);
-      break;
-     }
+  if (values['id'] && isSingle) {
+   var previous = document.getElementById('id' + values['id']);
+   if (previous) {
+    previous.parentNode.removeChild(previous);
+    // TODO: check siblings of previous for warnings, clear if necessary
+   }
+   var times = tb.getElementsByTagName('tr');
+   for (var j=0; j<times.length; j++) {
+    var start = times[j].firstChild.firstChild.datetime;
+    var end = times[j].childNodes[1].firstChild.datetime;
+    if (start >= values['starttime']) {
+     added = tb.insertBefore(tr, times[j]);
+     break;
     }
    }
   }
