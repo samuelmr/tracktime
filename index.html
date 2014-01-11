@@ -155,6 +155,9 @@
    float: left;
    margin: 1em 0 0 0;
   }
+  .extra.description {
+   clear: both;
+  }
   #description {
    width: 50em;
   }
@@ -385,9 +388,8 @@
  }
  
  function updateStars() {
-  var val = rat.value;
   for (var i=1; i<=5; i++) {
-   stars[i].innerHTML = (val >= i) ? '\u2605' : '\u2606';
+   stars[i].innerHTML = (rat.value >= i) ? '\u2605' : '\u2606';
   }
  }
 
@@ -405,7 +407,7 @@
 
  function getLatest() {
   xhr.abort();
-  var href = GET_URI + '?latest=15';
+  var href = GET_URI + '?latest=35';
   xhr.open('GET', href, true);
   xhr.send(null);
  }
@@ -423,10 +425,11 @@
     tmp = {'starttime': currEnd,
            'endtime': values[i]['starttime'], 
            'mainaction': 26,
+           'rating': 0,
            'with': 0};
-    addRow(tmp);
+    addRow(tmp, false);
    }
-   var tr = addRow(values[i]);
+   var tr = addRow(values[i], (values.length < 2));
    if (currEnd && (values[i]['starttime'] < currEnd)) {
     tr.className += ' alert';
    }   
@@ -434,7 +437,7 @@
   }
  }
 
- function addRow(values) {
+ function addRow(values, isSingle) {
   var tr = document.createElement('tr');
   tr.id = 'id' + values['id'];
   if (values['mainaction'] == 26) {
@@ -522,13 +525,16 @@
   }
   var added;
   if (values['id']) {
-   var previous = document.getElementById('id' + values['id']);
-   if (previous) {
-    previous.parentNode.removeChild(previous);
+   if (isSingle) {
+    var previous = document.getElementById('id' + values['id']);
+    if (previous) {
+     previous.parentNode.removeChild(previous);
+     // TODO: check siblings of previous for warnings, clear if necessary
+    }
     var times = tb.getElementsByTagName('tr');
-    for (var j=1; j<times.length; j++) {
-     var start = times[j].firstChild.firstChild.datetime;
-     if (start >= values['endtime']) {
+    for (var j=times.length-1; j>=0; j--) {
+     var end = times[j].childNodes[1].firstChild.datetime;
+     if (end <= values['starttime']) {
       added = tb.insertBefore(tr, times[j]);
       break;
      }
