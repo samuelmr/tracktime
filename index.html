@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+<html>
+<head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="initial-scale=1.0,user-scalable=no" />
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -11,7 +13,7 @@
   font-family: 'Unicode Sans','Lucida Sans Unicode',Helvetica,Arial,Verdana,sans-serif;
   font-size: 13px;
  }
- fieldset {
+ #add fieldset {
   border-width: 0px;
   max-width: 90%;
  }
@@ -83,13 +85,61 @@
   max-width: none;
   white-space: normal;
  }
+ #datetimepicker {
+  background-color: #FFF;
+  border-color: #666;
+  border-radius: 0.5em;
+  border-style: solid;
+  border-width: 1px;
+  display: none;
+  padding: 0.25em;
+  position: absolute;
+ }
+ #datetimepicker fieldset {
+  border-width: 0;
+  float: left;
+  height: 3em;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+ }
+ #datetimepicker label {
+  margin: 0 !important;
+  padding: 0 !important;
+ }
+ #datetimepicker .up {
+  position: relative;
+  top: 0.4em;
+ }
+ #datetimepicker .down {
+  position: relative;
+  top: -0.6em;
+ }
+ #datetimepicker .separator {
+  display: block;
+  height: 1em;
+  float: left;
+  padding: 1.5em 0;
+  text-align: center;
+  width: 1ex;
+ }
+ #datetimepicker input {
+  background: #FFF;
+  border-width: 0;
+ }
+ #pickyear {
+  width: 5ex;
+ }
+ #pickmonth, #pickday, #pickhour, #pickminute {
+  width: 2.5ex;
+ }
  @media screen and (max-width: 40em) {
   th.endtime, td.endtime, td .description {
    display: none;
   }
  }
  @media screen and (min-width: 30em) {
-  fieldset {
+  #add fieldset {
    float: left;
    height: 2.5em;
   }
@@ -124,7 +174,7 @@
    text-transform: uppercase;
    top: 0.25em;
   }
-  fieldset {
+  #add fieldset {
    float: left;
    height: 3em;
    margin: 7em 0 0 0;
@@ -153,7 +203,7 @@
   .extra {
    clear: none;
    float: left;
-   margin: 1em 0 0 0;
+   margin: 1em 0 0 0 !important;
   }
   .extra.description {
    clear: both;
@@ -169,6 +219,8 @@
   }
  }
 </style>
+</head>
+<body>
 <h1>Ajankäyttö</h1>
 <form id="add" method="POST" action="put.php">
 <input type="hidden" name="id" id="hiddenid" />
@@ -298,6 +350,43 @@
 <tbody id="results">
 </tbody>
 </table>
+<div id="datetimepicker">
+<fieldset>
+ <label for="pickyear" class="up">&#9650;</label>
+ <input id="pickyear" size="4" maxlength="4" />
+ <label for="pickyear" class="down">&#9660;</label>
+</fieldset>
+<span class="separator">-</span>
+<fieldset>
+ <label for="pickmonth" class="up">&#9650;</label>
+ <input id="pickmonth" size="2" maxlength="2" />
+ <label for="pickmonth" class="down">&#9660;</label>
+</fieldset>
+</fieldset>
+<span class="separator">-</span>
+<fieldset>
+<fieldset>
+ <label for="pickday" class="up">&#9650;</label>
+ <input id="pickday" size="2" maxlength="2" />
+ <label for="pickday" class="down">&#9660;</label>
+</fieldset>
+</fieldset>
+<span class="separator">&nbsp;&nbsp;</span>
+<fieldset>
+<fieldset>
+ <label for="pickhour" class="up">&#9650;</label>
+ <input id="pickhour" size="2" maxlength="2" />
+ <label for="pickhour" class="down">&#9660;</label>
+</fieldset>
+</fieldset>
+<span class="separator">:</span>
+<fieldset>
+<fieldset>
+ <label for="pickminute" class="up">&#9650;</label>
+ <input id="pickminute" size="2" maxlength="2" />
+ <label for="pickminute" class="down">&#9660;</label>
+</fieldset>
+</div>
 <script>
 
  var GET_URI = './get.php';
@@ -319,8 +408,17 @@
  var h = document.getElementById('hiddenid');
  var sub = document.getElementById('submit');
  var rat = document.getElementById('rating');
+ var dp = document.getElementById('datetimepicker');
+ var py = document.getElementById('pickyear');
+ var pm = document.getElementById('pickmonth');
+ var pd = document.getElementById('pickday');
+ var ph = document.getElementById('pickhour');
+ var pi = document.getElementById('pickminute');
 
  rat.onchange = updateStars;
+ st.onfocus = et.onfocus = showPicker;
+ f.mainaction.onfocus = hidePicker;
+ f.sideaction.onfocus = hidePicker;
 
  f.onsubmit = function(e) {
   e.preventDefault();
@@ -339,14 +437,6 @@
   }
  }
 
-/*
- var labels = {};
- var lbs = document.getElementsByTagName('label');
- for (var i=0; i<lbs.length; i++) {
-  var tmp = lbs[i].textContent;
-  labels[lbs[i].getAttribute('for')] = tmp;
- }
-*/
  var labels = ['yksin', 'lapset', 'perhe', '', 'muut'];
 
  var keys = ['starttime', 'endtime', 'mainaction', 'sideaction', 'with'];
@@ -357,9 +447,82 @@
   acts[opts[i].value] = opts[i].text.substr(3);
  }
 
+ var lbs = dp.getElementsByTagName('label');
+ for (var i=0; i<lbs.length; i++) {
+  lbs[i].onclick = lbs[i].touchend = function() {
+   var ip = document.getElementById(this.getAttribute('for'));
+   if (ip.id == pi.id) {
+    tmp = ((this.className == 'up') ? 10 : -10 ) + parseInt(ip.value);
+   }
+   else {
+    tmp = ((this.className == 'up') ? 1 : -1 ) + parseInt(ip.value);
+   }
+   switch (ip) {
+    case pm:
+     tmp = (tmp < 12) ? tmp : 12;
+     tmp = (tmp >= 1) ? tmp : 1;
+     break;
+    case pd:
+     tmp = (tmp < 31) ? tmp : 31;
+     tmp = (tmp >= 1) ? tmp : 1;
+     break;
+    case ph:
+     tmp = (tmp < 23) ? tmp : 23;
+     tmp = (tmp >= 0) ? tmp : 0;
+     break;
+    case pi:
+     tmp = (tmp < 50) ? tmp : 50;
+     tmp = (tmp >= 0) ? tmp : 0;
+     break;
+   }
+   if (tmp < 10) {
+    tmp = '0' + '' + tmp;
+   }
+   ip.value = tmp;
+   ip.onchange();
+  }
+ }
+
  getLatest();
  resetEndDate();
  window.setInterval(resetEndDate, 60 * 10 * 1000);
+
+ function showPicker() {
+  // console.log(this);
+  var elem = this;
+  var rect = this.getBoundingClientRect();
+  var dt = this.value.split(' ');
+  var d = dt[0].split('-');
+  var t = dt[1].split(':');
+  py.value = d[0];
+  pm.value = d[1];
+  pd.value = d[2];
+  ph.value = t[0];
+  pi.value = t[1];
+  py.onchange = pm.onchange = pd.onchange = ph.onchange = pi.onchange = 
+  function() {
+   elem.value = py.value + '-' + pm.value + '-' + pd.value + ' ' +
+                ph.value + ':' + pi.value + ':00';
+  };
+  dp.style.left = (rect.left - 4) + 'px';
+  dp.style.top = (rect.bottom + 2) + 'px';
+  dp.style.display = 'block';
+ }
+
+ window.onclick = window.ontouchend = function(e) {
+  var el = e.target;
+  while (el.parentNode) {
+	     if ((el == dp) || (el == st) || (el == et)) {
+    return;
+   }
+   el = el.parentNode;
+  }
+  hidePicker();
+ }
+
+ function hidePicker(e) {
+  dp.style.display = 'none';  
+ }
 
  function resetEndDate() {
   var d = new Date();
@@ -407,7 +570,7 @@
 
  function getLatest() {
   xhr.abort();
-  var href = GET_URI + '?latest=35';
+  var href = GET_URI + '?latest=15';
   xhr.open('GET', href, true);
   xhr.send(null);
  }
@@ -450,8 +613,8 @@
    f.mainaction.value = values['mainaction'];
    f.sideaction.value = values['sideaction'];
    f.description.value = values['description'] || '';
-   rat.value = values['rating'];
-   updateStars();   
+   rat.value = values['rating'] || 0;
+   updateStars();
    sub.value = 'Muokkaa';
    hilite(sub, 15, 12, 7)
    for (var i=0; i<boxes.length; i++) {
@@ -552,5 +715,6 @@
   }
   return val;
  }
-
 </script>
+</body>
+</html>
