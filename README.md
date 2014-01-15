@@ -89,5 +89,6 @@ The first version only allows you to store data but not much else.
 Future plans (in no particular order):
 * Various charts, tables and other views to the stored data
 ** Also comparisons to public statistics
+* Mobile client with calendar integration and location tracking 
 * Offline storage and syncing with server
 * Sharing your data with others
