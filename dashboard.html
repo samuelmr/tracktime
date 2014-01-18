@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="initial-scale=1.0,user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="HandheldFriendly" content="True" />
+<meta name="MobileOptimized" content="width" />
+<title>Tracktime Dashboard</title>
+<style>
+ html, body {
+  height: 100%;
+  margin: 0;
+ }
+ body {
+  color: #333;
+  font-family: 'Unicode Sans','Lucida Sans Unicode',Helvetica,Arial,Verdana,sans-serif;
+  font-size: 13px;
+  padding: 1em;
+  text-align: center;
+ }
+ header, section {
+  background-color: #EEF;
+  background: linear-gradient(to bottom, #DDF 0%, #EEF 100%);
+  background: -moz-linear-gradient(top, #EEF 0%, #DDF 100%);
+  background: -moz-linear-gradient(top, #EEF 0%, #DDF 100%);
+  background: -ms-linear-gradient(top, #EEF 0%, #DDF 100%);
+  background: -o-linear-gradient(top, #EEF 0%, #DDF 100%);
+  background: -webkit-linear-gradient(top, #EEF 0%, #DDF 100%);
+  color: #000;
+  border: 2px outset #EEF;
+  border-radius: 4px;
+  box-shadow: 4px 4px 4px #DDF;
+  display: block;
+  margin: 0;
+  position: absolute; 
+ }
+ header {
+  height: 25px;
+  left: 1%;
+  padding: 0;
+  right: 1%;
+  top: 10px;
+ }
+ header button, header input {
+  position: absolute;
+  top: 1px;
+ }
+ header #prev {
+  left: 3px;
+ }
+ header #next {
+  right: 3px;
+ }
+ #from {
+  width: 11em;
+  left: 33px;
+ }
+ #to {
+  width: 11em;
+  right: 33px;
+ }
+ h1 {
+  font-size: 13px;
+  line-height: 1;
+ }
+ section {
+  padding: 4px;
+ }
+ #pie {
+  bottom: 70%;
+  left: 1%;
+  right: 61%;
+  top: 48px;
+ }
+ #pie2 {
+  bottom: 70%;
+  left: 40%;
+  right: 20%;
+  top: 48px;
+ }
+ #gauge {
+  bottom: 70%;
+  left: 81%;
+  right: 1%;
+  top: 48px;
+ }
+ #bars {
+  bottom: 160px;
+  left: 1%;
+  right: 1%;
+  top: 31%;
+ }
+ #timeline {
+  bottom: 10px;
+  height: 133px;
+  left: 1%;
+  right: 1%;
+ }
+</style>
+</head>
+<body>
+<header><button id="prev">&#x25C0;</button><input id="from" type="datetime" step="600" /><h1>Tracktime Dashboard</h1><input id="to" type="datetime" step="600" /><button id="next">&#x25B6;</button></header>
+<section id="pie">Pie chart loading...</section>
+<section id="pie2">Pie chart loading...</section>
+<section id="gauge">Gauge loading...</section>
+<section id="bars">Bar chart loading...</section>
+<section id="timeline">Timeline loading...</section>
+<script src="//www.google.com/jsapi"></script>
+<script>
+ google.load('visualization', '1', {packages: ['corechart',
+                                               'gauge',
+                                               'timeline']});
+</script>
+<script>
+
+ var GET_URI = './get.php';
+ var MAX_ROWS = 150;
+
+ var stateStatus;
+
+ var xhr = new XMLHttpRequest();
+ xhr.onload = update;
+
+ var pb = document.getElementById('prev');
+ pb.onclick = showprev;
+
+ var nb = document.getElementById('next');
+ nb.onclick = shownext;
+
+ var fi = document.getElementById('from');
+ var ti = document.getElementById('to');
+ fi.onchange = ti.onchange = function() {
+  globalStart = toDate(fi.value);
+  globalEnd = toDate(ti.value);
+  getInterval();
+ }
+
+ var labels = {'01': 'Ansiotyö',
+               '02': 'Työmatkat',
+               '03': 'Kotitaloustyö',
+               '04': 'Huoltotyö',
+               '05': 'Muut kotityöt',
+               '06': 'Lasten hoito',
+               '07': 'Ostokset ja asiointi',
+               '08': 'Kotityöhön liittyvät matkat',
+               '09': 'Nukkuminen',
+               '10': 'Ruokailu',
+               '11': 'Peseytyminen, pukeutuminen',
+               '12': 'Koulunkäynti ja opiskelu',
+               '13': 'Koulumatkat',
+               '14': 'Vapaa-ajan opiskelu',
+               '15': 'Osallistuva toiminta',
+               '16': 'Liikunta ja ulkoilu',
+               '17': 'Kulttuuri- ja huvitilaisuudet',
+               '18': 'Lukeminen',
+               '19': 'Radion kuuntelu',
+               '20': 'Television katselu',
+               '21': 'Seurustelu perheen kanssa',
+               '22': 'Seurustelu tuttavien kanssa',
+               '23': 'Harrastukset',
+               '33': 'Atk-harrastus',
+               '24': 'Muu vapaa-aika',
+               '25': 'Vapaa-ajan matkat'};
+ var clabels = ['Ansiotyö',
+                'Kotityö',
+                'Henkilökohtaiset tarpeet',
+                'Opiskelu',
+                'Vapaa-aika',
+                'Erittelemätön'];
+ var lkeys = [];
+ if (Object.keys) {
+  lkeys = Object.keys(labels);
+ }
+ else {
+  for (var i in labels) {
+   lkeys.push(i);
+  }   
+ }
+ lkeys = lkeys.sort();
+ var categories = {};
+ var cats = {};
+ for (var i=0; i<lkeys.length; i++) {
+  if (i<2) {
+   cats[lkeys[i]] = clabels[0];
+  }
+  else if (i<8) {
+   cats[lkeys[i]] = clabels[1];
+  }
+  else if (i<11) {
+   cats[lkeys[i]] = clabels[2];
+  }
+  else if (i<14) {
+   cats[lkeys[i]] = clabels[3];
+  }
+  else if (i<26) {
+   cats[lkeys[i]] = clabels[4];
+  }
+  else {
+   cats[lkeys[i]] = clabels[5];
+  }
+ }
+ var bd = document.getElementById('bars');
+ var b = new google.visualization.ColumnChart(bd);
+ var bopts = {'backgroundColor': 'transparent', 'orientation': 'horizontal',
+              'isStacked': true, 'legend': {'position': 'none'},
+              'charArea': {'left': 0, 'top': 0, 'width': '100%', 'height': '100%'},
+             };
+ var bdata = [];
+ var brows = {};
+
+ var td = document.getElementById('timeline');
+ var t = new google.visualization.Timeline(td);
+ var topts = {'backgroundColor': 'transparent',
+              'timeline': {'colorByRowLabel': true,
+                           'barLabelStyle': {'fontSize': 12}}};
+ var tdata = [];
+
+ var gd = document.getElementById('gauge');
+ var g = new google.visualization.Gauge(gd);
+ var gopts = {'min': 1, 'max': 5,
+              'redFrom': 1, 'redTo': 2,
+              'yellowFrom': '2', 'yellowTo': 4,
+              'greenFrom': 4, 'greenTo': 5,
+              'width': gd.clientWidth,
+              'height': gd.clientHeight,
+              'animation.easing': 'out',
+              'animation.duration': 300,
+              'majorTicks': ['1', '2', '3', '4', '5']};
+ var gdata = [];
+ var rattime = 0;
+ var ratvalue = 0;
+
+ var plabels = ['Yksin', 'Lasten kanssa', 'Perheen kanssa'];
+ plabels[4] = 'Muiden kanssa';
+ var pd = document.getElementById('pie');
+ var p = new google.visualization.PieChart(pd);
+ var popts = {'pieHole': 0.4,
+              'backgroundColor': 'transparent',
+              'pieSliceTextStyle': {'color': '#000', 'fontSize': 12},
+              'chartArea': {'left': '5%', 'top': '5%',
+                            'width': '90%', 'height': '90%'},
+              'legend': {'position': 'left', 'textStyle': {'fontSize': 16}}};
+ var pdata = [];
+ var prows = [];
+ var p2d = document.getElementById('pie2');
+ var p2 = new google.visualization.PieChart(p2d);
+ var p2opts = {'pieHole': 0.4,
+               'backgroundColor': 'transparent',
+               'pieSliceTextStyle': {'color': '#000', 'fontSize': 12},
+               'chartArea': {'left': '5%', 'top': '5%',
+                             'width': '90%', 'height': '90%'},
+               'legend': {'position': 'left', 'textStyle': {'fontSize': 16}}};
+ var p2data = [];
+ var p2rows = [];
+ var globalStart, globalEnd;
+
+ google.setOnLoadCallback(init);
+ window.addEventListener('resize', resizeHandler, true);
+ window.addEventListener('hashchange', restoreState);
+ google.visualization.events.addListener(b, 'onmouseover', function(e) {
+  p2.setSelection([{'row': e['column']-1, 'column': null}]);
+ });
+ google.visualization.events.addListener(b, 'onmouseout', function(e) {
+  p2.setSelection([{'row': null, 'column': null}]);
+ });
+ // not working yet...
+ google.visualization.events.addListener(p2, 'onmouseover', function(e) {
+  b.setSelection([{'row': null, 'column': e['row']+1}]);
+ });
+ google.visualization.events.addListener(p2, 'onmouseout', function(e) {
+  b.setSelection([{'row': null, 'column': null}]);
+ });
+
+ function init() {
+  bdata = new google.visualization.DataTable();
+  bdata.addColumn({'type': 'string', 'id': 'Type'});
+  // bdata.addColumn({'type': 'string', 'id': 'Action category'});
+  for (var i=0; i<clabels.length; i++) {
+   bdata.addColumn('number', clabels[i]);
+  }
+
+  tdata = new google.visualization.DataTable();
+  tdata.addColumn({'type': 'string', 'id': 'Action type'});
+  tdata.addColumn({'type': 'string', 'id': 'Description'});
+  tdata.addColumn({'type': 'date', 'id': 'Start'});
+  tdata.addColumn({'type': 'date', 'id': 'End'});
+
+  gdata = new google.visualization.DataTable();
+  gdata.addColumn({'type': 'string', 'id': 'Label'});
+  gdata.addColumn({'type': 'number', 'id': 'Value'});
+
+  pdata = new google.visualization.DataTable();
+  pdata.addColumn({'type': 'string', 'id': 'With'});
+  pdata.addColumn({'type': 'number', 'id': 'Duration'});
+
+  p2data = new google.visualization.DataTable();
+  p2data.addColumn({'type': 'string', 'id': 'Action'});
+  p2data.addColumn({'type': 'number', 'id': 'Duration'});
+
+  var d = new Date();
+  globalStart = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  globalEnd = new Date(globalStart.getTime() + 24 * 60 * 60 * 1000);
+  getInterval();
+
+ }
+
+ function showprev() {
+  var diff = globalEnd.getTime() - globalStart.getTime();
+  globalStart = new Date(globalStart.getTime() - diff);
+  globalEnd = new Date(globalEnd.getTime() - diff);
+  getInterval();
+ }
+
+ function shownext() {
+  var diff = globalEnd.getTime() - globalStart.getTime();
+  globalStart = new Date(globalStart.getTime() + diff);
+  globalEnd = new Date(globalEnd.getTime() + diff);
+  getInterval();
+ }
+
+ function resizeHandler() {
+  bopts['width'] = bd.clientWidth;
+  bopts['height'] = bd.clientHeight;
+  b.draw(bdata, bopts);
+  topts['width'] = td.clientWidth;
+  topts['height'] = td.clientHeight;
+  t.draw(tdata, topts);
+  gopts['width'] = gd.clientWidth;
+  gopts['height'] = gd.clientHeight;
+  g.draw(gdata, gopts);
+  popts['width'] = pd.clientWidth;
+  popts['height'] = pd.clientHeight;
+  p.draw(pdata, popts);
+  p2opts['width'] = p2d.clientWidth;
+  p2opts['height'] = p2d.clientHeight;
+  p2.draw(p2data, p2opts);
+ }
+
+ function restoreState(e) {
+  var match;
+  if (e.newURL && (match = new String(e.newURL).match(/([\d\s:-]+),([\d\s:-]+)$/))) {
+   fi.value = match[1];
+   ti.value = match[2];
+   ti.onchange();
+   stateStatus = 'pop';
+  }
+ }
+
+ function getInterval() {
+  fi.value = toString(globalStart);
+  ti.value = toString(globalEnd);
+  var state = {'from': fi.value, 'to': ti.value};
+  var newTitle = fi.value + ' - '+ ti.value;
+  var url = new String(document.location).replace(/#.+$/, '') + 
+            '#' + fi.value + ',' + ti.value;
+  if ((stateStatus == 'wait') || !history.replaceState) {
+   history.pushState(state, newTitle, url);
+  }
+  else {
+   history.replaceState(state, newTitle, url);
+  }
+  document.title = newTitle;
+  stateStatus = 'wait';
+  xhr.abort();
+  var href = GET_URI + '?starttime=' + Math.round(globalStart.getTime()/1000) +
+             '&endtime=' + Math.round(globalEnd.getTime()/1000);
+  xhr.open('GET', href, true);
+  xhr.send(null);
+ }
+
+ function update() {
+  var values = JSON.parse(this.responseText);
+  if (!values.length) {
+   return false;
+  }
+  // b.clearChart();
+  bdata.removeRows(0, bdata.getNumberOfRows());
+  // empty bdata
+  // t.clearChart();
+  tdata.removeRows(0, tdata.getNumberOfRows());
+  // g.clearChart();
+  gdata.removeRows(0, gdata.getNumberOfRows());
+  // p.clearChart();
+  pdata.removeRows(0, pdata.getNumberOfRows());
+  p2data.removeRows(0, p2data.getNumberOfRows());
+  ratvalue = 0;
+  rattime = 0;
+  prows = [0, 0, 0, 0, null, 0];
+  brows = {};
+  var currEnd = '';
+  for (var i=values.length-1; i>=0; i--) {
+   if (currEnd && (values[i]['starttime'] > currEnd)) {
+    var tmp = {'starttime': currEnd,
+               'endtime': values[i]['starttime'], 
+               'mainaction': 26,
+               'rating': 0,
+               'with': 0};
+    addData(tmp);
+   }
+   addData(values[i]);
+   currEnd = values[i]['endtime'];
+  }
+
+  var total = [0, 0, 0, 0, 0, 0];
+  for (var i=0; i<lkeys.length; i++) {
+   var key = lkeys[i];
+   if (!brows[key]) {
+    continue;
+   }
+   var tmp = [labels[key]];
+   for (var k=0; k<clabels.length; k++) {
+    if (cats[key] == clabels[k]) {
+      tmp.push(Math.round(brows[key]/6)/10);
+      total[k] += brows[key];
+    }
+    else {
+      tmp.push(0);
+    }
+   }
+   bdata.addRow(tmp);
+  }
+  b.draw(bdata, bopts);
+
+  for (var i=0; i<total.length; i++) {
+   p2data.addRow([clabels[i], Math.round(total[i]/6)/10]);
+  }
+  p2.draw(p2data, p2opts);
+
+  for (var i=0; i<plabels.length; i++) {
+   if (!plabels[i] || !prows[i]) {
+    continue;
+   }
+   pdata.addRow([plabels[i], Math.round(prows[i]/6)/10]);
+  }
+  p.draw(pdata, popts);
+
+  t.draw(tdata, topts);
+
+  gdata.addRow(['Rating', rattime ? Math.round(ratvalue/rattime*100)/100 : 0]);
+  g.draw(gdata, gopts);
+
+ }
+
+ function addData(values) {
+  var st = toDate(values['starttime']);
+  st = (st >= globalStart) ? st : globalStart;
+  var et = toDate(values['endtime']);
+  et = (et <= globalEnd) ? et : globalEnd;
+  var duration = (et - st)/(60 * 1000);
+  var desc = '';
+  if (values['description']) {
+   desc += ' (' + values['description'] + ')';
+  }
+  switch(parseInt(values['with'])) {
+   case 0:
+    prows[0] += duration;
+    desc += ' yksin';
+    break;
+   case 1:
+    prows[1] += duration;
+    desc += ' lasten kanssa';
+    break;
+   case 2:
+    prows[2] += duration;
+    desc += ' perheen kanssa';
+    break;
+   case 3:
+    prows[1] += duration;
+    prows[2] += duration;
+    desc += ' perheen kanssa';
+    break;
+   case 4:
+    prows[4] += duration;
+    desc += ' muiden kanssa';
+    break;
+   case 5:
+    prows[1] += duration;
+    prows[4] += duration;
+    desc += ' lasten ja muiden kanssa';
+    break;
+   case 6:
+    prows[2] += duration;
+    prows[4] += duration;
+    desc += ' perheen ja muiden kanssa';
+    break;
+   case 7:
+    prows[1] += duration;
+    prows[2] += duration;
+    prows[4] += duration;
+    desc += ' perheen ja muiden kanssa';
+    break;
+   default:
+    break;
+  }
+
+  if (values['rating']) {
+   var rv = parseInt(values['rating']);
+   desc += ' ' + new Array(rv+1).join('\u2605');
+   rattime += duration;
+   ratvalue += (duration * rv);
+  }
+
+  var a = ['Main action', labels[values['mainaction']] + desc, st, et];
+  tdata.addRow(a);
+
+  if (!brows[values['mainaction']]) {
+   brows[values['mainaction']] = 0;
+  }
+  brows[values['mainaction']] += duration;
+  if (values['sideaction']) {
+   a = ['Side action', labels[values['sideaction']] + desc, st, et];
+   tdata.addRow(a);
+   // if (!brows[values['sideaction']]) {
+   //  brows[values['sideaction']] = 0;
+   // }
+   // brows[values['sideaction']] += duration;
+  }
+
+ }
+
+ function toDate(str) {
+  var dt = str.split(' ');
+  var d = dt[0].split('-');
+  var t = dt[1].split(':');
+  var date = new Date(d[0], d[1]-1, d[2], t[0], t[1]);
+  return date;
+ }
+
+ function toString(d) {
+  var str = d.getFullYear() + '-' + 
+            pad(d.getMonth()+1) + '-' + 
+            pad(d.getDate()) + ' ' +
+            pad(d.getHours()) + ':' + 
+            pad(10*Math.floor(d.getMinutes()/10)) + ':00';
+  return str;
+ }
+
+ function pad(val) {
+  if (val < 10) {
+   return '0' + '' + val;
+  }
+  return val;
+ }
+
+</script>
+<!--
+
+
+<fieldset class="check">
+<input id="alone" name="with[]" value="0" type="checkbox" checked="checked" />
+<label for="alone">Yksin</label>
+</fieldset>
+<fieldset class="check">
+<input id="withkids" name="with[]" value="1" type="checkbox" />
+<label for="withkids">Lasten kanssa</label>
+</fieldset>
+<fieldset class="check">
+<input id="withfamily" name="with[]" value="2" type="checkbox" />
+<label for="withfamily">Perheen kanssa</label>
+</fieldset>
+<fieldset class="check">
+<input id="withothers" name="with[]" value="4" type="checkbox" />
+<label for="withothers">Muiden kanssa</label>
+</fieldset>
+-->
+</body>
+</html>
