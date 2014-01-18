@@ -60,7 +60,7 @@
             ')';
   $result = mysqli_query($conn, $insert);
   if ($result) {
-   $values[id] = isset($id) ? $id : mysqli_insert_id($conn);
+   $values['id'] = isset($id) ? $id : mysqli_insert_id($conn);
    $response[] = $values;
   }
   else {
