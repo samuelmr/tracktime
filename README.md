@@ -81,6 +81,9 @@ Try visiting index.php with your web browser. You should see a form.
 
 Go ahead and start tracking your time!
 
+After you have inserted some values, you should see some statistics by
+visiting your dashboard.html with your web browser.
+
 TODO
 ====
 
