@@ -87,13 +87,13 @@ TODO
 The first version only allows you to store data but not much else.
 
 Future plans (in no particular order):
-* Convert codes to [HETUS][]
-** [Activity coding list with definitions, notes and examples][2]
+* Convert codes to [HETUS][1]
+    * [Activity coding list with definitions, notes and examples][2]
 * Various charts, tables and other views to the stored data
-** Also comparisons to public statistics
-** montly/yearly graphs like [Statistics Sweden][3]
+    * Also comparisons to public statistics
+    * montly/yearly graphs like [Statistics Sweden][3]
 * Mobile client with calendar integration and location tracking 
-** also call logs
+    * also call logs
 * Offline storage and syncing with server
 * Sharing your data with others
 
