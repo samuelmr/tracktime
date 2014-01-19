@@ -299,7 +299,7 @@
   p2data.addColumn({'type': 'number', 'id': 'Duration'});
 
   var d = new Date();
-  globalStart = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  globalStart = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 4);
   globalEnd = new Date(globalStart.getTime() + 24 * 60 * 60 * 1000);
   getInterval();
 
