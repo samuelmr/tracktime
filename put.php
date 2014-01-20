@@ -9,23 +9,28 @@
 
  $response = array();
 
+ # echo "<pre>\n";
+ # var_dump($_REQUEST);
+ # echo "</pre>\n";
  if (isset($_REQUEST['id']) && $_REQUEST['id']) {
   $id = intval($_REQUEST['id']);
  }
  $starttime = $_REQUEST['starttime'];
  $endtime = $_REQUEST['endtime'];
- $mainaction = sprintf('%02d', $_REQUEST['mainaction']);
+ $mainaction = intval($_REQUEST['mainaction']);
  $values = array('starttime' => $starttime,
                  'endtime' => $endtime,
                  'mainaction' => $mainaction);
  if (isset($_REQUEST['sideaction']) && $_REQUEST['sideaction']) {
-  $sideaction = sprintf('%02d', $_REQUEST['sideaction']);
+  $sideaction = intval($_REQUEST['sideaction']);
   $values['sideaction'] = $sideaction;
  }
  $with = 0;
  if (isset($_REQUEST['with'])) {
   if (is_array($_REQUEST['with'])) {
-   $with = intval(array_sum($_REQUEST['with']));
+   for ($i=0; $i<count($_REQUEST['with']); $i++) {
+    $with += pow(2, intval($_REQUEST['with'][$i])-1);
+   }
   }
   elseif (is_numeric($_REQUEST['with'])) {
    $with = intval($_REQUEST['with']);
@@ -51,10 +56,10 @@
             ") VALUES (".
             "'".mysqli_real_escape_string($conn, $starttime)."'".
             ", '".mysqli_real_escape_string($conn, $endtime)."'".
-            ", '$mainaction'".
+            ", $mainaction".
             ", $with".
             (isset($id) ? ", $id" : '').
-            (isset($sideaction) ? ", '$sideaction'" : '').
+            (isset($sideaction) ? ", $sideaction" : '').
             (isset($description) ? ", '".mysqli_real_escape_string($conn, $description)."'" : '').
             (isset($rating) ? ", $rating" : '').
             ')';
@@ -65,7 +70,7 @@
   }
   else {
    header('500 Internal Server Error');
-   trigger_error($insert, E_USER_NOTICE);
+   trigger_error($insert, E_USER_WARNING);
    $code = mysqli_errno($conn);
    $msg = mysqli_error($conn);
    $response = array('code' => $code, 'msg' => $msg);
