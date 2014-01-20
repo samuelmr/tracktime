@@ -29,7 +29,7 @@
   background: -webkit-linear-gradient(#EEE, #DDD);
   background: -o-linear-gradient(#EEE, #DDD);
   -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#EEE', endColorstr='#DDD')";
-  background: linear-gradient(#EEE, #DDD); /* the standard */  
+  background: linear-gradient(#EEE, #DDD);
  }
  input {
   border-color: #FFF;
@@ -46,7 +46,7 @@
   max-width: 95%;
  }
  #table th, #table td {
-  padding: 0 0.25em;
+  padding: 0 0.5em 0 0.25em !important;
   text-align: left;
  }
  #table tr.unspecified td {
@@ -72,7 +72,7 @@
  .with .with, .with .rating, .with .description {
   display: block;
   float: left;
-  margin: 0 0.5em;
+  margin: 0 0.5em 0 0;
  }
  .with .description {
   font-style: italic;
@@ -148,9 +148,6 @@
    height: 1em;
   }
   .extra {
-/*
-   float: right;
-*/
   }
   #description {
    width: 30em;
@@ -225,127 +222,183 @@
 <form id="add" method="POST" action="put.php">
 <input type="hidden" name="id" id="hiddenid" />
 <fieldset>
-<label for="starttime">Alkoi</label>
+<label for="starttime">From</label>
 <input id="starttime" name="starttime" type="datetime" step="600" />
 </fieldset>
 <fieldset>
-<label for="endtime">Päättyi</label>
+<label for="endtime">To</label>
 <input id="endtime" name="endtime" type="datetime" step="600" />
 </fieldset>
 <fieldset>
-<label for="mainaction">Pääasiallinen toiminta</label>
+<label for="mainaction">Main action</label>
 <select id="mainaction" name="mainaction">
-<optgroup label="01–02 Ansiotyö">
-<option value="01">01 Ansiotyö</option>
-<option value="02">02 Työmatkat</option>
-<optgroup label="03–08 Kotityö">
-<option value="03">03 Kotitaloustyö</option>
-<option value="04">04 Huoltotyö</option>
-<option value="05">05 Muut kotityöt</option>
-<option value="06">06 Lasten hoito</option>
-<option value="07">07 Ostokset ja asiointi</option>
-<option value="08">08 Kotityöhön liittyvät matkat</option>
+<optgroup label="Personal care">
+<option value="1">Sleep</option>
+<option value="2">Eating</option>
+<option value="3">Other personal care</option>
+<optgroup label="Employment">
+<option value="4">Main and second job</option>
+<option value="5">Employment activities</option>
 </optgroup>
-<optgroup label="09–11 Henkilökohtaiset tarpeet">
-<option value="09">09 Nukkuminen</option>
-<option value="10">10 Ruokailu</option>
-<option value="11">11 Peseytyminen, pukeutuminen</option>
+<optgroup label="Study">
+<option value="6">School and university</option>
+<option value="7">Homework</option>
+<option value="8">Freetime study</option>
 </optgroup>
-<optgroup label="12–14 Opiskelu">
-<option value="12">12 Koulunkäynti ja opiskelu</option>
-<option value="13">13 Koulumatkat</option>
-<option value="14">14 Vapaa-ajan opiskelu</option>
+<optgroup label="Domestic">
+<option value="9">Food preparation</option>
+<option value="10">Dish washing</option>
+<option value="11">Cleaning dwelling</option>
+<option value="12">Other household upkeep</option>
+<option value="13">Laundry</option>
+<option value="14">Ironing</option>
+<option value="15">Handicraft</option>
+<option value="16">Gardening</option>
+<option value="17">Tending domestic animals</option>
+<option value="18">Caring for pets</option>
+<option value="19">Walking the dog</option>
+<option value="20">Construction and repairs</option>
+<option value="21">Shopping and services</option>
+<option value="22">Child care</option>
+<option value="23">Teaching kids</option>
+<option value="24">Other domestic work</option>
 </optgroup>
-<optgroup label="15–25 Vapaa-aika">
-<option value="15">15 Osallistuva toiminta</option>
-<option value="16">16 Liikunta ja ulkoilu</option>
-<option value="17">17 Kulttuuri- ja huvitilaisuudet</option>
-<option value="18">18 Lukeminen</option>
-<option value="19">19 Radion kuuntelu</option>
-<option value="20">20 Television katselu</option>
-<option value="21">21 Seurustelu perheen kanssa</option>
-<option value="22">22 Seurustelu tuttavien kanssa</option>
-<option value="23">23 Harrastukset</option>
-<option value="33">33 Atk-harrastus</option>
-<option value="24">24 Muu vapaa-aika</option>
-<option value="25">25 Vapaa-ajan matkat</option>
+<optgroup label="Leisure">
+<option value="25">Organisational work</option>
+<option value="26">Help to other households</option>
+<option value="27">Participatory activities</option>
+<option value="28">Visits and feasts</option>
+<option value="29">Other social life</option>
+<option value="30">Entertainment and culture</option>
+<option value="31">Resting</option>
+<option value="32">Walking and hiking</option>
+<option value="33">Sports and outdoors</option>
+<option value="34">Computer and video games</option>
+<option value="35">Other computing</option>
+<option value="36">Other hobbies and games</option>
+<option value="37">Reading books</option>
+<option value="38">Other reading</option>
+<option value="39">TV and video</option>
+<option value="40">Radio and music</option>
+<option value="41">Unspecified leisure</option>
 </optgroup>
-<option value="26">26 Erittelemätön</option>
+<optgroup label="Travel">
+<option value="42">Travel to/from work</option>
+<option value="43">Travel related to study</option>
+<option value="44">Travel related to shopping</option>
+<option value="45">Transporting a child</option>
+<option value="46">Travel related to other domestic</option>
+<option value="47">Travel related to leisure</option>
+<option value="48">Unspecified travel</option>
+</optgroup>
+<option value="49">Unspecified</option>
 </select>
 </fieldset>
 <fieldset>
-<label for="sideaction">Samaan aikaan</label>
+<label for="sideaction">Parallel action</label>
 <select id="sideaction" name="sideaction">
 <option value=""></option>
-<optgroup label="01–02 Ansiotyö">
-<option value="01">01 Ansiotyö</option>
-<option value="02">02 Työmatkat</option>
-<optgroup label="03–08 Kotityö">
-<option value="03">03 Kotitaloustyö</option>
-<option value="04">04 Huoltotyö</option>
-<option value="05">05 Muut kotityöt</option>
-<option value="06">06 Lasten hoito</option>
-<option value="07">07 Ostokset ja asiointi</option>
-<option value="08">08 Kotityöhön liittyvät matkat</option>
+<optgroup label="Personal care">
+<option value="1">Sleep</option>
+<option value="2">Eating</option>
+<option value="3">Other personal care</option>
+<optgroup label="Employment">
+<option value="4">Main and second job</option>
+<option value="5">Employment activities</option>
 </optgroup>
-<optgroup label="09–11 Henkilökohtaiset tarpeet">
-<option value="09">09 Nukkuminen</option>
-<option value="10">10 Ruokailu</option>
-<option value="11">11 Peseytyminen, pukeutuminen</option>
+<optgroup label="Study">
+<option value="6">School and university</option>
+<option value="7">Homework</option>
+<option value="8">Freetime study</option>
 </optgroup>
-<optgroup label="12–14 Opiskelu">
-<option value="12">12 Koulunkäynti ja opiskelu</option>
-<option value="13">13 Koulumatkat</option>
-<option value="14">14 Vapaa-ajan opiskelu</option>
+<optgroup label="Domestic">
+<option value="9">Food preparation</option>
+<option value="10">Dish washing</option>
+<option value="11">Cleaning dwelling</option>
+<option value="12">Other household upkeep</option>
+<option value="13">Laundry</option>
+<option value="14">Ironing</option>
+<option value="15">Handicraft</option>
+<option value="16">Gardening</option>
+<option value="17">Tending domestic animals</option>
+<option value="18">Caring for pets</option>
+<option value="19">Walking the dog</option>
+<option value="20">Construction and repairs</option>
+<option value="21">Shopping and services</option>
+<option value="22">Child care</option>
+<option value="23">Teaching kids</option>
+<option value="24">Other domestic work</option>
 </optgroup>
-<optgroup label="15–25 Vapaa-aika">
-<option value="15">15 Osallistuva toiminta</option>
-<option value="16">16 Liikunta ja ulkoilu</option>
-<option value="17">17 Kulttuuri- ja huvitilaisuudet</option>
-<option value="18">18 Lukeminen</option>
-<option value="19">19 Radion kuuntelu</option>
-<option value="20">20 Television katselu</option>
-<option value="21">21 Seurustelu perheen kanssa</option>
-<option value="22">22 Seurustelu tuttavien kanssa</option>
-<option value="23">23 Harrastukset</option>
-<option value="33">33 Atk-harrastus</option>
-<option value="24">24 Muu vapaa-aika</option>
-<option value="25">25 Vapaa-ajan matkat</option>
+<optgroup label="Leisure">
+<option value="25">Organisational work</option>
+<option value="26">Help to other households</option>
+<option value="27">Participatory activities</option>
+<option value="28">Visits and feasts</option>
+<option value="29">Other social life</option>
+<option value="30">Entertainment and culture</option>
+<option value="31">Resting</option>
+<option value="32">Walking and hiking</option>
+<option value="33">Sports and outdoors</option>
+<option value="34">Computer and video games</option>
+<option value="35">Other computing</option>
+<option value="36">Other hobbies and games</option>
+<option value="37">Reading books</option>
+<option value="38">Other reading</option>
+<option value="39">TV and video</option>
+<option value="40">Radio and music</option>
+<option value="41">Unspecified leisure</option>
 </optgroup>
-<option value="26">26 Erittelemätön</option>
+<optgroup label="Travel">
+<option value="42">Travel to/from work</option>
+<option value="43">Travel related to study</option>
+<option value="44">Travel related to shopping</option>
+<option value="45">Transporting a child</option>
+<option value="46">Travel related to other domestic</option>
+<option value="47">Travel related to leisure</option>
+<option value="48">Unspecified travel</option>
+</optgroup>
+<option value="49">Unspecified</option>
 </select>
 </fieldset>
 <fieldset class="check">
-<input id="alone" name="with[]" value="0" type="checkbox" checked="checked" />
-<label for="alone">Yksin</label>
+<input id="alone" name="with[]" value="1" type="checkbox" checked="checked" />
+<label for="alone">Alone</label>
 </fieldset>
 <fieldset class="check">
-<input id="withkids" name="with[]" value="1" type="checkbox" />
-<label for="withkids">Lasten kanssa</label>
+<input id="withpartner" name="with[]" value="2" type="checkbox" />
+<label for="withpartner">With partner</label>
 </fieldset>
 <fieldset class="check">
-<input id="withfamily" name="with[]" value="2" type="checkbox" />
-<label for="withfamily">Perheen kanssa</label>
+<input id="withparent" name="with[]" value="3" type="checkbox" />
+<label for="withparent">With parent</label>
 </fieldset>
 <fieldset class="check">
-<input id="withothers" name="with[]" value="4" type="checkbox" />
-<label for="withothers">Muiden kanssa</label>
+<input id="withkids" name="with[]" value="4" type="checkbox" />
+<label for="withkids">With kids</label>
+</fieldset>
+<fieldset class="check">
+<input id="withfamily" name="with[]" value="5" type="checkbox" />
+<label for="withfamily">With family</label>
+</fieldset>
+<fieldset class="check">
+<input id="withothers" name="with[]" value="6" type="checkbox" />
+<label for="withothers">With others</label>
 </fieldset>
 <fieldset class="extra description">
-<label for="description">Kuvaus</label>
+<label for="description">Description</label>
 <input id="description" name="description" type="text" size="40" maxlength="255" />
 </fieldset>
 <fieldset class="extra rating">
-<label for="rating">Arvio <span id="star1">&#9734;</span><span id="star2">&#9734;</span><span id="star3">&#9734;</span><span id="star4">&#9734;</span><span id="star5">&#9734;</span></label>
+<label for="rating">Rating <span id="star1">&#9734;</span><span id="star2">&#9734;</span><span id="star3">&#9734;</span><span id="star4">&#9734;</span><span id="star5">&#9734;</span></label>
 <input id="rating" name="rating" type="range" min="0" max="5" step="1" value="0" />
 </fieldset>
 <fieldset class="extra submit">
- <input type="submit" id="submit" value="Tallenna" />
+ <input type="submit" id="submit" value="Save" />
 </fieldset>
 </form>
 <table id="table">
 <thead>
-<tr><th class="starttime">Alkoi</th><th class="endtime">Päättyi</th><th class="mainaction">Pääasiallinen toiminta</th><th class="sideaction">Samaan aikaan</th><th class="with">Kuvaus</th></tr>
+<tr><th class="starttime">From</th><th class="endtime">To</th><th class="mainaction">Main action</th><th class="sideaction">Parallel</th><th class="with">With</th></tr>
 </thead>
 <tbody id="results">
 </tbody>
@@ -390,7 +443,7 @@
 <script>
 
  var GET_URI = './get.php';
- var MAX_ROWS = 48;
+ var MAX_ROWS = 480;
 
  var xhr = new XMLHttpRequest();
  xhr.onload = showRows;
@@ -425,7 +478,6 @@
   e.preventDefault();
   xhr.abort();
   xhr.open(f.method, f.action, true);
-  // xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
   xhr.send(new FormData (f));
  };
  
@@ -438,14 +490,20 @@
   }
  }
 
- var labels = ['yksin', 'lapset', 'perhe', '', 'muut'];
+ var wlabels = [];
+ wlabels[1] = 'Alone';
+ wlabels[2] = 'Partner';
+ wlabels[3] = 'Parent';
+ wlabels[4] = 'Kids';
+ wlabels[5] = 'Family';
+ wlabels[6] = 'Others';
 
  var keys = ['starttime', 'endtime', 'mainaction', 'sideaction', 'with'];
 
  var acts = {null: '', 'undefined': ''};
  var opts = document.getElementById('sideaction').options;
  for (var i=0; i<opts.length; i++) {
-  acts[opts[i].value] = opts[i].text.substr(3);
+  acts[opts[i].value] = opts[i].text;
  }
 
  var lbs = dp.getElementsByTagName('label');
@@ -489,7 +547,6 @@
  window.setInterval(resetEndDate, 60 * 10 * 1000);
 
  function showPicker() {
-  // console.log(this);
   var elem = this;
   var rect = this.getBoundingClientRect();
   var dt = this.value.split(' ');
@@ -581,16 +638,23 @@
   if (!values.length) {
    return false;
   }
+  h.value = null;
   st.value = values[0]['endtime'];
+  hilite(st, 15, 12, 7)
+  if (sub.value != 'Save') {
+   sub.value = 'Save';
+   hilite(sub, 15, 12, 7)
+  }
+
   resetEndDate();
   var currEnd = '';
   for (var i=values.length-1; i>=0; i--) {
    if (currEnd && (values[i]['starttime'] > currEnd)) {
     tmp = {'starttime': currEnd,
            'endtime': values[i]['starttime'], 
-           'mainaction': 26,
+           'mainaction': 49,
            'rating': 0,
-           'with': 0};
+           'with': 1};
     addRow(tmp, false);
    }
    var tr = addRow(values[i], (values.length < 2));
@@ -604,7 +668,7 @@
  function addRow(values, isSingle) {
   var tr = document.createElement('tr');
   tr.id = 'id' + values['id'];
-  if (values['mainaction'] == 26) {
+  if (values['mainaction'] == 49) {
    tr.className = ' unspecified';
   }
   tr.ontap = tr.ondblclick = function() {
@@ -616,11 +680,12 @@
    f.description.value = values['description'] || '';
    rat.value = values['rating'] || 0;
    updateStars();
-   sub.value = 'Muokkaa';
+   sub.value = 'Edit';
    hilite(sub, 15, 12, 7)
    for (var i=0; i<boxes.length; i++) {
     var val = boxes[i].value;
-    if ((val == values['with']) || (val & values['with'])) {
+    if ((val == parseInt(values['with'])) ||
+        (parseInt(values['with']) & Math.pow(2, (val-1)))) {
      boxes[i].checked = true;
     }
     else {
@@ -655,8 +720,9 @@
     var tmp = [];
     for (var i=0; i<boxes.length; i++) {
      var val = boxes[i].value;
-     if ((val == values['with']) || (val & values['with'])) {
-      tmp.push(labels[boxes[i].value]);
+     if ((val == parseInt(values['with'])) ||
+         (parseInt(values['with']) & Math.pow(2, (val-1)))) {
+      tmp.push(wlabels[boxes[i].value].toLowerCase());
      }
     }
     val = tmp.join(', ');
@@ -675,7 +741,6 @@
      cellval.appendChild(meter);
     }
     if (values['description']) {
-     // tr.title = values['description'];
      val = values['description'];
      span = document.createElement('span');
      span.className = 'description';
