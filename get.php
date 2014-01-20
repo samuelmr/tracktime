@@ -36,7 +36,7 @@
   $select .= " AND endtime >= '".date('Y-m-d H:i:s',$start)."'";
  }
  if ($end) {
-  $select .= " AND endtime <= '".date('Y-m-d H:i:s',$end)."'";
+  $select .= " AND starttime <= '".date('Y-m-d H:i:s',$end)."'";
  }
  if ($act) {
   $select .= ' AND (mainaction = '.$act.' OR sideaction = '.$act.')';
