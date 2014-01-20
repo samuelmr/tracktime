@@ -68,19 +68,19 @@
   padding: 4px;
  }
  #pie {
-  bottom: 70%;
+  bottom: 75%;
   left: 1%;
   right: 61%;
   top: 48px;
  }
  #pie2 {
-  bottom: 70%;
+  bottom: 75%;
   left: 40%;
   right: 20%;
   top: 48px;
  }
  #gauge {
-  bottom: 70%;
+  bottom: 75%;
   left: 81%;
   right: 1%;
   top: 48px;
@@ -89,7 +89,7 @@
   bottom: 160px;
   left: 1%;
   right: 1%;
-  top: 31%;
+  top: 26%;
  }
  #timeline {
   bottom: 10px;
@@ -117,6 +117,8 @@
  var GET_URI = './get.php';
  var MAX_ROWS = 150;
 
+ var animOpts = {'easing': 'in', 'duration': 500};
+
  var stateStatus;
 
  var xhr = new XMLHttpRequest();
@@ -136,74 +138,102 @@
   getInterval();
  }
 
- var labels = {'01': 'Ansiotyö',
-               '02': 'Työmatkat',
-               '03': 'Kotitaloustyö',
-               '04': 'Huoltotyö',
-               '05': 'Muut kotityöt',
-               '06': 'Lasten hoito',
-               '07': 'Ostokset ja asiointi',
-               '08': 'Kotityöhön liittyvät matkat',
-               '09': 'Nukkuminen',
-               '10': 'Ruokailu',
-               '11': 'Peseytyminen, pukeutuminen',
-               '12': 'Koulunkäynti ja opiskelu',
-               '13': 'Koulumatkat',
-               '14': 'Vapaa-ajan opiskelu',
-               '15': 'Osallistuva toiminta',
-               '16': 'Liikunta ja ulkoilu',
-               '17': 'Kulttuuri- ja huvitilaisuudet',
-               '18': 'Lukeminen',
-               '19': 'Radion kuuntelu',
-               '20': 'Television katselu',
-               '21': 'Seurustelu perheen kanssa',
-               '22': 'Seurustelu tuttavien kanssa',
-               '23': 'Harrastukset',
-               '33': 'Atk-harrastus',
-               '24': 'Muu vapaa-aika',
-               '25': 'Vapaa-ajan matkat'};
- var clabels = ['Ansiotyö',
-                'Kotityö',
-                'Henkilökohtaiset tarpeet',
-                'Opiskelu',
-                'Vapaa-aika',
-                'Erittelemätön'];
- var lkeys = [];
- if (Object.keys) {
-  lkeys = Object.keys(labels);
- }
- else {
-  for (var i in labels) {
-   lkeys.push(i);
-  }   
- }
- lkeys = lkeys.sort();
- var categories = {};
+ var labels = [null,
+                  'Sleep',
+                  'Eating',
+                  'Other personal care',
+                  'Main and second job',
+                  // 'Activities related to employment',
+                  'Employment activities',
+                  'School and university',
+                  'Homework',
+                  'Freetime study',
+                  'Food preparation',
+                  'Dish washing',
+                  'Cleaning dwelling',
+                  'Other household upkeep',
+                  'Laundry',
+                  'Ironing',
+                  'Handicraft',
+                  'Gardening',
+                  'Tending domestic animals',
+                  'Caring for pets',
+                  'Walking the dog',
+                  'Construction and repairs',
+                  'Shopping and services',
+                  // 'Physical care and supervision of child',
+                  'Child care',
+                  // 'Teaching, reading and talking with child',
+                  'Teaching kids',
+                  'Other domestic work',
+                  'Organisational work',
+                  // 'Informal help to other households',
+                  'Help to other households',
+                  'Participatory activities',
+                  'Visits and feasts',
+                  'Other social life',
+                  'Entertainment and culture',
+                  'Resting',
+                  'Walking and hiking',
+                  // 'Other sports and outdoor activities',
+                  'Sports and outdoor',
+                  'Computer and video games',
+                  'Other computing',
+                  'Other hobbies and games',
+                  'Reading books',
+                  'Other reading',
+                  'TV and video',
+                  'Radio and music',
+                  'Unspecified leisure',
+                  'Travel to/from work',
+                  'Travel related to study',
+                  'Travel related to shopping',
+                  'Transporting a child',
+                  'Travel related to other domestic',
+                  'Travel related to leisure',
+                  'Unspecified travel',
+                  'Unspecified time use'];
+
+ var clabels = ['Personal care',
+                'Employment',
+                'Study',
+                'Domestic',
+                'Leisure',
+                'Travel',
+                'Unspecified'];
  var cats = {};
- for (var i=0; i<lkeys.length; i++) {
-  if (i<2) {
-   cats[lkeys[i]] = clabels[0];
+ for (var i=0; i<labels.length; i++) {
+  if (!i) {
+   continue;
   }
-  else if (i<8) {
-   cats[lkeys[i]] = clabels[1];
+  if (i<=3) {
+   cats[i] = clabels[0];
   }
-  else if (i<11) {
-   cats[lkeys[i]] = clabels[2];
+  else if (i<=5) {
+   cats[i] = clabels[1];
   }
-  else if (i<14) {
-   cats[lkeys[i]] = clabels[3];
+  else if (i<=8) {
+   cats[i] = clabels[2];
   }
-  else if (i<26) {
-   cats[lkeys[i]] = clabels[4];
+  else if (i<=24) {
+   cats[i] = clabels[3];
   }
-  else {
-   cats[lkeys[i]] = clabels[5];
+  else if (i<=41) {
+   cats[i] = clabels[4];
+  }
+  else if (i<=48) {
+   cats[i] = clabels[5];
+  }
+  else if (i<=49) {
+   cats[i] = clabels[6];
   }
  }
+
  var bd = document.getElementById('bars');
  var b = new google.visualization.ColumnChart(bd);
  var bopts = {'backgroundColor': 'transparent', 'orientation': 'horizontal',
               'isStacked': true, 'legend': {'position': 'none'},
+              'animation': animOpts,
               'charArea': {'left': 0, 'top': 0, 'width': '100%', 'height': '100%'},
              };
  var bdata = [];
@@ -224,15 +254,21 @@
               'greenFrom': 4, 'greenTo': 5,
               'width': gd.clientWidth,
               'height': gd.clientHeight,
-              'animation.easing': 'out',
-              'animation.duration': 300,
+              'animation': animOpts,
               'majorTicks': ['1', '2', '3', '4', '5']};
  var gdata = [];
  var rattime = 0;
  var ratvalue = 0;
 
- var plabels = ['Yksin', 'Lasten kanssa', 'Perheen kanssa'];
- plabels[4] = 'Muiden kanssa';
+ // var plabels = ['Yksin', 'Lasten kanssa', 'Perheen kanssa'];
+ // plabels[4] = 'Muiden kanssa';
+ var wlabels = [];
+ wlabels[1] = 'Alone';
+ wlabels[2] = 'Partner';
+ wlabels[3] = 'Parent';
+ wlabels[4] = 'Kids';
+ wlabels[5] = 'Family';
+ wlabels[6] = 'Others';
  var pd = document.getElementById('pie');
  var p = new google.visualization.PieChart(pd);
  var popts = {'pieHole': 0.4,
@@ -240,6 +276,7 @@
               'pieSliceTextStyle': {'color': '#000', 'fontSize': 12},
               'chartArea': {'left': '5%', 'top': '5%',
                             'width': '90%', 'height': '90%'},
+              'animation': animOpts,
               'legend': {'position': 'left', 'textStyle': {'fontSize': 16}}};
  var pdata = [];
  var prows = [];
@@ -250,6 +287,7 @@
                'pieSliceTextStyle': {'color': '#000', 'fontSize': 12},
                'chartArea': {'left': '5%', 'top': '5%',
                              'width': '90%', 'height': '90%'},
+               'animation': animOpts,
                'legend': {'position': 'left', 'textStyle': {'fontSize': 16}}};
  var p2data = [];
  var p2rows = [];
@@ -386,7 +424,7 @@
   p2data.removeRows(0, p2data.getNumberOfRows());
   ratvalue = 0;
   rattime = 0;
-  prows = [0, 0, 0, 0, null, 0];
+  prows = [0, 0, 0, 0, 0, 0];
   brows = {};
   var currEnd = '';
   for (var i=values.length-1; i>=0; i--) {
@@ -403,8 +441,9 @@
   }
 
   var total = [0, 0, 0, 0, 0, 0];
-  for (var i=0; i<lkeys.length; i++) {
-   var key = lkeys[i];
+//  for (var i=0; i<lkeys.length; i++) {
+//   var key = lkeys[i];
+  for (var key=0; key<labels.length; key++) {
    if (!brows[key]) {
     continue;
    }
@@ -427,11 +466,11 @@
   }
   p2.draw(p2data, p2opts);
 
-  for (var i=0; i<plabels.length; i++) {
-   if (!plabels[i] || !prows[i]) {
+  for (var i=0; i<wlabels.length; i++) {
+   if (!wlabels[i] || !prows[i]) {
     continue;
    }
-   pdata.addRow([plabels[i], Math.round(prows[i]/6)/10]);
+   pdata.addRow([wlabels[i], Math.round(prows[i]/6)/10]);
   }
   p.draw(pdata, popts);
 
@@ -452,46 +491,20 @@
   if (values['description']) {
    desc += ' (' + values['description'] + ')';
   }
-  switch(parseInt(values['with'])) {
-   case 0:
-    prows[0] += duration;
-    desc += ' yksin';
-    break;
-   case 1:
-    prows[1] += duration;
-    desc += ' lasten kanssa';
-    break;
-   case 2:
-    prows[2] += duration;
-    desc += ' perheen kanssa';
-    break;
-   case 3:
-    prows[1] += duration;
-    prows[2] += duration;
-    desc += ' perheen kanssa';
-    break;
-   case 4:
-    prows[4] += duration;
-    desc += ' muiden kanssa';
-    break;
-   case 5:
-    prows[1] += duration;
-    prows[4] += duration;
-    desc += ' lasten ja muiden kanssa';
-    break;
-   case 6:
-    prows[2] += duration;
-    prows[4] += duration;
-    desc += ' perheen ja muiden kanssa';
-    break;
-   case 7:
-    prows[1] += duration;
-    prows[2] += duration;
-    prows[4] += duration;
-    desc += ' perheen ja muiden kanssa';
-    break;
-   default:
-    break;
+
+  if (values['with'] == 1) {
+   desc += ' ' + wlabels[1].toLowerCase();
+   prows[1] += duration;
+  }
+  else {
+   var company = [];
+   for (var i=1; i<wlabels.length; i++) {
+    if (parseInt(values['with']) & Math.pow(2, (i-1))) {
+     company.push(wlabels[i].toLowerCase());
+     prows[i] += duration;
+    }
+   }
+   desc += ' with ' + company.join(', ');
   }
 
   if (values['rating']) {
@@ -544,25 +557,5 @@
  }
 
 </script>
-<!--
-
-
-<fieldset class="check">
-<input id="alone" name="with[]" value="0" type="checkbox" checked="checked" />
-<label for="alone">Yksin</label>
-</fieldset>
-<fieldset class="check">
-<input id="withkids" name="with[]" value="1" type="checkbox" />
-<label for="withkids">Lasten kanssa</label>
-</fieldset>
-<fieldset class="check">
-<input id="withfamily" name="with[]" value="2" type="checkbox" />
-<label for="withfamily">Perheen kanssa</label>
-</fieldset>
-<fieldset class="check">
-<input id="withothers" name="with[]" value="4" type="checkbox" />
-<label for="withothers">Muiden kanssa</label>
-</fieldset>
--->
 </body>
 </html>
