@@ -338,6 +338,9 @@
 
   var d = new Date();
   globalStart = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 4);
+  if (d.getHours() <= 5) {
+   globalStart = new Date(globalStart.getTime() - 24 * 60 * 60 * 1000);  
+  }
   globalEnd = new Date(globalStart.getTime() + 24 * 60 * 60 * 1000);
   getInterval();
 
