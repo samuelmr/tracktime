@@ -5,11 +5,11 @@
  if (!$res) {
   die(mysqli_error($conn));
  }
- $max = isset($_REQUEST['max']) ? intval($_REQUEST['max']) : NULL;
+ $limit = isset($_REQUEST['limit']) ? intval($_REQUEST['limit']) : NULL;
  $end = time();
  $start = $end - 24 * 60 * 60;
  if (isset($_REQUEST['latest'])) {
-  $max = intval($_REQUEST['latest']);
+  $limit = intval($_REQUEST['latest']);
   $start = NULL;
   $end = NULL;
  }
@@ -62,8 +62,8 @@
   $select .= ' AND with = '.$with;
  }
  $select .= ' ORDER BY endtime DESC, starttime DESC, id DESC';
- if ($max) {
-  $select .= ' LIMIT '.$max;
+ if ($limit) {
+  $select .= ' LIMIT '.$limit;
  }
  trigger_error($select, E_USER_NOTICE);
 
