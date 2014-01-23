@@ -104,16 +104,17 @@
   text-align: center;
  }
  #datetimepicker label {
+  font-size: larger;
   margin: 0 !important;
   padding: 0 !important;
  }
  #datetimepicker .up {
   position: relative;
-  top: 0.4em;
+  top: 0.2em;
  }
  #datetimepicker .down {
   position: relative;
-  top: -0.6em;
+  top: -0.2em;
  }
  #datetimepicker .separator {
   display: block;
@@ -130,10 +131,16 @@
  #pickyear {
   width: 5ex;
  }
- #pickmonth, #pickday, #pickhour, #pickminute {
+ #pickmonth, #pickday {
   width: 2.5ex;
  }
  @media screen and (max-width: 40em) {
+  body {
+   font-size: larger;
+  }
+  input, select, option {
+   height: 2em;
+  }
   th.endtime, td.endtime, td .description {
    display: none;
   }
@@ -384,6 +391,17 @@
 <input id="withothers" name="with[]" value="6" type="checkbox" />
 <label for="withothers">With others</label>
 </fieldset>
+<fieldset>
+<label for="location">Location</label>
+<select id="location" name="location">
+<optgroup label="Location">
+<option value="1">Home</option>
+</optgroup>
+<optgroup label="Transport mode">
+<option value="1">Car</option>
+</optgroup>
+</select>
+</fieldset>
 <fieldset class="extra description">
 <label for="description">Description</label>
 <input id="description" name="description" type="text" size="40" maxlength="255" />
@@ -426,18 +444,155 @@
 </fieldset>
 <span class="separator">&nbsp;&nbsp;</span>
 <fieldset>
-<fieldset>
- <label for="pickhour" class="up">&#9650;</label>
- <input id="pickhour" size="2" maxlength="2" disabled="disabled" />
- <label for="pickhour" class="down">&#9660;</label>
-</fieldset>
-</fieldset>
-<span class="separator">:</span>
-<fieldset>
-<fieldset>
- <label for="pickminute" class="up">&#9650;</label>
- <input id="pickminute" size="2" maxlength="2" disabled="disabled" />
- <label for="pickminute" class="down">&#9660;</label>
+<fieldset class="picktime">
+ <label for="picktime" class="up">&#9650;</label>
+ <select id="picktime">
+  <option value="00:00:00">0:00</option>
+  <option value="00:10:00">0:10</option>
+  <option value="00:20:00">0:20</option>
+  <option value="00:30:00">0:30</option>
+  <option value="00:40:00">0:40</option>
+  <option value="00:50:00">0:50</option>
+  <option value="01:00:00">1:00</option>
+  <option value="01:10:00">1:10</option>
+  <option value="01:20:00">1:20</option>
+  <option value="01:30:00">1:30</option>
+  <option value="01:40:00">1:40</option>
+  <option value="01:50:00">1:50</option>
+  <option value="02:00:00">2:00</option>
+  <option value="02:10:00">2:10</option>
+  <option value="02:20:00">2:20</option>
+  <option value="02:30:00">2:30</option>
+  <option value="02:40:00">2:40</option>
+  <option value="02:50:00">2:50</option>
+  <option value="03:00:00">3:00</option>
+  <option value="03:10:00">3:10</option>
+  <option value="03:20:00">3:20</option>
+  <option value="03:30:00">3:30</option>
+  <option value="03:40:00">3:40</option>
+  <option value="03:50:00">3:50</option>
+  <option value="04:00:00">4:00</option>
+  <option value="04:10:00">4:10</option>
+  <option value="04:20:00">4:20</option>
+  <option value="04:30:00">4:30</option>
+  <option value="04:40:00">4:40</option>
+  <option value="04:50:00">4:50</option>
+  <option value="05:00:00">5:00</option>
+  <option value="05:10:00">5:10</option>
+  <option value="05:20:00">5:20</option>
+  <option value="05:30:00">5:30</option>
+  <option value="05:40:00">5:40</option>
+  <option value="05:50:00">5:50</option>
+  <option value="06:00:00">6:00</option>
+  <option value="06:10:00">6:10</option>
+  <option value="06:20:00">6:20</option>
+  <option value="06:30:00">6:30</option>
+  <option value="06:40:00">6:40</option>
+  <option value="06:50:00">6:50</option>
+  <option value="07:00:00">7:00</option>
+  <option value="07:10:00">7:10</option>
+  <option value="07:20:00">7:20</option>
+  <option value="07:30:00">7:30</option>
+  <option value="07:40:00">7:40</option>
+  <option value="07:50:00">7:50</option>
+  <option value="08:00:00">8:00</option>
+  <option value="08:10:00">8:10</option>
+  <option value="08:20:00">8:20</option>
+  <option value="08:30:00">8:30</option>
+  <option value="08:40:00">8:40</option>
+  <option value="08:50:00">8:50</option>
+  <option value="09:00:00">9:00</option>
+  <option value="09:10:00">9:10</option>
+  <option value="09:20:00">9:20</option>
+  <option value="09:30:00">9:30</option>
+  <option value="09:40:00">9:40</option>
+  <option value="09:50:00">9:50</option>
+  <option value="10:00:00">10:00</option>
+  <option value="10:10:00">10:10</option>
+  <option value="10:20:00">10:20</option>
+  <option value="10:30:00">10:30</option>
+  <option value="10:40:00">10:40</option>
+  <option value="10:50:00">10:50</option>
+  <option value="11:00:00">11:00</option>
+  <option value="11:10:00">11:10</option>
+  <option value="11:20:00">11:20</option>
+  <option value="11:30:00">11:30</option>
+  <option value="11:40:00">11:40</option>
+  <option value="11:50:00">11:50</option>
+  <option value="12:00:00">12:00</option>
+  <option value="12:10:00">12:10</option>
+  <option value="12:20:00">12:20</option>
+  <option value="12:30:00">12:30</option>
+  <option value="12:40:00">12:40</option>
+  <option value="12:50:00">12:50</option>
+  <option value="13:00:00">13:00</option>
+  <option value="13:10:00">13:10</option>
+  <option value="13:20:00">13:20</option>
+  <option value="13:30:00">13:30</option>
+  <option value="13:40:00">13:40</option>
+  <option value="13:50:00">13:50</option>
+  <option value="14:00:00">14:00</option>
+  <option value="14:10:00">14:10</option>
+  <option value="14:20:00">14:20</option>
+  <option value="14:30:00">14:30</option>
+  <option value="14:40:00">14:40</option>
+  <option value="14:50:00">14:50</option>
+  <option value="15:00:00">15:00</option>
+  <option value="15:10:00">15:10</option>
+  <option value="15:20:00">15:20</option>
+  <option value="15:30:00">15:30</option>
+  <option value="15:40:00">15:40</option>
+  <option value="15:50:00">15:50</option>
+  <option value="16:00:00">16:00</option>
+  <option value="16:10:00">16:10</option>
+  <option value="16:20:00">16:20</option>
+  <option value="16:30:00">16:30</option>
+  <option value="16:40:00">16:40</option>
+  <option value="16:50:00">16:50</option>
+  <option value="17:00:00">17:00</option>
+  <option value="17:10:00">17:10</option>
+  <option value="17:20:00">17:20</option>
+  <option value="17:30:00">17:30</option>
+  <option value="17:40:00">17:40</option>
+  <option value="17:50:00">17:50</option>
+  <option value="18:00:00">18:00</option>
+  <option value="18:10:00">18:10</option>
+  <option value="18:20:00">18:20</option>
+  <option value="18:30:00">18:30</option>
+  <option value="18:40:00">18:40</option>
+  <option value="18:50:00">18:50</option>
+  <option value="19:00:00">19:00</option>
+  <option value="19:10:00">19:10</option>
+  <option value="19:20:00">19:20</option>
+  <option value="19:30:00">19:30</option>
+  <option value="19:40:00">19:40</option>
+  <option value="19:50:00">19:50</option>
+  <option value="20:00:00">20:00</option>
+  <option value="20:10:00">20:10</option>
+  <option value="20:20:00">20:20</option>
+  <option value="20:30:00">20:30</option>
+  <option value="20:40:00">20:40</option>
+  <option value="20:50:00">20:50</option>
+  <option value="21:00:00">21:00</option>
+  <option value="21:10:00">21:10</option>
+  <option value="21:20:00">21:20</option>
+  <option value="21:30:00">21:30</option>
+  <option value="21:40:00">21:40</option>
+  <option value="21:50:00">21:50</option>
+  <option value="22:00:00">22:00</option>
+  <option value="22:10:00">22:10</option>
+  <option value="22:20:00">22:20</option>
+  <option value="22:30:00">22:30</option>
+  <option value="22:40:00">22:40</option>
+  <option value="22:50:00">22:50</option>
+  <option value="23:00:00">23:00</option>
+  <option value="23:10:00">23:10</option>
+  <option value="23:20:00">23:20</option>
+  <option value="23:30:00">23:30</option>
+  <option value="23:40:00">23:40</option>
+  <option value="23:50:00">23:50</option>
+ </select>
+ <label for="picktime" class="down">&#9660;</label>
 </fieldset>
 </div>
 <script>
@@ -446,7 +601,8 @@
  var MAX_ROWS = 480;
 
  var xhr = new XMLHttpRequest();
- xhr.onload = showRows;
+ xhr.onload = handleResult;
+ // xhr.onerror = handleError;
 
  var stars = [];
  for (var i=1; i<=5; i++) {
@@ -466,8 +622,7 @@
  var py = document.getElementById('pickyear');
  var pm = document.getElementById('pickmonth');
  var pd = document.getElementById('pickday');
- var ph = document.getElementById('pickhour');
- var pi = document.getElementById('pickminute');
+ var pt = document.getElementById('picktime');
 
  rat.onchange = updateStars;
  st.onfocus = et.onfocus = showPicker;
@@ -477,8 +632,14 @@
  f.onsubmit = function(e) {
   e.preventDefault();
   xhr.abort();
-  xhr.open(f.method, f.action, true);
-  xhr.send(new FormData (f));
+  var res = xhr.open(f.method, f.action, true);
+  try {
+   xhr.send(new FormData (f));
+  }
+  catch(e) {
+   handleError(f.method);
+  }
+  return false;
  };
  
  var boxes = [];
@@ -510,36 +671,32 @@
  for (var i=0; i<lbs.length; i++) {
   lbs[i].onclick = lbs[i].touchend = function() {
    var ip = document.getElementById(this.getAttribute('for'));
-   if (ip.id == pi.id) {
-    tmp = ((this.className == 'up') ? 10 : -10 ) + parseInt(ip.value);
+   if (ip.id == pt.id) {
+    pt.selectedIndex += (this.className == 'up') ? 1 : -1;
+    if ((pt.selectedIndex >= pt.options.length) || (pt.selectedIndex < 0)) {
+     pt.selectedIndex = 0;
+    }
    }
    else {
     tmp = ((this.className == 'up') ? 1 : -1 ) + parseInt(ip.value);
+    switch (ip) {
+     case pm:
+      tmp = (tmp <= 12) ? tmp : 1;
+      tmp = (tmp >= 1) ? tmp : 1;
+      tmp = (tmp < 10) ? '0' + '' + tmp : tmp;
+      break;
+     case pd:
+      tmp = (tmp <= 31) ? tmp : 1;
+      tmp = (tmp >= 1) ? tmp : 1;
+      tmp = (tmp < 10) ? '0' + '' + tmp : tmp;
+      break;
+     case pt:
+      break;
+    }
+    ip.value = tmp;
    }
-   switch (ip) {
-    case pm:
-     tmp = (tmp < 12) ? tmp : 12;
-     tmp = (tmp >= 1) ? tmp : 1;
-     break;
-    case pd:
-     tmp = (tmp < 31) ? tmp : 31;
-     tmp = (tmp >= 1) ? tmp : 1;
-     break;
-    case ph:
-     tmp = (tmp < 23) ? tmp : 23;
-     tmp = (tmp >= 0) ? tmp : 0;
-     break;
-    case pi:
-     tmp = (tmp < 50) ? tmp : 50;
-     tmp = (tmp >= 0) ? tmp : 0;
-     break;
-   }
-   if (tmp < 10) {
-    tmp = '0' + '' + tmp;
-   }
-   ip.value = tmp;
    ip.onchange();
-  }
+  };
  }
 
  getLatest();
@@ -549,18 +706,18 @@
  function showPicker() {
   var elem = this;
   var rect = this.getBoundingClientRect();
-  var dt = this.value.split(' ');
+  var dtstr = this.value || toString(new Date());
+  var dt = dtstr	.split(' ');
   var d = dt[0].split('-');
   var t = dt[1].split(':');
   py.value = d[0];
   pm.value = d[1];
   pd.value = d[2];
-  ph.value = t[0];
-  pi.value = t[1];
-  py.onchange = pm.onchange = pd.onchange = ph.onchange = pi.onchange = 
+  pt.selectedIndex = 6 * parseInt(t[0]) + parseInt(t[1])/10;
+  py.onchange = pm.onchange = pd.onchange = pt.onchange = 
   function() {
    elem.value = py.value + '-' + pm.value + '-' + pd.value + ' ' +
-                ph.value + ':' + pi.value + ':00';
+                pt[pt.selectedIndex].value;
   };
   dp.style.left = (rect.left - 4) + 'px';
   dp.style.top = (rect.bottom + 2) + 'px';
@@ -583,12 +740,7 @@
  }
 
  function resetEndDate() {
-  var d = new Date();
-  et.value = d.getFullYear() + '-' + 
-             pad(d.getMonth()+1) + '-' + 
-             pad(d.getDate()) + ' ' +
-             pad(d.getHours()) + ':' + 
-             pad(10*Math.floor(d.getMinutes()/10)) + ':00';
+  et.value = toString(new Date());
   hilite(et, 15, 12, 7)
  }
 
@@ -630,23 +782,64 @@
   xhr.abort();
   var href = GET_URI + '?latest=' + MAX_ROWS;
   xhr.open('GET', href, true);
-  xhr.send(null);
+  try {
+   xhr.send(null);
+  }
+  catch(e) {
+   console.log(e);	
+   handleError('GET');
+  }
  }
 
- function showRows() {
+ function handleResult() {
   var values = JSON.parse(this.responseText);
   if (!values.length) {
    return false;
   }
+  showRows(values);
+ }
+ 
+ function handleError(method) {
+  if (!localStorage) {
+   return false;
+  }
+  var storedItem = localStorage.getItem('data');
+  var values = JSON.parse(storedItem) || [];
+  if (method.toLowerCase() == 'post') {
+   var withval = 0;
+   for (var i=0; i<boxes.length; i++) {
+    if (boxes[i].checked) {
+     withval += Math.pow(2, boxes[i].value-1);
+    }
+   }
+   var row =  {'starttime': st.value,
+               'endtime': et.value,
+               'mainaction': f.mainaction.value,
+               'sideaction': f.sideaction.value,
+               'with': withval,
+               'location': f.location.value,
+               'description': f.description.value};
+   console.log(row);
+   values.unshift(row);
+   localStorage.setItem('data', JSON.stringify(values));
+   showRows([row], true);
+  }
+  else {
+   showRows(values);
+  }
+ }
+ 
+ function showRows(values) {
   h.value = null;
-  st.value = values[0]['endtime'];
+  if (values[0]) {
+   st.value = values[0]['endtime'];
+  }
   hilite(st, 15, 12, 7)
+  resetEndDate();
   if (sub.value != 'Save') {
    sub.value = 'Save';
    hilite(sub, 15, 12, 7)
   }
-
-  resetEndDate();
   var currEnd = '';
   for (var i=values.length-1; i>=0; i--) {
    if (currEnd && (values[i]['starttime'] > currEnd)) {
@@ -701,13 +894,15 @@
    td.className = key;
    if ((key == 'starttime') || (key == 'endtime')) {
     var cellval = document.createElement('time');
-    cellval.datetime = val;
-    var dt = val.split(' ');
-    var d = dt[0].split('-');
-    var t = dt[1].split(':');
-    val = '' + parseInt(d[2]) + '.' + parseInt(d[1]) +
-                  '. ' + parseInt(t[0]) + ':' + t[1];
-    cellval.appendChild(document.createTextNode(val));
+    if (val) {
+     cellval.datetime = val;
+     var dt = val.split(' ');
+     var d = dt[0].split('-');
+     var t = dt[1].split(':');
+     val = '' + parseInt(d[2]) + '.' + parseInt(d[1]) +
+                   '. ' + parseInt(t[0]) + ':' + t[1];
+     cellval.appendChild(document.createTextNode(val));
+    }
    }
    else if ((key == 'mainaction') || (key == 'sideaction')) {
     val = acts[val] || '';
@@ -781,6 +976,15 @@
   }
   return val;
  }
+ 
+ function toString(d) {
+  return d.getFullYear() + '-' + 
+         pad(d.getMonth()+1) + '-' + 
+         pad(d.getDate()) + ' ' +
+         pad(d.getHours()) + ':' + 
+         pad(10*Math.floor(d.getMinutes()/10)) + ':00';
+ }
+ 
 </script>
 </body>
 </html>
