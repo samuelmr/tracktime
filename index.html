@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="HandheldFriendly" content="True" />
 <meta name="MobileOptimized" content="width" />
-<title>Ajankäyttölomake</title>
+<title>Tracktime</title>
 <style>
  body {
   color: #333;
@@ -165,16 +165,24 @@
   }
  }
  @media screen and (min-width: 60em) {
+  html, body {
+   height: 99%;
+   margin-top: 0;
+   margin-bottom: 0;
+   padding-top: 0;
+   padding-bottom: 0;
+   overflow: hidden;
+  }
   h1 {
-   color: #666;
-   font-family: Impact,Verdana,sans-serif;
+   color: #999;
+   font-family: 'Arial Black',Impact,Verdana,sans-serif;
    font-size: 3em;
    font-weight: 900;
    left: 2em;
    letter-spacing: 0.5em;
    line-height: 1;
    position: absolute;
-   text-shadow: 0.1em 0.1em 0.15em #CCF;
+   text-shadow: 0.1em 0.1em 0.15em #CCC;
    text-transform: uppercase;
    top: 0.25em;
   }
@@ -209,11 +217,31 @@
    float: left;
    margin: 1em 0 0 0 !important;
   }
-  .extra.description {
+  .extra.location {
    clear: both;
   }
   #description {
    width: 50em;
+  }
+  header {
+   max-height: 16em;
+   overflow: auto;
+  }
+  #data {
+   bottom: 2em;
+   overflow: auto;
+   position: absolute;
+   top: 17em;
+  }
+  #table thead {
+/*
+   position: fixed;
+*/
+  }
+  #table thead tr {
+   
+   position: relative;
+   top: -1em;
   }
   #table thead th {
    padding: 2em 0.5em 0 0.5em;
@@ -225,7 +253,8 @@
 </style>
 </head>
 <body>
-<h1>Ajankäyttö</h1>
+<header>
+<h1>Tracktime</h1>
 <form id="add" method="POST" action="put.php">
 <input type="hidden" name="id" id="hiddenid" />
 <fieldset>
@@ -391,14 +420,33 @@
 <input id="withothers" name="with[]" value="6" type="checkbox" />
 <label for="withothers">With others</label>
 </fieldset>
-<fieldset>
+<fieldset class="check computer">
+<input id="usingcomputer" name="usecomputer" value="1" type="checkbox" />
+<label for="usingcomputer">Using computer</label>
+</fieldset>
+<fieldset class="extra location">
 <label for="location">Location</label>
 <select id="location" name="location">
+<option value="0">Unspecified</option>
 <optgroup label="Location">
-<option value="1">Home</option>
+<option value="10">Unspecified</option>
+<option value="11">Home</option>
+<option value="12">Second home</option>
+<option value="13">Workplace/school</option>
+<option value="14">Other's home</option>
+<option value="15">Restaurant</option>
+<option value="16">Shop, market</option>
+<option value="17">Hotel, camping</option>
+<option value="19">Other</option>
 </optgroup>
 <optgroup label="Transport mode">
-<option value="1">Car</option>
+<option value="20">Unspecified</option>
+<option value="21">Walking, waiting</option>
+<option value="22">Bicycle</option>
+<option value="23">Motorbike</option>
+<option value="24">Car</option>
+<option value="29">Other private</option>
+<option value="31">Public transport</option>
 </optgroup>
 </select>
 </fieldset>
@@ -414,13 +462,16 @@
  <input type="submit" id="submit" value="Save" />
 </fieldset>
 </form>
+</header>
+<div id="data">
 <table id="table">
 <thead>
-<tr><th class="starttime">From</th><th class="endtime">To</th><th class="mainaction">Main action</th><th class="sideaction">Parallel</th><th class="with">With</th></tr>
+<tr><th class="starttime">From</th><th class="endtime">To</th><th class="mainaction">Main action</th><th class="sideaction">Parallel</th><th class="with">What</th></tr>
 </thead>
 <tbody id="results">
 </tbody>
 </table>
+</div>
 <div id="datetimepicker">
 <fieldset>
  <label for="pickyear" class="up">&#9650;</label>
@@ -598,7 +649,7 @@
 <script>
 
  var GET_URI = './get.php';
- var MAX_ROWS = 480;
+ var MAX_ROWS = 144;
 
  var xhr = new XMLHttpRequest();
  xhr.onload = handleResult;
@@ -645,7 +696,7 @@
  var boxes = [];
  var ips = document.getElementsByTagName('input');
  for (var i=0; i<ips.length; i++) {
-  if (ips[i].type == 'checkbox') {
+  if ((ips[i].type == 'checkbox') && (ips[i].name != 'usecomputer')) {
    boxes.push(ips[i]);
    ips[i].onchange = checkBoxes;
   }
