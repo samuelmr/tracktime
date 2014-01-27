@@ -99,12 +99,23 @@
   right: 1%;
   top: 48px;
  }
- #bars {
+ #area {
   bottom: 160px;
-  left: 1%;
+  left: 95%;
   right: 1%;
   top: 26%;
  }
+ #bars {
+  bottom: 160px;
+  left: 1%;
+  right: 6%;
+  top: 26%;
+ }
+/*
+ #area, #bars {
+  transition: all 0 1s;
+ }
+*/
  #timeline {
   bottom: 10px;
   height: 133px;
@@ -119,6 +130,7 @@
 <section id="pie2">Pie chart loading...</section>
 <section id="pie3">Pie chart loading...</section>
 <section id="gauge">Gauge loading...</section>
+<section id="area"></section>
 <section id="bars">Bar chart loading...</section>
 <section id="timeline">Timeline loading...</section>
 <script src="//www.google.com/jsapi"></script>
@@ -246,6 +258,19 @@
   }
  }
 
+ var ad = document.getElementById('area');
+ var a = new google.visualization.AreaChart(ad);
+ var aopts = {'backgroundColor': 'transparent', 'orientation': 'horizontal',
+               'isStacked': true, 'legend': {'position': 'none'},
+               'animation': animOpts, 'theme': 'maximized',
+               'vAxis': {'title': '%', 'viewWindowMode': 'maximized'},
+               'hAxis': {'showTextEvery': 24}, 'areaOpacity': 1,
+               'focusTarget': 'category',
+               'lineWidth': 0,
+             };
+ var adata = [];
+ var arows = {};
+
  var bd = document.getElementById('bars');
  var b = new google.visualization.ColumnChart(bd);
  var bopts = {'backgroundColor': 'transparent', 'orientation': 'horizontal',
@@ -255,6 +280,8 @@
              };
  var bdata = [];
  var brows = {};
+
+ ad.addEventListener('click', toggleBars, true);
 
  var td = document.getElementById('timeline');
  var t = new google.visualization.Timeline(td);
@@ -277,8 +304,6 @@
  var rattime = 0;
  var ratvalue = 0;
 
- // var plabels = ['Yksin', 'Lasten kanssa', 'Perheen kanssa'];
- // plabels[4] = 'Muiden kanssa';
  var wlabels = [];
  wlabels[1] = 'Alone';
  wlabels[2] = 'Partner';
@@ -358,10 +383,16 @@
  function init() {
   bdata = new google.visualization.DataTable();
   bdata.addColumn({'type': 'string', 'id': 'Type'});
-  // bdata.addColumn({'type': 'string', 'id': 'Action category'});
   for (var i=0; i<clabels.length; i++) {
    bdata.addColumn('number', clabels[i]);
   }
+
+  adata = new google.visualization.DataTable();
+  adata.addColumn({'type': 'string', 'id': 'Time'});
+  for (var i=0; i<clabels.length; i++) {
+   adata.addColumn('number', clabels[i]);
+  }
+  adata.addColumn({'type': 'string', 'role': 'Annotation'});
 
   tdata = new google.visualization.DataTable();
   tdata.addColumn({'type': 'string', 'id': 'Action type'});
@@ -449,11 +480,39 @@
   }
  }
 
+ function toggleBars() {
+  if (!ad.style.left || (ad.style.left == '95%')) {
+   ad.style.left = '6%';
+   bd.style.right = '95%';
+   ad.removeEventListener('click', toggleBars, true);
+   bd.addEventListener('click', toggleBars, true);
+  }
+  else {
+   ad.style.left = '95%';
+   bd.style.right = '6%';
+   bd.removeEventListener('click', toggleBars, true);
+   ad.addEventListener('click', toggleBars, true);
+  }
+  showBars();
+ }
+
+ function showBars() {
+  if (!ad.style.left || (ad.style.left == '95%')) {
+   a.clearChart();
+   bopts['width'] = bd.clientWidth;
+   bopts['height'] = bd.clientHeight;
+   b.draw(bdata, bopts);
+  }
+  else {
+   b.clearChart();
+   aopts['width'] = ad.clientWidth;
+   aopts['height'] = ad.clientHeight;
+   a.draw(adata, aopts);
+  }
+ }
+
  function resizeHandler() {
   setLegendStyle();
-  bopts['width'] = bd.clientWidth;
-  bopts['height'] = bd.clientHeight;
-  b.draw(bdata, bopts);
   topts['width'] = td.clientWidth;
   topts['height'] = td.clientHeight;
   t.draw(tdata, topts);
@@ -472,6 +531,7 @@
   p3opts['height'] = p3d.clientHeight;
   p3opts['legend'] = legendStyle;
   p3.draw(p3data, p3opts);
+  showBars();
  }
 
  function restoreState(e) {
@@ -511,14 +571,10 @@
   if (!values.length) {
    return false;
   }
-  // b.clearChart();
   bdata.removeRows(0, bdata.getNumberOfRows());
-  // empty bdata
-  // t.clearChart();
+  adata.removeRows(0, adata.getNumberOfRows());
   tdata.removeRows(0, tdata.getNumberOfRows());
-  // g.clearChart();
   gdata.removeRows(0, gdata.getNumberOfRows());
-  // p.clearChart();
   pdata.removeRows(0, pdata.getNumberOfRows());
   p2data.removeRows(0, p2data.getNumberOfRows());
   p3data.removeRows(0, p3data.getNumberOfRows());
@@ -527,6 +583,7 @@
   prows = [0, 0, 0, 0, 0, 0];
   lrows = {};
   brows = {};
+  arows = {};
   var currEnd = '';
   for (var i=values.length-1; i>=0; i--) {
    if (currEnd && (values[i]['starttime'] > currEnd)) {
@@ -558,7 +615,6 @@
    }
    bdata.addRow(tmp);
   }
-  b.draw(bdata, bopts);
 
   for (var i=0; i<total.length; i++) {
    p2data.addRow([clabels[i], Math.round(total[i]/6)/10]);
@@ -583,6 +639,27 @@
   gdata.addRow(['Rating', rattime ? Math.round(ratvalue/rattime*100)/100 : 0]);
   g.draw(gdata, gopts);
 
+  var minutes = 24 * 60;
+  for (var i=0; i<minutes; i+=10) {
+   var d = new Date(0, 0, 0, 4, i, 0);
+   var tkey = pad(d.getHours()) + ':' + pad(d.getMinutes());
+   if (!arows[tkey]) {
+    continue;
+   }
+   var tmp = [tkey];
+   for (var j=0; j<clabels.length; j++) {
+    var cl = clabels[j];
+    if (arows[tkey] && arows[tkey][cl] && arows[tkey]['total']) {
+     tmp.push(Math.round(10000*arows[tkey][cl]/arows[tkey]['total'])/100);
+    }
+    else {
+     tmp.push(0);
+    }
+   }
+   tmp.push(tkey);
+   adata.addRow(tmp);
+  }
+  showBars();
  }
 
  function addData(values) {
@@ -592,6 +669,7 @@
   et = (et <= globalEnd) ? et : globalEnd;
   var duration = (et - st)/(60 * 1000);
   var desc = '';
+  var ma = values['mainaction'];
   if (values['description']) {
    desc += ' (' + values['description'] + ')';
   }
@@ -630,22 +708,37 @@
    ratvalue += (duration * rv);
   }
 
-  var a = ['Main action', labels[values['mainaction']] + desc, st, et];
-  tdata.addRow(a);
+  var act = ['Main action', labels[ma] + desc, st, et];
+  tdata.addRow(act);
 
-  if (!brows[values['mainaction']]) {
-   brows[values['mainaction']] = 0;
+  if (!brows[ma]) {
+   brows[ma] = 0;
   }
-  brows[values['mainaction']] += duration;
+  brows[ma] += duration;
   if (values['sideaction']) {
-   a = ['Side action', labels[values['sideaction']] + desc, st, et];
-   tdata.addRow(a);
+   act = ['Side action', labels[values['sideaction']] + desc, st, et];
+   tdata.addRow(act);
    // if (!brows[values['sideaction']]) {
    //  brows[values['sideaction']] = 0;
    // }
    // brows[values['sideaction']] += duration;
   }
 
+  var init = st.getTime();
+  var end = et.getTime();
+  var interval = 10 * 60 * 1000;
+  for (var t = init; t < end; t += interval) {
+   var d = new Date(t);
+   var tkey = pad(d.getHours()) + ':' + pad(d.getMinutes());
+   if (!arows[tkey]) {
+    arows[tkey] = {'total': 0};
+   }
+   if (!arows[tkey][cats[ma]]) {
+    arows[tkey][cats[ma]] = 0;
+   }
+   arows[tkey]['total'] += 10;
+   arows[tkey][cats[ma]] += 10;
+  }
  }
 
  function toDate(str) {
