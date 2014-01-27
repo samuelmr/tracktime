@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="initial-scale=1.0,user-scalable=no" />
+<meta name="viewport" content="width=device-width" />
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="HandheldFriendly" content="True" />
 <meta name="MobileOptimized" content="width" />
@@ -42,7 +42,7 @@
   right: 1%;
   top: 10px;
  }
- header button, header input {
+ header button, header input, header select {
   position: absolute;
   top: 1px;
  }
@@ -56,6 +56,14 @@
   width: 11em;
   left: 33px;
  }
+/*
+ #search {
+  left: 170px;
+ }
+ #ratinglimit {
+  left: 290px;
+ }
+*/
  #to {
   width: 11em;
   right: 33px;
@@ -70,18 +78,24 @@
  #pie {
   bottom: 75%;
   left: 1%;
-  right: 61%;
+  right: 72%;
   top: 48px;
  }
  #pie2 {
   bottom: 75%;
-  left: 40%;
-  right: 20%;
+  left: 29%;
+  right: 44%;
+  top: 48px;
+ }
+ #pie3 {
+  bottom: 75%;
+  left: 57%;
+  right: 16%;
   top: 48px;
  }
  #gauge {
   bottom: 75%;
-  left: 81%;
+  left: 85%;
   right: 1%;
   top: 48px;
  }
@@ -100,9 +114,10 @@
 </style>
 </head>
 <body>
-<header><button id="prev">&#x25C0;</button><input id="from" type="datetime" step="600" /><h1>Tracktime Dashboard</h1><input id="to" type="datetime" step="600" /><button id="next">&#x25B6;</button></header>
+<header><button id="prev">&#x25C0;</button><input id="from" type="datetime" step="600" /><!-- <input id="search" type="text" size="14" /><select id="ratinglimit"><option value="">All</option><option value="1">1</option><option value="1 2">1 or 2</option><option value="2 3 4">2 - 4</option><option value="4 5">4 or 5</option><option value="5">5</option></select> --><h1>Tracktime Dashboard</h1><input id="to" type="datetime" step="600" /><button id="next">&#x25B6;</button></header>
 <section id="pie">Pie chart loading...</section>
 <section id="pie2">Pie chart loading...</section>
+<section id="pie3">Pie chart loading...</section>
 <section id="gauge">Gauge loading...</section>
 <section id="bars">Bar chart loading...</section>
 <section id="timeline">Timeline loading...</section>
@@ -116,6 +131,8 @@
 
  var GET_URI = './get.php';
  var MAX_ROWS = 150;
+ var fts = 12;
+ var lfs = 16;
 
  var animOpts = {'easing': 'in', 'duration': 500};
 
@@ -243,7 +260,7 @@
  var t = new google.visualization.Timeline(td);
  var topts = {'backgroundColor': 'transparent',
               'timeline': {'colorByRowLabel': true,
-                           'barLabelStyle': {'fontSize': 12}}};
+                           'barLabelStyle': {'fontSize': fts}}};
  var tdata = [];
 
  var gd = document.getElementById('gauge');
@@ -270,29 +287,57 @@
  wlabels[5] = 'Family';
  wlabels[6] = 'Others';
  var pd = document.getElementById('pie');
+ setLegendStyle();
  var p = new google.visualization.PieChart(pd);
  var popts = {'pieHole': 0.4,
               'backgroundColor': 'transparent',
-              'pieSliceTextStyle': {'color': '#000', 'fontSize': 12},
+              'pieSliceTextStyle': {'color': '#000', 'fontSize': fts},
               'chartArea': {'left': '5%', 'top': '5%',
                             'width': '90%', 'height': '90%'},
               'animation': animOpts,
-              'legend': {'position': 'left', 'textStyle': {'fontSize': 16}}};
+              'legend': legendStyle};
  var pdata = [];
  var prows = [];
+
  var p2d = document.getElementById('pie2');
  var p2 = new google.visualization.PieChart(p2d);
  var p2opts = {'pieHole': 0.4,
                'backgroundColor': 'transparent',
-               'pieSliceTextStyle': {'color': '#000', 'fontSize': 12},
+               'pieSliceTextStyle': {'color': '#000', 'fontSize': fts},
                'chartArea': {'left': '5%', 'top': '5%',
                              'width': '90%', 'height': '90%'},
                'animation': animOpts,
-               'legend': {'position': 'left', 'textStyle': {'fontSize': 16}}};
+               'legend': legendStyle};
  var p2data = [];
- var p2rows = [];
- var globalStart, globalEnd;
 
+ var llabels = [];
+ llabels[11] = 'At home';
+ llabels[12] = 'At other home';
+ llabels[13] = 'At work';
+ llabels[14] = 'At other\'s home';
+ llabels[15] = 'At restaurant';
+ llabels[16] = 'At shop';
+ llabels[17] = 'At hotel';
+ llabels[19] = 'At other';
+ llabels[21] = 'By foot';
+ llabels[22] = 'By bicycle';
+ llabels[23] = 'By motorbike';
+ llabels[24] = 'By car';
+ llabels[29] = 'By other';
+ llabels[31] = 'By public transport';
+ var p3d = document.getElementById('pie3');
+ var p3 = new google.visualization.PieChart(p3d);
+ var p3opts = {'pieHole': 0.4,
+               'backgroundColor': 'transparent',
+               'pieSliceTextStyle': {'color': '#000', 'fontSize': fts},
+               'chartArea': {'left': '5%', 'top': '5%',
+                             'width': '90%', 'height': '90%'},
+               'animation': animOpts,
+               'legend': legendStyle};
+ var p3data = [];
+ var lrows = {};
+
+ var globalStart, globalEnd;
  google.setOnLoadCallback(init);
  window.addEventListener('resize', resizeHandler, true);
  window.addEventListener('hashchange', restoreState);
@@ -336,6 +381,10 @@
   p2data.addColumn({'type': 'string', 'id': 'Action'});
   p2data.addColumn({'type': 'number', 'id': 'Duration'});
 
+  p3data = new google.visualization.DataTable();
+  p3data.addColumn({'type': 'string', 'id': 'Location'});
+  p3data.addColumn({'type': 'number', 'id': 'Duration'});
+
   var d = new Date();
   globalStart = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 4);
   if (d.getHours() <= 5) {
@@ -360,7 +409,48 @@
   getInterval();
  }
 
+ function setLegendStyle() {
+  legendStyle = {'position': 'left', 'textStyle': {'fontSize': 16}};
+  if ((pd.offsetWidth < 220) || (pd.offsetHeight < 110)) {
+   legendStyle['position'] = 'none';
+   return;
+  }
+  if ((pd.offsetWidth < 240) || (pd.offsetHeight < 120)) {
+   legendStyle['textStyle']['fontSize'] = 8;
+   return;
+  }
+  if ((pd.offsetWidth < 260) || (pd.offsetHeight < 130)) {
+   legendStyle['textStyle']['fontSize'] = 9;
+   return;
+  }
+  if ((pd.offsetWidth < 280) || (pd.offsetHeight < 140)) {
+   legendStyle['textStyle']['fontSize'] = 10;
+   return;
+  }
+  if ((pd.offsetWidth < 300) || (pd.offsetHeight < 150)) {
+   legendStyle['textStyle']['fontSize'] = 11;
+   return;
+  }
+  if ((pd.offsetWidth < 320) || (pd.offsetHeight < 160)) {
+   legendStyle['textStyle']['fontSize'] = 12;
+   return;
+  }
+  if ((pd.offsetWidth < 340) || (pd.offsetHeight < 170)) {
+   legendStyle['textStyle']['fontSize'] = 13;
+   return;
+  }
+  if ((pd.offsetWidth < 360) || (pd.offsetHeight < 180)) {
+   legendStyle['textStyle']['fontSize'] = 14;
+   return;
+  }
+  if ((pd.offsetWidth < 380) || (pd.offsetHeight < 190)) {
+   legendStyle['textStyle']['fontSize'] = 15;
+   return;
+  }
+ }
+
  function resizeHandler() {
+  setLegendStyle();
   bopts['width'] = bd.clientWidth;
   bopts['height'] = bd.clientHeight;
   b.draw(bdata, bopts);
@@ -372,10 +462,16 @@
   g.draw(gdata, gopts);
   popts['width'] = pd.clientWidth;
   popts['height'] = pd.clientHeight;
+  popts['legend'] = legendStyle;
   p.draw(pdata, popts);
   p2opts['width'] = p2d.clientWidth;
   p2opts['height'] = p2d.clientHeight;
+  p2opts['legend'] = legendStyle;
   p2.draw(p2data, p2opts);
+  p3opts['width'] = p3d.clientWidth;
+  p3opts['height'] = p3d.clientHeight;
+  p3opts['legend'] = legendStyle;
+  p3.draw(p3data, p3opts);
  }
 
  function restoreState(e) {
@@ -425,16 +521,18 @@
   // p.clearChart();
   pdata.removeRows(0, pdata.getNumberOfRows());
   p2data.removeRows(0, p2data.getNumberOfRows());
+  p3data.removeRows(0, p3data.getNumberOfRows());
   ratvalue = 0;
   rattime = 0;
   prows = [0, 0, 0, 0, 0, 0];
+  lrows = {};
   brows = {};
   var currEnd = '';
   for (var i=values.length-1; i>=0; i--) {
    if (currEnd && (values[i]['starttime'] > currEnd)) {
     var tmp = {'starttime': currEnd,
                'endtime': values[i]['starttime'], 
-               'mainaction': 26,
+               'mainaction': 49,
                'rating': 0,
                'with': 0};
     addData(tmp);
@@ -444,8 +542,6 @@
   }
 
   var total = [0, 0, 0, 0, 0, 0];
-//  for (var i=0; i<lkeys.length; i++) {
-//   var key = lkeys[i];
   for (var key=0; key<labels.length; key++) {
    if (!brows[key]) {
     continue;
@@ -468,6 +564,11 @@
    p2data.addRow([clabels[i], Math.round(total[i]/6)/10]);
   }
   p2.draw(p2data, p2opts);
+
+  for (var i in lrows) {
+   p3data.addRow([llabels[i], Math.round(lrows[i]/6)/10]);
+  }
+  p3.draw(p3data, p3opts);
 
   for (var i=0; i<wlabels.length; i++) {
    if (!wlabels[i] || !prows[i]) {
@@ -507,7 +608,19 @@
      prows[i] += duration;
     }
    }
-   desc += ' with ' + company.join(', ');
+   if (company.length > 0) {
+    desc += ' with ' + company.join(', ');
+   }
+  }
+
+  if (values['location']) {
+   if (!lrows[values['location']]) {
+    lrows[values['location']] = 0;
+   }
+   lrows[values['location']] += duration;
+   if (llabels[values['location']]) {
+    desc += ' ' + llabels[values['location']].toLowerCase();
+   }
   }
 
   if (values['rating']) {
