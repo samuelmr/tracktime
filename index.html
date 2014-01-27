@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="initial-scale=1.0,user-scalable=no" />
+<meta name="viewport" content="width=width" />
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="HandheldFriendly" content="True" />
 <meta name="MobileOptimized" content="width" />
@@ -30,6 +30,7 @@
   background: -o-linear-gradient(#EEE, #DDD);
   -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#EEE', endColorstr='#DDD')";
   background: linear-gradient(#EEE, #DDD);
+  height: 2em;
  }
  input {
   border-color: #FFF;
@@ -92,13 +93,14 @@
   border-style: solid;
   border-width: 1px;
   display: none;
-  padding: 0.25em;
+  padding: 0 0.25em;
   position: absolute;
+  width: 12em;
  }
  #datetimepicker fieldset {
   border-width: 0;
   float: left;
-  height: 3em;
+  height: auto;
   margin: 0;
   padding: 0;
   text-align: center;
@@ -118,9 +120,9 @@
  }
  #datetimepicker .separator {
   display: block;
-  height: 1em;
+  height: 2em;
   float: left;
-  padding: 1.5em 0;
+  padding: 2em 0;
   text-align: center;
   width: 1ex;
  }
@@ -134,11 +136,44 @@
  #pickmonth, #pickday {
   width: 2.5ex;
  }
- @media screen and (max-width: 40em) {
+ @media screen and (max-width: 320px) {
   body {
+/*
    font-size: larger;
+*/
   }
-  input, select, option {
+  input, select, option, #datetimepicker label {
+   font-size: 18px;
+   height: 24px;
+  }
+  #pickyear {
+   width: 4ex;
+  }
+  #pickmonth, #pickday {
+   width: 2ex;
+  }
+  #picktime {
+   height: 2em;
+  }
+  #datetimepicker .separator {
+   font-size: 18px;
+   padding-top: 1.5em;
+   width: 0.5ex;
+  }
+  input[type=checkbox] {
+   font-size: 12px;
+   height: auto;
+  }
+  #add fieldset {
+   min-width: 10em;
+  }
+  #add label {
+   white-space: nowrap;
+  }
+  #datetimepicker {
+   width: 20em;
+  }
+  #picktime {
    height: 2em;
   }
   th.endtime, td.endtime, td .description {
@@ -188,7 +223,7 @@
   }
   #add fieldset {
    float: left;
-   height: 3em;
+   height: auto;
    margin: 7em 0 0 0;
    padding: 0 0.25em;
    width: auto;
@@ -430,7 +465,7 @@
 <option value="0">Unspecified</option>
 <optgroup label="Location">
 <option value="10">Unspecified</option>
-<option value="11">Home</option>
+<option value="11" selected="selected">Home</option>
 <option value="12">Second home</option>
 <option value="13">Workplace/school</option>
 <option value="14">Other's home</option>
@@ -649,7 +684,7 @@
 <script>
 
  var GET_URI = './get.php';
- var MAX_ROWS = 144;
+ var MAX_ROWS = 24;
 
  var xhr = new XMLHttpRequest();
  xhr.onload = handleResult;
@@ -684,6 +719,11 @@
   e.preventDefault();
   xhr.abort();
   var res = xhr.open(f.method, f.action, true);
+  if ((toDate(et.value) - toDate(st.value)) > 8 * 60 * 60 * 1000) {
+   if (!confirm('Duration longer than 8 hours. OK?')) {
+    return false;
+   }
+  }
   try {
    xhr.send(new FormData (f));
   }
@@ -709,6 +749,22 @@
  wlabels[4] = 'Kids';
  wlabels[5] = 'Family';
  wlabels[6] = 'Others';
+
+ var llabels = [];
+ llabels[11] = 'at home';
+ llabels[12] = 'at other home';
+ llabels[13] = 'at work';
+ llabels[14] = 'at other\'s home';
+ llabels[15] = 'at restaurant';
+ llabels[16] = 'at shop';
+ llabels[17] = 'at hotel';
+ llabels[19] = 'at other';
+ llabels[21] = 'by foot';
+ llabels[22] = 'by bicycle';
+ llabels[23] = 'by motorbike';
+ llabels[24] = 'by car';
+ llabels[29] = 'by other';
+ llabels[31] = 'by public transport';
 
  var keys = ['starttime', 'endtime', 'mainaction', 'sideaction', 'with'];
 
@@ -921,6 +977,9 @@
    et.value = values['endtime'];
    f.mainaction.value = values['mainaction'];
    f.sideaction.value = values['sideaction'];
+   f.location.value = values['location'];
+   f.usecomputer.checked = values['usecomputer'] ? true : false;
+   f.sideaction.value = values['sideaction'];
    f.description.value = values['description'] || '';
    rat.value = values['rating'] || 0;
    updateStars();
@@ -928,8 +987,7 @@
    hilite(sub, 15, 12, 7)
    for (var i=0; i<boxes.length; i++) {
     var val = boxes[i].value;
-    if ((val == parseInt(values['with'])) ||
-        (parseInt(values['with']) & Math.pow(2, (val-1)))) {
+    if (parseInt(values['with']) & Math.pow(2, (val-1))) {
      boxes[i].checked = true;
     }
     else {
@@ -966,12 +1024,16 @@
     var tmp = [];
     for (var i=0; i<boxes.length; i++) {
      var val = boxes[i].value;
-     if ((val == parseInt(values['with'])) ||
-         (parseInt(values['with']) & Math.pow(2, (val-1)))) {
+     if (parseInt(values['with']) & Math.pow(2, (val-1))) {
       tmp.push(wlabels[boxes[i].value].toLowerCase());
      }
     }
-    val = tmp.join(', ');
+    val = (values['with'] != 1) ? 'with ' + tmp.join(', ') : 'alone';
+    if (values['location'] && llabels[values['location']]) {
+     val += ' ' + llabels[values['location']];
+    }
+    // val += (values['usecomputer']) ? ' using computer/net' : '';
+    val += (values['usecomputer']) ? ' \u2328' : '';
     span.appendChild(document.createTextNode(val));
     cellval.appendChild(span);
     var rv = parseInt(values['rating']);
@@ -1034,6 +1096,14 @@
          pad(d.getDate()) + ' ' +
          pad(d.getHours()) + ':' + 
          pad(10*Math.floor(d.getMinutes()/10)) + ':00';
+ }
+
+ function toDate(str) {
+  var dt = str.split(' ');
+  var d = dt[0].split('-');
+  var t = dt[1].split(':');
+  var date = new Date(d[0], d[1]-1, d[2], t[0], t[1]);
+  return date;
  }
  
 </script>
