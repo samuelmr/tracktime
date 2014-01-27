@@ -41,6 +41,14 @@
   $description = $_REQUEST['description'];
   $values['description'] = $description;
  }
+ if (isset($_REQUEST['usecomputer']) && $_REQUEST['usecomputer']) {
+  $usecomputer = $_REQUEST['usecomputer'] ? 1 : 0;
+  $values['usecomputer'] = $usecomputer;
+ }
+ if (isset($_REQUEST['location']) && $_REQUEST['location']) {
+  $location = intval($_REQUEST['location']);
+  $values['location'] = $location;
+ }
  if (isset($_REQUEST['rating']) && $_REQUEST['rating']) {
   $rating = intval($_REQUEST['rating']);
   $values['rating'] = $rating;
@@ -51,6 +59,8 @@
             ' (starttime, endtime, mainaction, `with`'.
             (isset($id) ? ', id' : '').
             (isset($sideaction) ? ', sideaction' : '').
+            (isset($usecomputer) ? ', usecomputer' : '').
+            (isset($location) ? ', location' : '').
             (isset($description) ? ', description' : '').
             (isset($rating) ? ', rating' : '').
             ") VALUES (".
@@ -60,6 +70,8 @@
             ", $with".
             (isset($id) ? ", $id" : '').
             (isset($sideaction) ? ", $sideaction" : '').
+            (isset($usecomputer) ? ", $usecomputer" : '').
+            (isset($location) ? ", $location" : '').
             (isset($description) ? ", '".mysqli_real_escape_string($conn, $description)."'" : '').
             (isset($rating) ? ", $rating" : '').
             ')';
