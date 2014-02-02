@@ -56,10 +56,12 @@
  #table tr.alert td.starttime {
   border: 2px solid #F60;
  }
- #table td.starttime, #table td.endtime {
+ #table td time {
   font-size: smaller;
-  text-align: right !important;
   white-space: nowrap;
+ }
+ #table td.starttime, #table td.endtime {
+  text-align: right !important;
  }
  th.mainaction, td.mainaction, th.sideaction, td.sideaction {
   max-width: 8.5em;
@@ -267,19 +269,26 @@
    overflow: auto;
    position: absolute;
    top: 17em;
+   width: 100%;
+  }
+  .starttime, .endtime {
+   width: 7.5ex;
+  }
+  .mainaction, .sideaction {
+   width: 22ex;
+  }
+  #table {
+   width: 100%;
   }
   #table thead {
-/*
    position: fixed;
-*/
   }
-  #table thead tr {
-   
+  #table thead th {
    position: relative;
    top: -1em;
   }
   #table thead th {
-   padding: 2em 0.5em 0 0.5em;
+   padding: 2em 0.5em 0 0;
   }
   th.mainaction, td.mainaction, th.sideaction, td.sideaction, td.with {
    max-width: none;
@@ -500,6 +509,7 @@
 </header>
 <div id="data">
 <table id="table">
+<colgroup><col class="starttime" /><col class="endtime" /><col class="mainaction" /><col class="sideaction" /><col class="with" /></colgroup>
 <thead>
 <tr><th class="starttime">From</th><th class="endtime">To</th><th class="mainaction">Main action</th><th class="sideaction">Parallel</th><th class="with">What</th></tr>
 </thead>
