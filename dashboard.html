@@ -486,28 +486,35 @@
    bd.style.right = '95%';
    ad.removeEventListener('click', toggleBars, true);
    bd.addEventListener('click', toggleBars, true);
+   b.clearChart();
   }
   else {
    ad.style.left = '95%';
    bd.style.right = '6%';
    bd.removeEventListener('click', toggleBars, true);
    ad.addEventListener('click', toggleBars, true);
+   a.clearChart();
   }
   showBars();
  }
 
  function showBars() {
   if (!ad.style.left || (ad.style.left == '95%')) {
-   a.clearChart();
    bopts['width'] = bd.clientWidth;
    bopts['height'] = bd.clientHeight;
    b.draw(bdata, bopts);
   }
   else {
-   b.clearChart();
    aopts['width'] = ad.clientWidth;
    aopts['height'] = ad.clientHeight;
    a.draw(adata, aopts);
+
+   // WTF: chart gives an error every second time it is drawn!
+   // Ugly ugly fix: if chart is empty, toggle twice... :-(
+   if (ad.getElementsByTagName('svg').length < 1) {
+    toggleBars();
+    toggleBars();
+   }
   }
  }
 
