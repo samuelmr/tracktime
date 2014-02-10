@@ -138,11 +138,8 @@
  #pickmonth, #pickday {
   width: 2.5ex;
  }
- @media screen and (max-width: 320px) {
+ @media (max-width: 320px) {
   body {
-/*
-   font-size: larger;
-*/
   }
   input, select, option, #datetimepicker label {
    font-size: 18px;
@@ -182,7 +179,7 @@
    display: none;
   }
  }
- @media screen and (min-width: 30em) {
+ @media (min-width: 30em) {
   #add fieldset {
    float: left;
    height: 2.5em;
@@ -201,7 +198,7 @@
    float: left;
   }
  }
- @media screen and (min-width: 60em) {
+ @media (min-width: 60em) {
   html, body {
    height: 99%;
    margin-top: 0;
@@ -694,7 +691,7 @@
 <script>
 
  var GET_URI = './get.php';
- var MAX_ROWS = 24;
+ var MAX_ROWS = 30;
 
  var xhr = new XMLHttpRequest();
  xhr.onload = handleResult;
