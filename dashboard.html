@@ -587,7 +587,7 @@
   p3data.removeRows(0, p3data.getNumberOfRows());
   ratvalue = 0;
   rattime = 0;
-  prows = [0, 0, 0, 0, 0, 0];
+  prows = [0, 0, 0, 0, 0, 0, 0];
   lrows = {};
   brows = {};
   arows = {};
@@ -633,7 +633,7 @@
   }
   p3.draw(p3data, p3opts);
 
-  for (var i=0; i<wlabels.length; i++) {
+  for (var i=1; i<wlabels.length; i++) {
    if (!wlabels[i] || !prows[i]) {
     continue;
    }
