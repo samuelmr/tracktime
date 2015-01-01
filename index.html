@@ -28,9 +28,12 @@
   background: -moz-linear-gradient(#EEE, #DDD);
   background: -webkit-linear-gradient(#EEE, #DDD);
   background: -o-linear-gradient(#EEE, #DDD);
-  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#EEE', endColorstr='#DDD')";
   background: linear-gradient(#EEE, #DDD);
+  color: #000;
   height: 2em;
+ }
+ option:hover, option:focus {
+  color: #000;
  }
  input {
   border-color: #FFF;
@@ -138,6 +141,9 @@
  #pickmonth, #pickday {
   width: 2.5ex;
  }
+ #submit {
+  margin-top: 1.5em;
+ }
  @media (max-width: 320px) {
   body {
   }
@@ -193,7 +199,7 @@
   #description {
    width: 30em;
   }
-  .submit {
+  #submit {
    clear: both;
    float: left;
   }
@@ -208,7 +214,6 @@
    overflow: hidden;
   }
   h1 {
-   color: #999;
    font-family: 'Arial Black',Impact,Verdana,sans-serif;
    font-size: 3em;
    font-weight: 900;
@@ -219,6 +224,10 @@
    text-shadow: 0.1em 0.1em 0.15em #CCC;
    text-transform: uppercase;
    top: 0.25em;
+  }
+  h1 a {
+   color: #999;
+   text-decoration: none;
   }
   #add fieldset {
    float: left;
@@ -258,14 +267,14 @@
    width: 50em;
   }
   header {
-   max-height: 16em;
+   max-height: 16.5em;
    overflow: auto;
   }
   #data {
    bottom: 2em;
    overflow: auto;
    position: absolute;
-   top: 17em;
+   top: 18em;
    width: 100%;
   }
   .starttime, .endtime {
@@ -278,14 +287,20 @@
    width: 100%;
   }
   #table thead {
-   position: fixed;
+   position: absolute;
+   top: 0;
+   width: 100%;
   }
   #table thead th {
    position: relative;
-   top: -1em;
+   top: 0;
   }
   #table thead th {
    padding: 2em 0.5em 0 0;
+  }
+  #table tbody {
+   position: absolute;
+   top: 1em;
   }
   th.mainaction, td.mainaction, th.sideaction, td.sideaction, td.with {
    max-width: none;
@@ -295,7 +310,7 @@
 </head>
 <body>
 <header>
-<h1>Tracktime</h1>
+<h1><a href="./">Tracktime</a></h1>
 <form id="add" method="POST" action="put.php">
 <input type="hidden" name="id" id="hiddenid" />
 <fieldset>
@@ -337,7 +352,7 @@
 <option value="20">Construction and repairs</option>
 <option value="21">Shopping and services</option>
 <option value="22">Child care</option>
-<option value="23">Teaching kids</option>
+<option value="23">Playing with and teaching kids</option>
 <option value="24">Other domestic work</option>
 </optgroup>
 <optgroup label="Leisure">
@@ -403,7 +418,7 @@
 <option value="20">Construction and repairs</option>
 <option value="21">Shopping and services</option>
 <option value="22">Child care</option>
-<option value="23">Teaching kids</option>
+<option value="23">Playing with and teaching kids</option>
 <option value="24">Other domestic work</option>
 </optgroup>
 <optgroup label="Leisure">
@@ -540,157 +555,157 @@
 <fieldset class="picktime">
  <label for="picktime" class="up">&#9650;</label>
  <select id="picktime">
-  <option value="00:00:00">0:00</option>
-  <option value="00:10:00">0:10</option>
-  <option value="00:20:00">0:20</option>
-  <option value="00:30:00">0:30</option>
-  <option value="00:40:00">0:40</option>
-  <option value="00:50:00">0:50</option>
-  <option value="01:00:00">1:00</option>
-  <option value="01:10:00">1:10</option>
-  <option value="01:20:00">1:20</option>
-  <option value="01:30:00">1:30</option>
-  <option value="01:40:00">1:40</option>
-  <option value="01:50:00">1:50</option>
-  <option value="02:00:00">2:00</option>
-  <option value="02:10:00">2:10</option>
-  <option value="02:20:00">2:20</option>
-  <option value="02:30:00">2:30</option>
-  <option value="02:40:00">2:40</option>
-  <option value="02:50:00">2:50</option>
-  <option value="03:00:00">3:00</option>
-  <option value="03:10:00">3:10</option>
-  <option value="03:20:00">3:20</option>
-  <option value="03:30:00">3:30</option>
-  <option value="03:40:00">3:40</option>
-  <option value="03:50:00">3:50</option>
-  <option value="04:00:00">4:00</option>
-  <option value="04:10:00">4:10</option>
-  <option value="04:20:00">4:20</option>
-  <option value="04:30:00">4:30</option>
-  <option value="04:40:00">4:40</option>
-  <option value="04:50:00">4:50</option>
-  <option value="05:00:00">5:00</option>
-  <option value="05:10:00">5:10</option>
-  <option value="05:20:00">5:20</option>
-  <option value="05:30:00">5:30</option>
-  <option value="05:40:00">5:40</option>
-  <option value="05:50:00">5:50</option>
-  <option value="06:00:00">6:00</option>
-  <option value="06:10:00">6:10</option>
-  <option value="06:20:00">6:20</option>
-  <option value="06:30:00">6:30</option>
-  <option value="06:40:00">6:40</option>
-  <option value="06:50:00">6:50</option>
-  <option value="07:00:00">7:00</option>
-  <option value="07:10:00">7:10</option>
-  <option value="07:20:00">7:20</option>
-  <option value="07:30:00">7:30</option>
-  <option value="07:40:00">7:40</option>
-  <option value="07:50:00">7:50</option>
-  <option value="08:00:00">8:00</option>
-  <option value="08:10:00">8:10</option>
-  <option value="08:20:00">8:20</option>
-  <option value="08:30:00">8:30</option>
-  <option value="08:40:00">8:40</option>
-  <option value="08:50:00">8:50</option>
-  <option value="09:00:00">9:00</option>
-  <option value="09:10:00">9:10</option>
-  <option value="09:20:00">9:20</option>
-  <option value="09:30:00">9:30</option>
-  <option value="09:40:00">9:40</option>
-  <option value="09:50:00">9:50</option>
-  <option value="10:00:00">10:00</option>
-  <option value="10:10:00">10:10</option>
-  <option value="10:20:00">10:20</option>
-  <option value="10:30:00">10:30</option>
-  <option value="10:40:00">10:40</option>
-  <option value="10:50:00">10:50</option>
-  <option value="11:00:00">11:00</option>
-  <option value="11:10:00">11:10</option>
-  <option value="11:20:00">11:20</option>
-  <option value="11:30:00">11:30</option>
-  <option value="11:40:00">11:40</option>
-  <option value="11:50:00">11:50</option>
-  <option value="12:00:00">12:00</option>
-  <option value="12:10:00">12:10</option>
-  <option value="12:20:00">12:20</option>
-  <option value="12:30:00">12:30</option>
-  <option value="12:40:00">12:40</option>
-  <option value="12:50:00">12:50</option>
-  <option value="13:00:00">13:00</option>
-  <option value="13:10:00">13:10</option>
-  <option value="13:20:00">13:20</option>
-  <option value="13:30:00">13:30</option>
-  <option value="13:40:00">13:40</option>
-  <option value="13:50:00">13:50</option>
-  <option value="14:00:00">14:00</option>
-  <option value="14:10:00">14:10</option>
-  <option value="14:20:00">14:20</option>
-  <option value="14:30:00">14:30</option>
-  <option value="14:40:00">14:40</option>
-  <option value="14:50:00">14:50</option>
-  <option value="15:00:00">15:00</option>
-  <option value="15:10:00">15:10</option>
-  <option value="15:20:00">15:20</option>
-  <option value="15:30:00">15:30</option>
-  <option value="15:40:00">15:40</option>
-  <option value="15:50:00">15:50</option>
-  <option value="16:00:00">16:00</option>
-  <option value="16:10:00">16:10</option>
-  <option value="16:20:00">16:20</option>
-  <option value="16:30:00">16:30</option>
-  <option value="16:40:00">16:40</option>
-  <option value="16:50:00">16:50</option>
-  <option value="17:00:00">17:00</option>
-  <option value="17:10:00">17:10</option>
-  <option value="17:20:00">17:20</option>
-  <option value="17:30:00">17:30</option>
-  <option value="17:40:00">17:40</option>
-  <option value="17:50:00">17:50</option>
-  <option value="18:00:00">18:00</option>
-  <option value="18:10:00">18:10</option>
-  <option value="18:20:00">18:20</option>
-  <option value="18:30:00">18:30</option>
-  <option value="18:40:00">18:40</option>
-  <option value="18:50:00">18:50</option>
-  <option value="19:00:00">19:00</option>
-  <option value="19:10:00">19:10</option>
-  <option value="19:20:00">19:20</option>
-  <option value="19:30:00">19:30</option>
-  <option value="19:40:00">19:40</option>
-  <option value="19:50:00">19:50</option>
-  <option value="20:00:00">20:00</option>
-  <option value="20:10:00">20:10</option>
-  <option value="20:20:00">20:20</option>
-  <option value="20:30:00">20:30</option>
-  <option value="20:40:00">20:40</option>
-  <option value="20:50:00">20:50</option>
-  <option value="21:00:00">21:00</option>
-  <option value="21:10:00">21:10</option>
-  <option value="21:20:00">21:20</option>
-  <option value="21:30:00">21:30</option>
-  <option value="21:40:00">21:40</option>
-  <option value="21:50:00">21:50</option>
-  <option value="22:00:00">22:00</option>
-  <option value="22:10:00">22:10</option>
-  <option value="22:20:00">22:20</option>
-  <option value="22:30:00">22:30</option>
-  <option value="22:40:00">22:40</option>
-  <option value="22:50:00">22:50</option>
-  <option value="23:00:00">23:00</option>
-  <option value="23:10:00">23:10</option>
-  <option value="23:20:00">23:20</option>
-  <option value="23:30:00">23:30</option>
-  <option value="23:40:00">23:40</option>
   <option value="23:50:00">23:50</option>
+  <option value="23:40:00">23:40</option>
+  <option value="23:30:00">23:30</option>
+  <option value="23:20:00">23:20</option>
+  <option value="23:10:00">23:10</option>
+  <option value="23:00:00">23:00</option>
+  <option value="22:50:00">22:50</option>
+  <option value="22:40:00">22:40</option>
+  <option value="22:30:00">22:30</option>
+  <option value="22:20:00">22:20</option>
+  <option value="22:10:00">22:10</option>
+  <option value="22:00:00">22:00</option>
+  <option value="21:50:00">21:50</option>
+  <option value="21:40:00">21:40</option>
+  <option value="21:30:00">21:30</option>
+  <option value="21:20:00">21:20</option>
+  <option value="21:10:00">21:10</option>
+  <option value="21:00:00">21:00</option>
+  <option value="20:50:00">20:50</option>
+  <option value="20:40:00">20:40</option>
+  <option value="20:30:00">20:30</option>
+  <option value="20:20:00">20:20</option>
+  <option value="20:10:00">20:10</option>
+  <option value="20:00:00">20:00</option>
+  <option value="19:50:00">19:50</option>
+  <option value="19:40:00">19:40</option>
+  <option value="19:30:00">19:30</option>
+  <option value="19:20:00">19:20</option>
+  <option value="19:10:00">19:10</option>
+  <option value="19:00:00">19:00</option>
+  <option value="18:50:00">18:50</option>
+  <option value="18:40:00">18:40</option>
+  <option value="18:30:00">18:30</option>
+  <option value="18:20:00">18:20</option>
+  <option value="18:10:00">18:10</option>
+  <option value="18:00:00">18:00</option>
+  <option value="17:50:00">17:50</option>
+  <option value="17:40:00">17:40</option>
+  <option value="17:30:00">17:30</option>
+  <option value="17:20:00">17:20</option>
+  <option value="17:10:00">17:10</option>
+  <option value="17:00:00">17:00</option>
+  <option value="16:50:00">16:50</option>
+  <option value="16:40:00">16:40</option>
+  <option value="16:30:00">16:30</option>
+  <option value="16:20:00">16:20</option>
+  <option value="16:10:00">16:10</option>
+  <option value="16:00:00">16:00</option>
+  <option value="15:50:00">15:50</option>
+  <option value="15:40:00">15:40</option>
+  <option value="15:30:00">15:30</option>
+  <option value="15:20:00">15:20</option>
+  <option value="15:10:00">15:10</option>
+  <option value="15:00:00">15:00</option>
+  <option value="14:50:00">14:50</option>
+  <option value="14:40:00">14:40</option>
+  <option value="14:30:00">14:30</option>
+  <option value="14:20:00">14:20</option>
+  <option value="14:10:00">14:10</option>
+  <option value="14:00:00">14:00</option>
+  <option value="13:50:00">13:50</option>
+  <option value="13:40:00">13:40</option>
+  <option value="13:30:00">13:30</option>
+  <option value="13:20:00">13:20</option>
+  <option value="13:10:00">13:10</option>
+  <option value="13:00:00">13:00</option>
+  <option value="12:50:00">12:50</option>
+  <option value="12:40:00">12:40</option>
+  <option value="12:30:00">12:30</option>
+  <option value="12:20:00">12:20</option>
+  <option value="12:10:00">12:10</option>
+  <option value="12:00:00">12:00</option>
+  <option value="11:50:00">11:50</option>
+  <option value="11:40:00">11:40</option>
+  <option value="11:30:00">11:30</option>
+  <option value="11:20:00">11:20</option>
+  <option value="11:10:00">11:10</option>
+  <option value="11:00:00">11:00</option>
+  <option value="10:50:00">10:50</option>
+  <option value="10:40:00">10:40</option>
+  <option value="10:30:00">10:30</option>
+  <option value="10:20:00">10:20</option>
+  <option value="10:10:00">10:10</option>
+  <option value="10:00:00">10:00</option>
+  <option value="09:50:00">9:50</option>
+  <option value="09:40:00">9:40</option>
+  <option value="09:30:00">9:30</option>
+  <option value="09:20:00">9:20</option>
+  <option value="09:10:00">9:10</option>
+  <option value="09:00:00">9:00</option>
+  <option value="08:50:00">8:50</option>
+  <option value="08:40:00">8:40</option>
+  <option value="08:30:00">8:30</option>
+  <option value="08:20:00">8:20</option>
+  <option value="08:10:00">8:10</option>
+  <option value="08:00:00">8:00</option>
+  <option value="07:50:00">7:50</option>
+  <option value="07:40:00">7:40</option>
+  <option value="07:30:00">7:30</option>
+  <option value="07:20:00">7:20</option>
+  <option value="07:10:00">7:10</option>
+  <option value="07:00:00">7:00</option>
+  <option value="06:50:00">6:50</option>
+  <option value="06:40:00">6:40</option>
+  <option value="06:30:00">6:30</option>
+  <option value="06:20:00">6:20</option>
+  <option value="06:10:00">6:10</option>
+  <option value="06:00:00">6:00</option>
+  <option value="05:50:00">5:50</option>
+  <option value="05:40:00">5:40</option>
+  <option value="05:30:00">5:30</option>
+  <option value="05:20:00">5:20</option>
+  <option value="05:10:00">5:10</option>
+  <option value="05:00:00">5:00</option>
+  <option value="04:50:00">4:50</option>
+  <option value="04:40:00">4:40</option>
+  <option value="04:30:00">4:30</option>
+  <option value="04:20:00">4:20</option>
+  <option value="04:10:00">4:10</option>
+  <option value="04:00:00">4:00</option>
+  <option value="03:50:00">3:50</option>
+  <option value="03:40:00">3:40</option>
+  <option value="03:30:00">3:30</option>
+  <option value="03:20:00">3:20</option>
+  <option value="03:10:00">3:10</option>
+  <option value="03:00:00">3:00</option>
+  <option value="02:50:00">2:50</option>
+  <option value="02:40:00">2:40</option>
+  <option value="02:30:00">2:30</option>
+  <option value="02:20:00">2:20</option>
+  <option value="02:10:00">2:10</option>
+  <option value="02:00:00">2:00</option>
+  <option value="01:50:00">1:50</option>
+  <option value="01:40:00">1:40</option>
+  <option value="01:30:00">1:30</option>
+  <option value="01:20:00">1:20</option>
+  <option value="01:10:00">1:10</option>
+  <option value="01:00:00">1:00</option>
+  <option value="00:50:00">0:50</option>
+  <option value="00:40:00">0:40</option>
+  <option value="00:30:00">0:30</option>
+  <option value="00:20:00">0:20</option>
+  <option value="00:10:00">0:10</option>
+  <option value="00:00:00">0:00</option>
  </select>
  <label for="picktime" class="down">&#9660;</label>
 </fieldset>
 </div>
 <script>
 
- var GET_URI = './get.php';
+ var GET_URI = 'http://ajan.seuranta.org/get.php';
  var MAX_ROWS = 30;
 
  var xhr = new XMLHttpRequest();
@@ -719,12 +734,21 @@
 
  rat.onchange = updateStars;
  st.onfocus = et.onfocus = showPicker;
+ st.onkeyup = et.onkeyup = st.onchange = et.onchange = setPicker;
  f.mainaction.onfocus = hidePicker;
+ f.mainaction.onchange = guessLocation;
  f.sideaction.onfocus = hidePicker;
 
  f.onsubmit = function(e) {
-  e.preventDefault();
+  if (e && e.preventDefault) {
+   e.preventDefault();
+  }
   xhr.abort();
+  // xhr.onreadystatechange = function() {
+  //  if ((this.readyState == 4) && (this.status == 200)) {
+  //   this.onload();
+  //  }
+  // };
   var res = xhr.open(f.method, f.action, true);
   if ((toDate(et.value) - toDate(st.value)) > 8 * 60 * 60 * 1000) {
    if (!confirm('Duration longer than 8 hours. OK?')) {
@@ -733,6 +757,7 @@
   }
   try {
    xhr.send(new FormData (f));
+   f.description.value = '';
   }
   catch(e) {
    handleError(f.method);
@@ -773,9 +798,60 @@
  llabels[29] = 'by other';
  llabels[31] = 'by public transport';
 
+ var guesses = [];
+ guesses[1] = 11; // sleep at home
+ guesses[2] = 11; // eat at home
+ guesses[3] = 11; // personal care at home
+ guesses[4] = 13; // work at workplace
+ guesses[5] = 13; // employment at workplace
+ guesses[6] = 13; // study at school
+ guesses[7] = 11; // homework at home
+ guesses[8] = 11; // freetime study at home
+ guesses[9] = 11; // food preparation at home
+ guesses[10] = 11; // dish washing at home
+ guesses[11] = 11; // cleaning at home
+ guesses[12] = 11; // household upkeep at home
+ guesses[13] = 11; // laundry at home
+ guesses[14] = 11; // ironing at home
+ guesses[15] = 11; // handicraft at home
+ guesses[16] = 11; // gardening at home
+ guesses[17] = 11; // tending animals at home
+ guesses[18] = 11; // pet caring at home
+ guesses[19] = 11; // dog walking at home
+ guesses[20] = 11; // repairs at home
+ guesses[21] = 16; // shopping at shop
+ guesses[22] = 11; // child care at home
+ guesses[23] = 11; // playing with kids at home
+ guesses[24] = 11; // domestic work at home
+ guesses[25] = 11; // organizational work at home
+ guesses[26] = 14; // household help at other's home
+ guesses[27] = 11; // participatory activities at home
+ guesses[28] = 14; // visits at other's home
+ guesses[29] = 11; // other social life at home
+ guesses[30] = 19; // entertainment at other
+ guesses[31] = 11; // resting at home
+ guesses[32] = 11; // walking at home
+ guesses[33] = 19; // sports at other
+ guesses[34] = 11; // computer games at home
+ guesses[35] = 11; // other computing at home
+ guesses[36] = 11; // other hobbies at home
+ guesses[37] = 11; // reading books at home
+ guesses[38] = 11; // other reading at home
+ guesses[39] = 11; // TV and video at home
+ guesses[40] = 11; // radio and music at home
+ guesses[41] = 11; // unspecified leisure at home
+ guesses[42] = 24; // commuting by car
+ guesses[43] = 31; // school travel by public transport
+ guesses[44] = 24; // shopping travel by car
+ guesses[45] = 24; // child transport by car
+ guesses[46] = 24; // domestic travel by car
+ guesses[47] = 24; // leisure travel by car
+ guesses[48] = 24; // unspecified travel by car
+ guesses[49] = 11; // unspecified at home
+
  var keys = ['starttime', 'endtime', 'mainaction', 'sideaction', 'with'];
 
- var acts = {null: '', 'undefined': ''};
+ var acts = {'null': '', 'undefined': ''};
  var opts = document.getElementById('sideaction').options;
  for (var i=0; i<opts.length; i++) {
   acts[opts[i].value] = opts[i].text;
@@ -786,22 +862,26 @@
   lbs[i].onclick = lbs[i].touchend = function() {
    var ip = document.getElementById(this.getAttribute('for'));
    if (ip.id == pt.id) {
-    pt.selectedIndex += (this.className == 'up') ? 1 : -1;
-    if ((pt.selectedIndex >= pt.options.length) || (pt.selectedIndex < 0)) {
-     pt.selectedIndex = 0;
+    var newIndex = ((this.className == 'up') ? -1 : 1) + pt.selectedIndex;
+    if (newIndex >= pt.options.length) {
+     newIndex = 0;
     }
+    if (newIndex < 0) {
+     newIndex = pt.options.length - 1;
+    }
+    pt.selectedIndex = newIndex;
    }
    else {
-    tmp = ((this.className == 'up') ? 1 : -1 ) + parseInt(ip.value);
+    tmp = ((this.className == 'up') ? 1 : -1 ) + toNum(ip.value);
     switch (ip) {
      case pm:
       tmp = (tmp <= 12) ? tmp : 1;
-      tmp = (tmp >= 1) ? tmp : 1;
+      tmp = (tmp >= 1) ? tmp : 12;
       tmp = (tmp < 10) ? '0' + '' + tmp : tmp;
       break;
      case pd:
       tmp = (tmp <= 31) ? tmp : 1;
-      tmp = (tmp >= 1) ? tmp : 1;
+      tmp = (tmp >= 1) ? tmp : 31;
       tmp = (tmp < 10) ? '0' + '' + tmp : tmp;
       break;
      case pt:
@@ -817,27 +897,6 @@
  resetEndDate();
  window.setInterval(resetEndDate, 60 * 10 * 1000);
 
- function showPicker() {
-  var elem = this;
-  var rect = this.getBoundingClientRect();
-  var dtstr = this.value || toString(new Date());
-  var dt = dtstr	.split(' ');
-  var d = dt[0].split('-');
-  var t = dt[1].split(':');
-  py.value = d[0];
-  pm.value = d[1];
-  pd.value = d[2];
-  pt.selectedIndex = 6 * parseInt(t[0]) + parseInt(t[1])/10;
-  py.onchange = pm.onchange = pd.onchange = pt.onchange = 
-  function() {
-   elem.value = py.value + '-' + pm.value + '-' + pd.value + ' ' +
-                pt[pt.selectedIndex].value;
-  };
-  dp.style.left = (rect.left - 4) + 'px';
-  dp.style.top = (rect.bottom + 2) + 'px';
-  dp.style.display = 'block';
- }
-
  window.onclick = window.ontouchend = function(e) {
   var el = e.target;
   while (el.parentNode) {
@@ -849,13 +908,64 @@
   hidePicker();
  }
 
+ function showPicker() {
+  var elem = this;
+  var rect = this.getBoundingClientRect();
+  var dtstr = this.value || toString(new Date());
+  var dt = dtstr.split(' ');
+  var d = dt[0].split('-');
+  var t = dt[1].split(':');
+  py.value = d[0];
+  pm.value = d[1];
+  pd.value = d[2];
+  pt.selectedIndex = pt.length - 1 - (6 * toNum(t[0])) - toNum(t[1])/10;
+  py.onchange = pm.onchange = pd.onchange = pt.onchange = 
+  function() {
+   elem.value = py.value + '-' + pm.value + '-' + pd.value + ' ' +
+                pt[pt.selectedIndex].value;
+  };
+  dp.style.left = (rect.left - 4) + 'px';
+  dp.style.top = (rect.bottom + 2) + 'px';
+  dp.style.display = 'block';
+ }
+
+ function setPicker() {
+  var dtstr = this.value || toString(new Date());
+  var dt = dtstr.split(' ');
+  var d = dt[0].split('-');
+  var t = dt[1].split(':');
+  py.value = d[0];
+  pm.value = d[1];
+  pd.value = d[2];
+  pt.selectedIndex = pt.length - 1 - (6 * toNum(t[0])) - toNum(t[1])/10;
+  console.log(dtstr);
+  console.log(pt.selectedIndex);
+ }
+
  function hidePicker(e) {
   dp.style.display = 'none';  
  }
 
+ function guessLocation() {
+  var action = this[this.selectedIndex].value;
+  var guess = new String(guesses[action]);
+  var current = f.location.value;
+  if (guess && current && (guess[0] != current[0])) {
+   for (var i=0; i<f.location.options.length; i++) {
+    if (f.location.options[i].value == guess) {
+     f.location.selectedIndex = i;
+     return;
+    }
+   }
+  }
+ }
+
  function resetEndDate() {
-  et.value = toString(new Date());
-  hilite(et, 15, 12, 7)
+  var now = new Date();
+  if (!et.value || (now - toDate(et.value) < (20 * 60 * 1000))) {
+   et.value = toString(now);
+   hilite(et, 15, 12, 7)
+  }
  }
 
  function hilite(el, r, g, b) {
@@ -894,6 +1004,12 @@
 
  function getLatest() {
   xhr.abort();
+  // for IE 8
+  // xhr.onreadystatechange = function() {
+  //  if ((this.readyState == 4) && (this.status == 200)) {
+  //   this.onload();
+  //  }
+  // };
   var href = GET_URI + '?latest=' + MAX_ROWS;
   xhr.open('GET', href, true);
   try {
@@ -914,11 +1030,12 @@
  }
  
  function handleError(method) {
+  console.log(method + ' error');
   if (!localStorage) {
    return false;
   }
   var storedItem = localStorage.getItem('data');
-  var values = JSON.parse(storedItem) || [];
+  var values = JSON.parse(storedItem) || [];
   if (method.toLowerCase() == 'post') {
    var withval = 0;
    for (var i=0; i<boxes.length; i++) {
@@ -933,7 +1050,6 @@
                'with': withval,
                'location': f.location.value,
                'description': f.description.value};
-   console.log(row);
    values.unshift(row);
    localStorage.setItem('data', JSON.stringify(values));
    showRows([row], true);
@@ -978,7 +1094,7 @@
   if (values['mainaction'] == 49) {
    tr.className = ' unspecified';
   }
-  tr.ontap = tr.ondblclick = function() {
+  tr.ontouchend = tr.ondblclick = function() {
    h.value = values['id'] || null;
    st.value = values['starttime'];
    et.value = values['endtime'];
@@ -1015,8 +1131,8 @@
      var dt = val.split(' ');
      var d = dt[0].split('-');
      var t = dt[1].split(':');
-     val = '' + parseInt(d[2]) + '.' + parseInt(d[1]) +
-                   '. ' + parseInt(t[0]) + ':' + t[1];
+     val = '' + toNum(d[2]) + '.' + toNum(d[1]) +
+                   '. ' + toNum(t[0]) + ':' + t[1];
      cellval.appendChild(document.createTextNode(val));
     }
    }
@@ -1097,6 +1213,16 @@
   return val;
  }
  
+ function toNum(str) {
+  while (str[0] == '0') {
+   str = str.substr(1, str.length-1);
+  }
+  if (str.length == 0) {
+   str = 0;
+  }
+  return parseInt(str);
+ }
+
  function toString(d) {
   return d.getFullYear() + '-' + 
          pad(d.getMonth()+1) + '-' + 
@@ -1114,5 +1240,9 @@
  }
  
 </script>
+<!--[if lt IE 8]>
+<script type="text/javascript" src="./json2-optimized.js">
+</script>
+<![endif]-->
 </body>
 </html>
