@@ -313,7 +313,7 @@
  wlabels[6] = 'Others';
  var pd = document.getElementById('pie');
  setLegendStyle();
- var p = new google.visualization.PieChart(pd);
+ // var p = new google.visualization.PieChart(pd);
  var popts = {'pieHole': 0.4,
               'backgroundColor': 'transparent',
               'pieSliceTextStyle': {'color': '#000', 'fontSize': fts},
@@ -321,6 +321,12 @@
                             'width': '90%', 'height': '90%'},
               'animation': animOpts,
               'legend': legendStyle};
+ var p = new google.visualization.ColumnChart(pd);
+ var popts = {'backgroundColor': 'transparent', 'orientation': 'horizontal',
+              'legend': {'position': 'none'},
+              'animation': animOpts,
+              'charArea': {'left': 0, 'top': 0, 'width': '100%', 'height': '100%'},
+             };
  var pdata = [];
  var prows = [];
 
