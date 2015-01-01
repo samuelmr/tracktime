@@ -6,6 +6,7 @@
   die(mysqli_error($conn));
  }
  $limit = isset($_REQUEST['limit']) ? intval($_REQUEST['limit']) : NULL;
+ $interval = isset($_REQUEST['interval']) ? intval($_REQUEST['interval']) : 0;
  $end = time();
  $start = $end - 24 * 60 * 60;
  if (isset($_REQUEST['latest'])) {
@@ -36,6 +37,42 @@
  $with = isset($_REQUEST['with']) ? intval($_REQUEST['with']) : NULL;
  $desc = isset($_REQUEST['description']) ? $_REQUEST['description'] : NULL;
 
+ if ($interval) {
+  $select = 'SELECT starttime, endtime, mainaction FROM '.DB_TABLE.
+            ' ORDER BY starttime';
+  $stmt = mysqli_query($conn, $select);
+  if (!$stmt) {
+   header('500 Internal Server Error');
+   $values = array('code' => mysqli_errno($conn), 'msg' => mysqli_error($conn));
+  }
+  else {
+   $values = array();
+   while ($row = mysqli_fetch_assoc($stmt)) {
+    $start = strtotime($row['starttime']);
+    $end = strtotime($row['endtime']);
+    for ($st = $start; $st <= $end; $st += $interval) {
+     $timekey = date('H:i', $st);
+     if (!$values[$timekey]) {
+      $values[$timekey] = array();
+     }
+     $values[$timekey][$row['mainaction']] += 1;
+    }
+   }
+   $json = json_encode($values);
+   header('Access-Control-Allow-Origin: *');
+   header('Content-Type: application/json');
+   header('Content-Length: '.strlen($json));
+   if (in_array('gzip', explode(',', $_SERVER['HTTP_ACCEPT_ENCODING']))) {
+    header('Content-Encoding: gzip');
+    echo gzencode($json);
+   }
+   else {
+    echo $json;
+   }
+  }
+  exit;
+ }
+
  $select = 'SELECT * FROM '.DB_TABLE.' WHERE 1';
  if ($start) {
   $select .= " AND endtime >= '".date('Y-m-d H:i:s',$start)."'";
@@ -65,7 +102,7 @@
  if ($limit) {
   $select .= ' LIMIT '.$limit;
  }
- trigger_error($select, E_USER_NOTICE);
+ # trigger_error($select, E_USER_NOTICE);
 
  $stmt = mysqli_query($conn, $select);
  if (!$stmt) {
@@ -81,13 +118,11 @@
  $json = json_encode($values);
  header('Access-Control-Allow-Origin: *');
  header('Content-Type: application/json');
- header('Content-Length: '.strlen($json));
  if (in_array('gzip', explode(',', $_SERVER['HTTP_ACCEPT_ENCODING']))) {
   header('Content-Encoding: gzip');
-  echo gzencode($json);
+  $json = gzencode($json);
  }
- else {
-  echo $json;
- }
+ header('Content-Length: '.strlen($json));
+ echo $json;
 
 ?>
