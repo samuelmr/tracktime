@@ -755,6 +755,11 @@
     return false;
    }
   }
+  if (toDate(et.value) < toDate(st.value)) {
+   alert('Error: End time before start time.');
+   et.focus();
+   return false;
+  }
   try {
    xhr.send(new FormData (f));
    f.description.value = '';
