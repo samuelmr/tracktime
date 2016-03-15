@@ -62,7 +62,8 @@
    header('Access-Control-Allow-Origin: *');
    header('Content-Type: application/json');
    header('Content-Length: '.strlen($json));
-   if (in_array('gzip', explode(',', $_SERVER['HTTP_ACCEPT_ENCODING']))) {
+   if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) &&
+       (in_array('gzip', explode(',', $_SERVER['HTTP_ACCEPT_ENCODING'])))) {
     header('Content-Encoding: gzip');
     echo gzencode($json);
    }
@@ -112,10 +113,13 @@
  else {
   $values = array();
   while ($row = mysqli_fetch_assoc($stmt)) {
+   $row = array_filter($row, 'is_not_null');
+   $row['description'] = utf8_encode($row['description']);
    $values[] = $row;
   }
  }
  $json = json_encode($values);
+ trigger_error(count($values), E_USER_WARNING);
  header('Access-Control-Allow-Origin: *');
  header('Content-Type: application/json');
  if (in_array('gzip', explode(',', $_SERVER['HTTP_ACCEPT_ENCODING']))) {
@@ -125,4 +129,8 @@
  header('Content-Length: '.strlen($json));
  echo $json;
 
+ function is_not_null($val){
+   return !is_null($val);
+ }
+    
 ?>
