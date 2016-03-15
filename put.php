@@ -72,7 +72,7 @@
             (isset($sideaction) ? ", $sideaction" : '').
             (isset($usecomputer) ? ", $usecomputer" : '').
             (isset($location) ? ", $location" : '').
-            (isset($description) ? ", '".mysqli_real_escape_string($conn, $description)."'" : '').
+            (isset($description) ? ", '".mysqli_real_escape_string($conn, utf8_decode($description))."'" : '').
             (isset($rating) ? ", $rating" : '').
             ')';
   $result = mysqli_query($conn, $insert);
