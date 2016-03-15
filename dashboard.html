@@ -149,7 +149,9 @@
  var animOpts = {'easing': 'in', 'duration': 500};
 
  var stateStatus;
-
+ var globalStart, globalEnd;
+ var zoomLevel = 3;
+ 
  var xhr = new XMLHttpRequest();
  xhr.onload = update;
 
@@ -276,12 +278,14 @@
  var bopts = {'backgroundColor': 'transparent', 'orientation': 'horizontal',
               'isStacked': true, 'legend': {'position': 'none'},
               'animation': animOpts,
-              'charArea': {'left': 0, 'top': 0, 'width': '100%', 'height': '100%'},
+              'vAxis': { title: "hours"},
+	      'charArea': {'left': 0, 'top': 0, 'width': '100%', 'height': '100%'},
              };
  var bdata = [];
  var brows = {};
 
  ad.addEventListener('click', toggleBars, true);
+ bd.addEventListener('dblclick', zoomColumns, true);
 
  var td = document.getElementById('timeline');
  var t = new google.visualization.Timeline(td);
@@ -368,7 +372,6 @@
  var p3data = [];
  var lrows = {};
 
- var globalStart, globalEnd;
  google.setOnLoadCallback(init);
  window.addEventListener('resize', resizeHandler, true);
  window.addEventListener('hashchange', restoreState);
@@ -502,6 +505,17 @@
    a.clearChart();
   }
   showBars();
+ }
+
+ function zoomColumns() {
+  zoomLevel++;
+  if (zoomLevel > 8) {
+   zoomLevel = 3;
+  }
+  var maxBarHeight = (globalEnd - globalStart) / 1000 / 60 / 60 / zoomLevel;
+  bopts['vAxis']['viewWindowMode'] = 'explicit';
+  bopts['vAxis']['viewWindow'] = {'max': maxBarHeight, 'min': 0};
+  b.draw(bdata, bopts);
  }
 
  function showBars() {
