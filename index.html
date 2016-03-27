@@ -267,7 +267,7 @@
    width: 50em;
   }
   header {
-   max-height: 16.5em;
+   max-height: 17em;
    overflow: auto;
   }
   #data {
@@ -905,7 +905,7 @@
  window.onclick = window.ontouchend = function(e) {
   var el = e.target;
   while (el.parentNode) {
-	     if ((el == dp) || (el == st) || (el == et)) {
+   if ((el == dp) || (el == st) || (el == et)) {
     return;
    }
    el = el.parentNode;
@@ -1099,7 +1099,7 @@
   if (values['mainaction'] == 49) {
    tr.className = ' unspecified';
   }
-  tr.ontouchend = tr.ondblclick = function() {
+  tr.ondblclick = function() {
    h.value = values['id'] || null;
    st.value = values['starttime'];
    et.value = values['endtime'];
@@ -1108,6 +1108,9 @@
    f.location.value = values['location'];
    f.usecomputer.checked = values['usecomputer'] ? true : false;
    f.sideaction.value = values['sideaction'];
+   if (!values['sideaction']) {
+    f.sideaction.selectedIndex = 0;
+   }
    f.description.value = values['description'] || '';
    rat.value = values['rating'] || 0;
    updateStars();
