@@ -705,7 +705,7 @@
 </div>
 <script>
 
- var GET_URI = 'http://ajan.seuranta.org/get.php';
+ var GET_URI = '//ajan.seuranta.org/get.php';
  var MAX_ROWS = 30;
 
  var xhr = new XMLHttpRequest();
@@ -718,6 +718,8 @@
   str.ontap = str.onclick = setRating;
   stars[i] = str;
  }
+
+ var prevMonthLength = [30, 31, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30];
 
  var tb = document.getElementById('results');
  var f = document.getElementById('add');
@@ -870,9 +872,16 @@
     var newIndex = ((this.className == 'up') ? -1 : 1) + pt.selectedIndex;
     if (newIndex >= pt.options.length) {
      newIndex = 0;
+     /* breaks if the month changes! */
+     pd.value = toNum(pd.value) - 1;
+     //  console.log(pd.value);
+     // pd.onchange();
     }
     if (newIndex < 0) {
      newIndex = pt.options.length - 1;
+     /* breaks if the month changes! */
+     pd.value = toNum(pd.value) + 1;
+     // pd.onchange();
     }
     pt.selectedIndex = newIndex;
    }
@@ -880,13 +889,28 @@
     tmp = ((this.className == 'up') ? 1 : -1 ) + toNum(ip.value);
     switch (ip) {
      case pm:
-      tmp = (tmp <= 12) ? tmp : 1;
-      tmp = (tmp >= 1) ? tmp : 12;
+      if (tmp > 12) {
+       tmp = 1;
+       py.value = toNum(py.value) + 1;
+      }
+      else if (tmp <= 1) {
+       tmp = 12;
+       py.value = toNum(py.value) - 1;
+      }
       tmp = (tmp < 10) ? '0' + '' + tmp : tmp;
       break;
      case pd:
-      tmp = (tmp <= 31) ? tmp : 1;
-      tmp = (tmp >= 1) ? tmp : 31;
+      if (tmp > 31) {
+       tmp = 1;
+       pm.value = toNum(pm.value) + 1;
+       pm.value = (pm.value < 10) ? '0' + '' + pm.value : pm.value;
+      }
+      else if (tmp < 1) {
+       tmp = prevMonthLength[toNum(pm.value)];
+       console.log(pm.value + ': ' + tmp);
+       pm.value = toNum(pm.value) - 1;
+       pm.value = (pm.value < 10) ? '0' + '' + pm.value : pm.value;
+      }
       tmp = (tmp < 10) ? '0' + '' + tmp : tmp;
       break;
      case pt:
@@ -916,26 +940,32 @@
  function showPicker() {
   var elem = this;
   var rect = this.getBoundingClientRect();
-  var dtstr = this.value || toString(new Date());
-  var dt = dtstr.split(' ');
-  var d = dt[0].split('-');
-  var t = dt[1].split(':');
-  py.value = d[0];
-  pm.value = d[1];
-  pd.value = d[2];
-  pt.selectedIndex = pt.length - 1 - (6 * toNum(t[0])) - toNum(t[1])/10;
-  py.onchange = pm.onchange = pd.onchange = pt.onchange = 
-  function() {
+  var newValue = setPicker(this.value);
+  if (newValue && newValue != this.value) {
+   this.value = newValue;
+   console.log(newValue);
+   this.select();
+  }
+  py.onchange = pm.onchange = pd.onchange = pt.onchange = function() {
    elem.value = py.value + '-' + pm.value + '-' + pd.value + ' ' +
-                pt[pt.selectedIndex].value;
+               pt[pt.selectedIndex].value;
+   elem.value = setPicker(elem.value);
   };
   dp.style.left = (rect.left - 4) + 'px';
   dp.style.top = (rect.bottom + 2) + 'px';
   dp.style.display = 'block';
  }
 
- function setPicker() {
-  var dtstr = this.value || toString(new Date());
+ function setPicker(value) {
+  if (typeof(value) != typeof(' ')) {
+   value = this.value;
+  }
+  // console.log(value);
+  var d = new Date(Date.parse(value)) || new Date();
+  var dtstr = toString(d);
+  if (!dtstr) {
+   return;
+  }
   var dt = dtstr.split(' ');
   var d = dt[0].split('-');
   var t = dt[1].split(':');
@@ -943,8 +973,7 @@
   pm.value = d[1];
   pd.value = d[2];
   pt.selectedIndex = pt.length - 1 - (6 * toNum(t[0])) - toNum(t[1])/10;
-  console.log(dtstr);
-  console.log(pt.selectedIndex);
+  return(dtstr);
  }
 
  function hidePicker(e) {
@@ -1032,6 +1061,7 @@
    return false;
   }
   showRows(values);
+  f.location.value = values[0].location;
  }
  
  function handleError(method) {
@@ -1232,6 +1262,9 @@
  }
 
  function toString(d) {
+  if (!d || !d.getFullYear) {
+   return;
+  }
   return d.getFullYear() + '-' + 
          pad(d.getMonth()+1) + '-' + 
          pad(d.getDate()) + ' ' +
@@ -1241,6 +1274,9 @@
 
  function toDate(str) {
   var dt = str.split(' ');
+  if (!dt || !dt.length || (dt.length < 2)) {
+   return false;
+  }
   var d = dt[0].split('-');
   var t = dt[1].split(':');
   var date = new Date(d[0], d[1]-1, d[2], t[0], t[1]);
