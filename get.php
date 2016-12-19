@@ -60,6 +60,7 @@
    }
    $json = json_encode($values);
    header('Access-Control-Allow-Origin: *');
+   header('Access-Control-Allow-Credentials: true');
    header('Content-Type: application/json');
    header('Content-Length: '.strlen($json));
    if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) &&
