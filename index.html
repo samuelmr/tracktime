@@ -872,16 +872,11 @@
     var newIndex = ((this.className == 'up') ? -1 : 1) + pt.selectedIndex;
     if (newIndex >= pt.options.length) {
      newIndex = 0;
-     /* breaks if the month changes! */
      pd.value = toNum(pd.value) - 1;
-     //  console.log(pd.value);
-     // pd.onchange();
     }
     if (newIndex < 0) {
      newIndex = pt.options.length - 1;
-     /* breaks if the month changes! */
      pd.value = toNum(pd.value) + 1;
-     // pd.onchange();
     }
     pt.selectedIndex = newIndex;
    }
@@ -907,7 +902,6 @@
       }
       else if (tmp < 1) {
        tmp = prevMonthLength[toNum(pm.value)];
-       console.log(pm.value + ': ' + tmp);
        pm.value = toNum(pm.value) - 1;
        pm.value = (pm.value < 10) ? '0' + '' + pm.value : pm.value;
       }
@@ -943,7 +937,6 @@
   var newValue = setPicker(this.value);
   if (newValue && newValue != this.value) {
    this.value = newValue;
-   console.log(newValue);
    this.select();
   }
   py.onchange = pm.onchange = pd.onchange = pt.onchange = function() {
@@ -960,19 +953,30 @@
   if (typeof(value) != typeof(' ')) {
    value = this.value;
   }
-  // console.log(value);
-  var d = new Date(Date.parse(value)) || new Date();
-  var dtstr = toString(d);
+  var d = new Date(Date.parse(value));
+  var td = new Date();
+  var dtstr = value;
+  if (!isNaN(d.getHours())) {
+   dtstr = toString(d);
+  }
   if (!dtstr) {
    return;
   }
   var dt = dtstr.split(' ');
   var d = dt[0].split('-');
   var t = dt[1].split(':');
-  py.value = d[0];
-  pm.value = d[1];
-  pd.value = d[2];
+  td = new Date(d[0], d[1] - 1, d[2], t[0], t[1]);
+  py.value = td.getFullYear();
+  pm.value = td.getMonth() + 1;
+  if (pm.value < 10) {
+   pm.value = '0' + pm.value;
+  }
+  pd.value = td.getDate();
+  if (pd.value < 10) {
+   pd.value = '0' + pd.value;
+  }
   pt.selectedIndex = pt.length - 1 - (6 * toNum(t[0])) - toNum(t[1])/10;
+  dtstr = toString(td);
   return(dtstr);
  }
 
@@ -1050,7 +1054,7 @@
    xhr.send(null);
   }
   catch(e) {
-   console.log(e);	
+   console.trace(e);	
    handleError('GET');
   }
  }
