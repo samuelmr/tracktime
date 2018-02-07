@@ -115,15 +115,16 @@
   $values = array();
   while ($row = mysqli_fetch_assoc($stmt)) {
    $row = array_filter($row, 'is_not_null');
-   $row['description'] = utf8_encode($row['description']);
+   # $row['description'] = isset($row['description']) ? utf8_encode($row['description']) : '';
    $values[] = $row;
   }
  }
  $json = json_encode($values);
- trigger_error(count($values), E_USER_WARNING);
+ # trigger_error(count($values), E_USER_WARNING);
  header('Access-Control-Allow-Origin: *');
  header('Content-Type: application/json');
- if (in_array('gzip', explode(',', $_SERVER['HTTP_ACCEPT_ENCODING']))) {
+ if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) &&
+     in_array('gzip', explode(',', $_SERVER['HTTP_ACCEPT_ENCODING']))) {
   header('Content-Encoding: gzip');
   $json = gzencode($json);
  }
