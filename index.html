@@ -67,7 +67,6 @@
   text-align: right !important;
  }
  th.mainaction, td.mainaction, th.sideaction, td.sideaction {
-  max-width: 8.5em;
   overflow: hidden;
   text-overflow:ellipsis;
   white-space: nowrap;
@@ -281,15 +280,23 @@
    width: 7.5ex;
   }
   .mainaction, .sideaction {
-   width: 22ex;
+   width: 25ex;
+  }
+  th.starttime, th.endtime {
+   width: 7.4ex;
+  }
+  th.mainaction, th.sideaction {
+   width: 24.75ex;
+  }
+  th, td {
   }
   #table {
+   position: relative;
    width: 100%;
   }
   #table thead {
-   position: absolute;
-   top: 0;
-   width: 100%;
+   position: fixed;
+   top: 218px;
   }
   #table thead th {
    position: relative;
@@ -299,7 +306,6 @@
    padding: 2em 0.5em 0 0;
   }
   #table tbody {
-   position: absolute;
    top: 1em;
   }
   th.mainaction, td.mainaction, th.sideaction, td.sideaction, td.with {
