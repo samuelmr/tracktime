@@ -17,12 +17,12 @@
  }
  $starttime = $_REQUEST['starttime'];
  $endtime = $_REQUEST['endtime'];
- $mainaction = intval($_REQUEST['mainaction']);
+ $mainaction = sprintf('%02d', intval($_REQUEST['mainaction']));
  $values = array('starttime' => $starttime,
                  'endtime' => $endtime,
                  'mainaction' => $mainaction);
  if (isset($_REQUEST['sideaction']) && $_REQUEST['sideaction']) {
-  $sideaction = intval($_REQUEST['sideaction']);
+  $sideaction = sprintf('%02d', intval($_REQUEST['sideaction']));
   $values['sideaction'] = $sideaction;
  }
  $with = 0;
@@ -66,10 +66,10 @@
             ") VALUES (".
             "'".mysqli_real_escape_string($conn, $starttime)."'".
             ", '".mysqli_real_escape_string($conn, $endtime)."'".
-            ", $mainaction".
+            ", '$mainaction'".
             ", $with".
             (isset($id) ? ", $id" : '').
-            (isset($sideaction) ? ", $sideaction" : '').
+            (isset($sideaction) ? ", '$sideaction'" : '').
             (isset($usecomputer) ? ", $usecomputer" : '').
             (isset($location) ? ", $location" : '').
             # (isset($description) ? ", '".mysqli_real_escape_string($conn, utf8_decode($description))."'" : '').
