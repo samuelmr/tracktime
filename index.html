@@ -6,11 +6,12 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="HandheldFriendly" content="True" />
 <meta name="MobileOptimized" content="width" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&amp;display=swap" rel="stylesheet">
 <title>Tracktime</title>
 <style>
  body {
   color: #333;
-  font-family: 'Unicode Sans','Lucida Sans Unicode',Helvetica,Arial,Verdana,sans-serif;
+  font-family: 'Open Sans','Unicode Sans','Lucida Sans Unicode',Helvetica,Arial,Verdana,sans-serif;
   font-size: 13px;
  }
  #add fieldset {
@@ -54,7 +55,7 @@
   text-align: left;
  }
  #table tr.unspecified td {
-  background-color: #CCC;
+  background-color: #FCFCFC;
  }
  #table tr.alert td.starttime {
   border: 2px solid #F60;
@@ -213,19 +214,38 @@
    overflow: hidden;
   }
   h1 {
-   font-family: 'Arial Black',Impact,Verdana,sans-serif;
-   font-size: 3em;
+   font-size: 4em;
    font-weight: 900;
    left: 2em;
-   letter-spacing: 0.5em;
+   letter-spacing: 0.25em;
    line-height: 1;
+   margin: 0;
+   padding: 0;
    position: absolute;
-   text-shadow: 0.1em 0.1em 0.15em #CCC;
+   text-shadow: -0.05em 0.05em 0.15em #CCC;
    text-transform: uppercase;
-   top: 0.25em;
+   top: 0.5em;
   }
   h1 a {
    color: #999;
+   text-decoration: none;
+  }
+  #hetus {
+   left: 50em;
+   position: absolute;
+   text-align: center;
+   top: 2em;
+   width: 8em;
+  }
+  #hetus a {
+   background-color: #FC6;
+   border-radius: 1em;
+   box-shadow: -0.2em 0.2em 0.6em #CCC;
+   color: #FFF;
+   display: block;
+   font-weight: bold;
+   line-height: 1;
+   padding: 1em;
    text-decoration: none;
   }
   #add fieldset {
@@ -277,18 +297,10 @@
    width: 100%;
   }
   .starttime, .endtime {
-   width: 7.5ex;
+   width: 4.5em;
   }
   .mainaction, .sideaction {
-   width: 25ex;
-  }
-  th.starttime, th.endtime {
-   width: 7.4ex;
-  }
-  th.mainaction, th.sideaction {
-   width: 24.75ex;
-  }
-  th, td {
+   width: 22em;
   }
   #table {
    position: relative;
@@ -296,15 +308,18 @@
   }
   #table thead {
    position: fixed;
-   top: 218px;
+   top: 16em;
   }
   #table thead th {
+   font-weight: bold;
    position: relative;
-   top: 0;
+   top: 1em;
   }
   #table thead th {
-   padding: 2em 0.5em 0 0;
-  }
+ /*
+ padding: 2em 0.5em 0 0;
+ */
+ }
   #table tbody {
    top: 1em;
   }
@@ -317,6 +332,8 @@
 <body>
 <header>
 <h1><a href="./">Tracktime</a></h1>
+<aside id="hetus"><a target="_blank" href="https://ec.europa.eu/eurostat/documents/3859598/9710775/KS-GQ-19-003-EN-N.pdf/ee48c0bd-7287-411a-86b6-fb0f6d5068cc#page=125" title="Harmonised European
+Time Use Surveys (HETUS) 2018 Guidelines, 2019 edition - Annex IV: Activity coding list 2018 (ACL 2018) and list of location/ transport modes">HETUS ACL 2018</a></aside>
 <form id="add" method="POST" action="put.php">
 <input type="hidden" name="id" id="hiddenid" />
 <fieldset>
@@ -331,65 +348,65 @@
 <label for="mainaction">Main action</label>
 <select id="mainaction" name="mainaction">
 <optgroup label="Personal care">
-<option value="1">Sleep</option>
-<option value="2">Eating</option>
-<option value="3">Other personal care</option>
+<option value="01">Sleep</option>
+<option value="02">Eating</option>
+<option value="03">Other personal care</option>
 <optgroup label="Employment">
-<option value="4">Main and second job</option>
-<option value="5">Employment activities</option>
+<option value="11">Main job and second job</option>
+<option value="12">Activities related to employment</option>
 </optgroup>
 <optgroup label="Study">
-<option value="6">School and university</option>
-<option value="7">Homework</option>
-<option value="8">Freetime study</option>
+<option value="21">School and university</option>
+<option value="22">Free time study</option>
 </optgroup>
-<optgroup label="Domestic">
-<option value="9">Food preparation</option>
-<option value="10">Dish washing</option>
-<option value="11">Cleaning dwelling</option>
-<option value="12">Other household upkeep</option>
-<option value="13">Laundry</option>
-<option value="14">Ironing</option>
-<option value="15">Handicraft</option>
-<option value="16">Gardening</option>
-<option value="17">Tending domestic animals</option>
-<option value="18">Caring for pets</option>
-<option value="19">Walking the dog</option>
-<option value="20">Construction and repairs</option>
-<option value="21">Shopping and services</option>
-<option value="22">Child care</option>
-<option value="23">Playing with and teaching kids</option>
-<option value="24">Other domestic work</option>
+<optgroup label="Household and family care">
+<option value="30">Unspecified household and family care</option>
+<option value="31">Food management</option>
+<option value="32">Household upkeep</option>
+<option value="33">Care for textiles</option>
+<option value="34">Gardening and pet care</option>
+<option value="35">Construction and repairs</option>
+<option value="36">Shopping and services</option>
+<option value="37">Household management</option>
+<option value="38">Childcare</option>
+<option value="39">Help to an adult household member</option>
 </optgroup>
-<optgroup label="Leisure">
-<option value="25">Organisational work</option>
-<option value="26">Help to other households</option>
-<option value="27">Participatory activities</option>
-<option value="28">Visits and feasts</option>
-<option value="29">Other social life</option>
-<option value="30">Entertainment and culture</option>
-<option value="31">Resting</option>
-<option value="32">Walking and hiking</option>
-<option value="33">Sports and outdoors</option>
-<option value="34">Computer and video games</option>
-<option value="35">Other computing</option>
-<option value="36">Other hobbies and games</option>
-<option value="37">Reading books</option>
-<option value="38">Other reading</option>
-<option value="39">TV and video</option>
-<option value="40">Radio and music</option>
-<option value="41">Unspecified leisure</option>
+<optgroup label="Voluntary work and meetings">
+<option value="41">Organisational work</option>
+<option value="42">Informal help to other households</option>
+<option value="27">Participatory and religious activities</option>
 </optgroup>
-<optgroup label="Travel">
-<option value="42">Travel to/from work</option>
-<option value="43">Travel related to study</option>
-<option value="44">Travel related to shopping</option>
-<option value="45">Transporting a child</option>
-<option value="46">Travel related to other domestic</option>
-<option value="47">Travel related to leisure</option>
-<option value="48">Unspecified travel</option>
+<optgroup label="Social life and entertainment">
+<option value="51">Social life</option>
+<option value="52">Entertainment and culture</option>
+<option value="53">Resting - time out</option>
 </optgroup>
-<option value="49">Unspecified</option>
+<optgroup label="Sports and outdoor activities">
+<option value="61">Physical excercise</option>
+<option value="62">Productive excercise</option>
+<option value="63">Sports related activities</option>
+</optgroup>
+<optgroup label="Hobbies">
+<option value="71">Arts and hobbies</option>
+<option value="72">Computing</option>
+<option value="73">Games</option>
+</optgroup>
+<optgroup label="Mass media">
+<option value="81">Reading</option>
+<option value="82">TV, video and DVD</option>
+<option value="83">Radio and recordings</option>
+</optgroup>
+<optgroup label="Travel by purpose">
+<option value="91">Travel to/from work</option>
+<option value="92">Travel related to study</option>
+<option value="93">Travel r. to shopping, services, childcare &amp;c.</option>
+<option value="94">Travel related to voluntary work and meetings</option>
+<option value="95">Travel related to social life</option>
+<option value="96">Travel related to other leisure</option>
+<option value="98">Travel related to changing locality</option>
+<option value="90">Other or unspecified travel purpose</option>
+</optgroup>
+<option value="99">Other unspecified time use</option>
 </select>
 </fieldset>
 <fieldset>
@@ -397,65 +414,65 @@
 <select id="sideaction" name="sideaction">
 <option value=""></option>
 <optgroup label="Personal care">
-<option value="1">Sleep</option>
-<option value="2">Eating</option>
-<option value="3">Other personal care</option>
+<option value="01">Sleep</option>
+<option value="02">Eating</option>
+<option value="03">Other personal care</option>
 <optgroup label="Employment">
-<option value="4">Main and second job</option>
-<option value="5">Employment activities</option>
+<option value="11">Main job and second job</option>
+<option value="12">Activities related to employment</option>
 </optgroup>
 <optgroup label="Study">
-<option value="6">School and university</option>
-<option value="7">Homework</option>
-<option value="8">Freetime study</option>
+<option value="21">School and university</option>
+<option value="22">Free time study</option>
 </optgroup>
-<optgroup label="Domestic">
-<option value="9">Food preparation</option>
-<option value="10">Dish washing</option>
-<option value="11">Cleaning dwelling</option>
-<option value="12">Other household upkeep</option>
-<option value="13">Laundry</option>
-<option value="14">Ironing</option>
-<option value="15">Handicraft</option>
-<option value="16">Gardening</option>
-<option value="17">Tending domestic animals</option>
-<option value="18">Caring for pets</option>
-<option value="19">Walking the dog</option>
-<option value="20">Construction and repairs</option>
-<option value="21">Shopping and services</option>
-<option value="22">Child care</option>
-<option value="23">Playing with and teaching kids</option>
-<option value="24">Other domestic work</option>
+<optgroup label="Household and family care">
+<option value="30">Unspecified household and family care</option>
+<option value="31">Food management</option>
+<option value="32">Household upkeep</option>
+<option value="33">Care for textiles</option>
+<option value="34">Gardening and pet care</option>
+<option value="35">Construction and repairs</option>
+<option value="36">Shopping and services</option>
+<option value="37">Household management</option>
+<option value="38">Childcare</option>
+<option value="39">Help to an adult household member</option>
 </optgroup>
-<optgroup label="Leisure">
-<option value="25">Organisational work</option>
-<option value="26">Help to other households</option>
-<option value="27">Participatory activities</option>
-<option value="28">Visits and feasts</option>
-<option value="29">Other social life</option>
-<option value="30">Entertainment and culture</option>
-<option value="31">Resting</option>
-<option value="32">Walking and hiking</option>
-<option value="33">Sports and outdoors</option>
-<option value="34">Computer and video games</option>
-<option value="35">Other computing</option>
-<option value="36">Other hobbies and games</option>
-<option value="37">Reading books</option>
-<option value="38">Other reading</option>
-<option value="39">TV and video</option>
-<option value="40">Radio and music</option>
-<option value="41">Unspecified leisure</option>
+<optgroup label="Voluntary work and meetings">
+<option value="41">Organisational work</option>
+<option value="42">Informal help to other households</option>
+<option value="27">Participatory and religious activities</option>
 </optgroup>
-<optgroup label="Travel">
-<option value="42">Travel to/from work</option>
-<option value="43">Travel related to study</option>
-<option value="44">Travel related to shopping</option>
-<option value="45">Transporting a child</option>
-<option value="46">Travel related to other domestic</option>
-<option value="47">Travel related to leisure</option>
-<option value="48">Unspecified travel</option>
+<optgroup label="Social life and entertainment">
+<option value="51">Social life</option>
+<option value="52">Entertainment and culture</option>
+<option value="53">Resting - time out</option>
 </optgroup>
-<option value="49">Unspecified</option>
+<optgroup label="Sports and outdoor activities">
+<option value="61">Physical excercise</option>
+<option value="62">Productive excercise</option>
+<option value="63">Sports related activities</option>
+</optgroup>
+<optgroup label="Hobbies">
+<option value="71">Arts and hobbies</option>
+<option value="72">Computing</option>
+<option value="73">Games</option>
+</optgroup>
+<optgroup label="Mass media">
+<option value="81">Reading</option>
+<option value="82">TV, video and DVD</option>
+<option value="83">Radio and recordings</option>
+</optgroup>
+<optgroup label="Travel by purpose">
+<option value="91">Travel to/from work</option>
+<option value="92">Travel related to study</option>
+<option value="93">Travel r. to shopping, services, childcare &amp;c.</option>
+<option value="94">Travel related to voluntary work and meetings</option>
+<option value="95">Travel related to social life</option>
+<option value="96">Travel related to other leisure</option>
+<option value="98">Travel related to changing locality</option>
+<option value="90">Other or unspecified travel purpose</option>
+</optgroup>
+<option value="99">Other unspecified time use</option>
 </select>
 </fieldset>
 <fieldset class="check">
@@ -493,22 +510,22 @@
 <optgroup label="Location">
 <option value="10">Unspecified</option>
 <option value="11" selected="selected">Home</option>
-<option value="12">Second home</option>
-<option value="13">Workplace/school</option>
-<option value="14">Other's home</option>
-<option value="15">Restaurant</option>
-<option value="16">Shop, market</option>
-<option value="17">Hotel, camping</option>
-<option value="19">Other</option>
+<option value="12">Weekend home or holiday apartment</option>
+<option value="13">Workplace or school</option>
+<option value="14">Other people's home</option>
+<option value="15">Restaurant, cafe or pub</option>
+<option value="16">Shopping centres, malls, markets, other shops</option>
+<option value="17">Hotel, guesthouse, camping site</option>
+<option value="19">Other specified location</option>
 </optgroup>
 <optgroup label="Transport mode">
 <option value="20">Unspecified</option>
-<option value="21">Walking, waiting</option>
-<option value="22">Bicycle</option>
-<option value="23">Motorbike</option>
-<option value="24">Car</option>
-<option value="29">Other private</option>
-<option value="31">Public transport</option>
+<option value="21">Travelling on foot</option>
+<option value="22">Travelling by bicycle</option>
+<option value="23">Travelling by moped, motorcycle or motorboat</option>
+<option value="24">Travelling by passenger car</option>
+<option value="29">Other or unspecified private transport mode</option>
+<option value="31">Travelling by public transport</option>
 </optgroup>
 </select>
 </fieldset>
@@ -529,7 +546,7 @@
 <table id="table">
 <colgroup><col class="starttime" /><col class="endtime" /><col class="mainaction" /><col class="sideaction" /><col class="with" /></colgroup>
 <thead>
-<tr><th class="starttime">From</th><th class="endtime">To</th><th class="mainaction">Main action</th><th class="sideaction">Parallel</th><th class="with">What</th></tr>
+<tr><th class="starttime">From</th><th class="endtime">To</th><th class="mainaction">Main action</th><th class="sideaction">Parallel action</th><th class="with">With whom and where</th></tr>
 </thead>
 <tbody id="results">
 </tbody>
@@ -833,55 +850,46 @@
  llabels[31] = 'by public transport';
 
  var guesses = [];
- guesses[1] = 11; // sleep at home
- guesses[2] = 11; // eat at home
- guesses[3] = 11; // personal care at home
- guesses[4] = 13; // work at workplace
- guesses[5] = 13; // employment at workplace
- guesses[6] = 13; // study at school
- guesses[7] = 11; // homework at home
- guesses[8] = 11; // freetime study at home
- guesses[9] = 11; // food preparation at home
- guesses[10] = 11; // dish washing at home
- guesses[11] = 11; // cleaning at home
- guesses[12] = 11; // household upkeep at home
- guesses[13] = 11; // laundry at home
- guesses[14] = 11; // ironing at home
- guesses[15] = 11; // handicraft at home
- guesses[16] = 11; // gardening at home
- guesses[17] = 11; // tending animals at home
- guesses[18] = 11; // pet caring at home
- guesses[19] = 11; // dog walking at home
- guesses[20] = 11; // repairs at home
- guesses[21] = 16; // shopping at shop
- guesses[22] = 11; // child care at home
- guesses[23] = 11; // playing with kids at home
- guesses[24] = 11; // domestic work at home
- guesses[25] = 11; // organizational work at home
- guesses[26] = 14; // household help at other's home
- guesses[27] = 11; // participatory activities at home
- guesses[28] = 14; // visits at other's home
- guesses[29] = 11; // other social life at home
- guesses[30] = 19; // entertainment at other
- guesses[31] = 11; // resting at home
- guesses[32] = 11; // walking at home
- guesses[33] = 19; // sports at other
- guesses[34] = 11; // computer games at home
- guesses[35] = 11; // other computing at home
- guesses[36] = 11; // other hobbies at home
- guesses[37] = 11; // reading books at home
- guesses[38] = 11; // other reading at home
- guesses[39] = 11; // TV and video at home
- guesses[40] = 11; // radio and music at home
- guesses[41] = 11; // unspecified leisure at home
- guesses[42] = 24; // commuting by car
- guesses[43] = 31; // school travel by public transport
- guesses[44] = 24; // shopping travel by car
- guesses[45] = 24; // child transport by car
- guesses[46] = 24; // domestic travel by car
- guesses[47] = 24; // leisure travel by car
- guesses[48] = 24; // unspecified travel by car
- guesses[49] = 11; // unspecified at home
+ guesses["01"] = 11; // sleep at home
+ guesses["02"] = 11; // eat at home
+ guesses["03"] = 11; // personal care at home
+ guesses["11"] = 13; // work at workplace
+ guesses["12"] = 13; // employment at workplace
+ guesses["21"] = 13; // study at school
+ guesses["22"] = 11; // freetime study at home
+ guesses["30"] = 11; // household care at home
+ guesses["31"] = 11; // food preparation at home
+ guesses["32"] = 11; // household upkeep at home
+ guesses["33"] = 11; // laundry at home
+ guesses["34"] = 11; // gardening at home
+ guesses["35"] = 11; // repairs at home
+ guesses["36"] = 16; // shopping at shop
+ guesses["38"] = 11; // childcare at home
+ guesses["39"] = 11; // adult help at home
+ guesses["41"] = 19; // organizational work at other
+ guesses["42"] = 14; // household help at other's home
+ guesses["43"] = 19; // participatory activities and meetings at other
+ guesses["51"] = 11; // social life at home
+ guesses["52"] = 19; // entertainment at other
+ guesses["53"] = 11; // resting at home
+ guesses["61"] = 19; // sports at other
+ guesses["62"] = 19; // productive at other
+ guesses["63"] = 19; // sports at other
+ guesses["71"] = 11; // hobbies at home
+ guesses["72"] = 11; // computing at home
+ guesses["73"] = 11; // games at home
+ guesses["81"] = 11; // reading at home
+ guesses["82"] = 11; // TV and video at home
+ guesses["83"] = 11; // radio and music at home
+ guesses["91"] = 24; // commuting by car
+ guesses["92"] = 31; // school travel by public transport
+ guesses["93"] = 24; // shopping travel by car
+ guesses["94"] = 22; // participatory and meetings by bike
+ guesses["95"] = 24; // travel related to social life by car
+ guesses["96"] = 24; // travel related to leisure by car
+ guesses["98"] = 24; // travel related to moving by car
+ guesses["90"] = 24; // other travel by car
+ guesses["99"] = 11; // unspecified at home
 
  var keys = ['starttime', 'endtime', 'mainaction', 'sideaction', 'with'];
 
@@ -1086,7 +1094,7 @@
    xhr.send(null);
   }
   catch(e) {
-   console.trace(e);	
+   console.trace(e);
    handleError('GET');
   }
  }
@@ -1146,7 +1154,7 @@
    if (currEnd && (values[i]['starttime'] > currEnd)) {
     tmp = {'starttime': currEnd,
            'endtime': values[i]['starttime'], 
-           'mainaction': 49,
+           'mainaction': 99,
            'rating': 0,
            'with': 1};
     addRow(tmp, false);
@@ -1162,7 +1170,7 @@
  function addRow(values, isSingle) {
   var tr = document.createElement('tr');
   tr.id = 'id' + values['id'];
-  if (values['mainaction'] == 49) {
+  if (values['mainaction'] == 99) {
    tr.className = ' unspecified';
   }
   tr.ondblclick = function() {
