@@ -87,9 +87,13 @@
   text-overflow:ellipsis;
   white-space: nowrap;
  }
- tr:hover .with .description {
+ tr:hover .wtih .description {
   max-width: none;
   white-space: normal;
+ }
+ #starttime, #endtime {
+  font-family: 'Open Sans','Unicode Sans','Lucida Sans Unicode';
+  width: 13em;
  }
  #datetimepicker {
   background-color: #FFF;
@@ -100,7 +104,7 @@
   display: none;
   padding: 0 0.25em;
   position: absolute;
-  width: 12em;
+  width: 13em;
  }
  #datetimepicker fieldset {
   border-width: 0;
@@ -131,15 +135,19 @@
   text-align: center;
   width: 1ex;
  }
- #datetimepicker input {
+ #datetimepicker input, #datetimepicker select, #datetimepicker option {
   background: #FFF;
   border-width: 0;
+  padding: 0;
+ }
+ #datetimepicker input {
+  text-align: center;
  }
  #pickyear {
-  width: 5ex;
+  width: 4.5ex;
  }
  #pickmonth, #pickday {
-  width: 2.5ex;
+  width: 2.25ex;
  }
  #submit {
   margin-top: 1.5em;
@@ -310,16 +318,16 @@
    position: fixed;
    top: 16em;
   }
-  #table thead th {
+ #table thead th {
+   background: rgb(255,255,255);
+   background: linear-gradient(0deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 50%, rgba(255,255,255,1) 100%);
    font-weight: bold;
+   height: 2em;
+   padding: 1em;
    position: relative;
    top: 1em;
+   vertical-align: top;
   }
-  #table thead th {
- /*
- padding: 2em 0.5em 0 0;
- */
- }
   #table tbody {
    top: 1em;
   }
@@ -338,10 +346,12 @@ Time Use Surveys (HETUS) 2018 Guidelines, 2019 edition - Annex IV: Activity codi
 <input type="hidden" name="id" id="hiddenid" />
 <fieldset>
 <label for="starttime">From</label>
+<!-- <input id="starttime" name="starttime" type="datetime-local" step="600" /> -->
 <input id="starttime" name="starttime" type="datetime" step="600" />
 </fieldset>
 <fieldset>
 <label for="endtime">To</label>
+<!-- <input id="endtime" name="endtime" type="datetime-local" step="600" /> -->
 <input id="endtime" name="endtime" type="datetime" step="600" />
 </fieldset>
 <fieldset>
@@ -351,6 +361,7 @@ Time Use Surveys (HETUS) 2018 Guidelines, 2019 edition - Annex IV: Activity codi
 <option value="01">Sleep</option>
 <option value="02">Eating</option>
 <option value="03">Other personal care</option>
+</optgroup>
 <optgroup label="Employment">
 <option value="11">Main job and second job</option>
 <option value="12">Activities related to employment</option>
@@ -374,7 +385,7 @@ Time Use Surveys (HETUS) 2018 Guidelines, 2019 edition - Annex IV: Activity codi
 <optgroup label="Voluntary work and meetings">
 <option value="41">Organisational work</option>
 <option value="42">Informal help to other households</option>
-<option value="27">Participatory and religious activities</option>
+<option value="43">Participatory and religious activities</option>
 </optgroup>
 <optgroup label="Social life and entertainment">
 <option value="51">Social life</option>
@@ -417,6 +428,7 @@ Time Use Surveys (HETUS) 2018 Guidelines, 2019 edition - Annex IV: Activity codi
 <option value="01">Sleep</option>
 <option value="02">Eating</option>
 <option value="03">Other personal care</option>
+</optgroup>
 <optgroup label="Employment">
 <option value="11">Main job and second job</option>
 <option value="12">Activities related to employment</option>
@@ -440,7 +452,7 @@ Time Use Surveys (HETUS) 2018 Guidelines, 2019 edition - Annex IV: Activity codi
 <optgroup label="Voluntary work and meetings">
 <option value="41">Organisational work</option>
 <option value="42">Informal help to other households</option>
-<option value="27">Participatory and religious activities</option>
+<option value="43">Participatory and religious activities</option>
 </optgroup>
 <optgroup label="Social life and entertainment">
 <option value="51">Social life</option>
@@ -766,12 +778,14 @@ Time Use Surveys (HETUS) 2018 Guidelines, 2019 edition - Annex IV: Activity codi
  f.sideaction.onfocus = hidePicker;
 
  st.onkeydown = et.onkeydown = function(e) {
-   var event = window.event ? window.event : e;
+  var event = window.event ? window.event : e;
    if (event.keyCode == 38) { // up
-    this.value = toString(upTen(toDate(this.value)));
+    // this.value = toString(upTen(toDate(this.value)));
+    this.stepUp();
    }
    else if (event.keyCode == 40) { // down
-    this.value = toString(downTen(toDate(this.value)));
+    // this.value = toString(downTen(toDate(this.value)));
+    this.stepDown();
    }
  }
 
@@ -1141,7 +1155,7 @@ Time Use Surveys (HETUS) 2018 Guidelines, 2019 edition - Annex IV: Activity codi
  function showRows(values) {
   h.value = null;
   if (values[0]) {
-   st.value = values[0]['endtime'];
+   st.value = toString(toDate(values[0]['endtime']));
   }
   hilite(st, 15, 12, 7)
   resetEndDate();
@@ -1175,8 +1189,8 @@ Time Use Surveys (HETUS) 2018 Guidelines, 2019 edition - Annex IV: Activity codi
   }
   tr.ondblclick = function() {
    h.value = values['id'] || null;
-   st.value = values['starttime'];
-   et.value = values['endtime'];
+   st.value = toString(toDate(values['starttime']));
+   et.value = toString(toDate(values['endtime']));
    f.mainaction.value = values['mainaction'];
    f.sideaction.value = values['sideaction'];
    f.location.value = values['location'];
@@ -1312,12 +1326,13 @@ Time Use Surveys (HETUS) 2018 Guidelines, 2019 edition - Annex IV: Activity codi
   return d.getFullYear() + '-' + 
          pad(d.getMonth()+1) + '-' + 
          pad(d.getDate()) + ' ' +
+         // pad(d.getDate()) + 'T' +
          pad(d.getHours()) + ':' + 
          pad(10*Math.floor(d.getMinutes()/10)) + ':00';
  }
 
  function toDate(str) {
-  var dt = str.split(' ');
+  var dt = str.indexOf('T') > 0 ? str.split('T') : str.split(' ');
   if (!dt || !dt.length || (dt.length < 2)) {
    return false;
   }
