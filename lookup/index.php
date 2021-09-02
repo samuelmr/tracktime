@@ -13,6 +13,18 @@
   color: #FFF;
   padding: 0.5em 1em;
  }
+ table {
+  border-collapse: collapse;
+  float: left;
+  margin: 1em;
+ }
+ table.total th, table.total td {
+   border: 1px solid #CCC;
+   padding: 0 0.5em;
+ }
+ table.total th {
+   text-align: right;
+ }
  th {
   color: rgb(37, 55, 100);
  }
@@ -38,9 +50,29 @@
   padding: 0 0 0 1em;
   font-family: Consolas,"Courier New",mono-space;
  }
+ th a {
+  color: #000;
+  text-decoration: none;
+ }
+ th a:hover {
+  text-decoration: underline;
+ }
+ td.unit {
+   text-align: left;
+ }
 </style>
 <h1>Time analysis</h1>
 <?php
+
+ function mkhref($y, $m) {
+  $st = sprintf("%d-%02d-01", $y, $m);
+  $et = date('Y-m-d', mktime(0, 0, 0, $m+1, 1, $y));
+  $params = $_REQUEST;
+  $params['starttime'] = $st;
+  $params['endtime'] = $et;
+  return "./?".http_build_query($params, '&amp;');
+ }
+ 
  require_once('dbconfig.php');
  $conn = mysqli_connect(DB_ADDR, DB_USER, DB_PASS);
  $res = mysqli_select_db($conn, DB_DB);
@@ -83,6 +115,9 @@
  if (isset($_REQUEST['desc']) && $_REQUEST['desc']) {
    $params[] = "description LIKE '%".mysqli_real_escape_string($conn, $_REQUEST['desc'])."%'";
  }
+ if (isset($_REQUEST['not']) && $_REQUEST['not']) {
+   $params[] = "description NOT LIKE '%".mysqli_real_escape_string($conn, $_REQUEST['not'])."%'";
+ }
  if (count($params) > 0) {
   $select .= " WHERE ";
   $select .= implode($oper, $params);
@@ -101,7 +136,8 @@
   exit;
  }
  else {
-  echo "<table>\n";
+  $days = mysqli_num_rows($stmt) + 1;
+  echo "<table class=\"days\">\n";
   echo "<tr><th>Month</th>";
   for ($d=1; $d<=31; $d++) {
     echo "<th>$d</th>";
@@ -109,6 +145,7 @@
   echo "<th>Total</th></tr>\n";
   echo "<tr>";
   $total = 0;
+  $totalmonths = 0;
   $monthly = 0;
   $month = 0;
   $monthnr = 0;
@@ -119,13 +156,14 @@
   $init = FALSE;
   while ($row = mysqli_fetch_assoc($stmt)) {
    # $date = date('j.n.', $row['tstamp']);
+   $lastts = $row['tstamp'];
    $date = $row['D'].".".$row['M'];
    echo "\n<!-- $date: $row[Y], $row[M], $row[D] ($row[tstamp]) -->";
    # $year = date('y', $row['tstamp']);
    # $month = date('n', $row['tstamp']);
-   $year = $row['Y'];
+   $year = $row['Y'] - 2000; // simple way of changing year to 2 digit format
    $month = $row['M'];
-   $monthnr = date('ym', $row['tstamp']);
+   $monthnr = date('Ym', $row['tstamp']);
    # $mday = date('j', $row['tstamp']);
    $mday = $row['D'];
    $time = $row['Time'];
@@ -138,12 +176,16 @@
    $fmtdur = str_replace('.', ',', sprintf('%.1f', $dur));
    if ($init === FALSE) {
     $init = TRUE;
-    echo "<tr><td>$month/$year</td>";
+    list ($y, $m) = str_split($monthnr, 4);
+    $firstts = $row['tstamp'];
+    $href = mkhref($y, $m);
+    echo "<tr><th><a href=\"$href\">$m/$y</a></th>";
+    $totalmonths++;
     $lastmonth = $month;
     $lastmonthnr = $monthnr;
    }
    elseif ($monthnr != $lastmonthnr) {
-    if ($prev != 31) {
+    if ($prev < 31) {
       echo "<td class=\"this\" colspan=\"".(31-$prev)."\">";
     }
     $bgcolor = "hsl(".(120-$monthly/3).", 75%, 75%)";
@@ -151,8 +193,7 @@
          str_replace('.', ',', sprintf('%.1f', $monthly)).
          "</td></tr>\n";
     while ($monthnr - $lastmonthnr > 0) {
-     list ($y, $m) = str_split($lastmonthnr, 2);
-     # echo "<tr><td>$m/$y</td><td colspan=\"31\">&nbsp;</td><td>0</td></tr>\n";
+     list ($y, $m) = str_split($lastmonthnr, 4);
      $lastmonth++;
      $lastmonthnr++;
      if ($lastmonth > 12) {
@@ -160,8 +201,10 @@
        $lastmonthnr = sprintf('%02d', intval($y)+1).'01';
      }
     }
-    list ($y, $m) = str_split($lastmonthnr, 2);
-    echo "<tr><td>$m/$y</td>";
+    list ($y, $m) = str_split($lastmonthnr, 4);
+    $href = mkhref($y, $m);
+    echo "<tr><th><a href=\"$href\">$m/$y</a></th>";
+    $totalmonths++;
     $monthly = 0;
     $prev = 0;
     $lastmonth = $month;
@@ -187,7 +230,7 @@
    }
   }
  }
- if ($mday !== 31) {
+ if ($mday < 31) {
    echo "<td class=\"that\" colspan=\"".(31-$mday)."\"></td>";
  }
  echo '<td class="total">'.
@@ -197,9 +240,36 @@
 ?>
 </table>
 <?php
-  echo '<p class="total">Yhteensä <strong>'.
-       str_replace('.', ',', sprintf('%.1f', $total)).
-       "</strong> tuntia (<strong>".
-       str_replace('.', ',', sprintf('%.1f', $total/7.5)).
-       "</strong> ty&ouml;p&auml;iv&auml;&auml;).</p>\n";
+
+  $totaltimespan = $lastts - $firstts;
+  $totaldays = ceil($totaltimespan/60/60/24);
+  $dayaverage = $total/$totaldays;
+  $adayaverage = $total/$days;
+  $totalweeks = ceil($totaldays/7);
+  $weekaverage = $total/$totalweeks;
+  $monthaverage = $total/$totalmonths;
+
+echo '<table class="total">'."\n";
+echo '<tr class="hour"><th>Hours</th><td></td><td class="total">'.
+     number_format($total, 1, ',', '&nbsp;').
+     "</td><td class=\"unit\">h</td></tr>\n";
+echo '<tr class="hour"><th>Man days</th><td></td><td class="total">'.
+     number_format($total/7.5, 1, ',', '&nbsp;').
+     "</td><td class=\"unit\">mwd</td></tr>\n";
+echo '<tr class="week"><th>Months</th><td>'.$totalmonths.
+     '</td><td class="total">'.
+     number_format($monthaverage, 1, ',', '&nbsp;').
+     "</td><td class=\"unit\">h/month</td></tr>\n";
+echo '<tr class="week"><th>Weeks</th><td>'.$totalweeks.
+     '</td><td class="total">'.
+     number_format($weekaverage, 1, ',', '&nbsp;').
+     "</td><td class=\"unit\">h/week</td></tr>\n";
+echo '<tr class="aday"><th>Active days</th><td>'.$days.
+     '</td><td class="total">'.
+     number_format($adayaverage, 1, ',', '&nbsp;').
+     "</td><td class=\"unit\">h/day</td></tr>\n";
+echo '<tr class="day"><th>Days</th><td>'.$totaldays.
+     '</td><td class="total">'.
+     number_format($dayaverage, 1, ',', '&nbsp;').
+     "</td><td class=\"unit\">h/day</td></tr>\n";
 ?>
