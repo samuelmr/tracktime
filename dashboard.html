@@ -284,7 +284,7 @@
               'isStacked': true, 'legend': {'position': 'none'},
               'animation': animOpts,
               'vAxis': { title: "hours"},
-	      'charArea': {'left': 0, 'top': 0, 'width': '100%', 'height': '100%'},
+              'charArea': {'left': 0, 'top': 0, 'width': '100%', 'height': '100%'},
              };
  var bdata = [];
  var brows = {};
@@ -439,14 +439,22 @@
   p3data.addColumn({'type': 'string', 'id': 'Location'});
   p3data.addColumn({'type': 'number', 'id': 'Duration'});
 
-  var d = new Date();
-  globalStart = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 4);
-  if (d.getHours() <= 5) {
-   globalStart = new Date(globalStart.getTime() - 24 * 60 * 60 * 1000);  
+  var dateRegex = '(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{0,2})'
+  var m;
+  if (m = document.location.hash.match('#'+dateRegex+','+dateRegex)) {
+   console.log(m);
+   globalStart = new Date(m[1]);
+   globalEnd = new Date(m[2]);
   }
-  globalEnd = new Date(globalStart.getTime() + 24 * 60 * 60 * 1000);
+  else {
+   var d = new Date();
+   globalStart = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 4);
+   if (d.getHours() <= 5) {
+    globalStart = new Date(globalStart.getTime() - 24 * 60 * 60 * 1000);
+   }
+   globalEnd = new Date(globalStart.getTime() + 24 * 60 * 60 * 1000);
+  }
   getInterval();
-
  }
 
  function showprev() {
