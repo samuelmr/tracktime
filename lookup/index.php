@@ -18,6 +18,10 @@
   float: left;
   margin: 1em;
  }
+ th a, td a {
+  color: inherit;
+  text-decoration: none;
+ }
  table.total th, table.total td {
    border: 1px solid #CCC;
    padding: 0 0.5em;
@@ -123,10 +127,10 @@
   $select .= implode($oper, $params);
  }
  
- # $select .= " GROUP BY YEAR(starttime), MONTH(starttime), DAY(starttime) ORDER BY starttime";
  $select .= " GROUP BY Y, M, D ORDER BY starttime";
+ # $select .= " GROUP BY YEAR(starttime), MONTH(starttime), DAY(starttime) ORDER BY starttime";
  # $select .= " GROUP BY DATE_FORMAT(starttime, '%Y%m%d') ORDER BY starttime";
- echo "<!-- $select -->\n";
+ # echo "<!-- $select -->\n";
  $stmt = mysqli_query($conn, $select);
  if (!$stmt) {
   header('500 Internal Server Error');
@@ -189,8 +193,12 @@
       echo "<td class=\"this\" colspan=\"".(31-$prev)."\">";
     }
     $bgcolor = "hsl(".(120-$monthly/3).", 75%, 75%)";
+    $from = "$y-$m-01T04:00:00";
+    $to = "$y-".sprintf('%02d', $m+1)."-01T04:00:00";
     echo '<td class="total" style="background-color: '.$bgcolor.'">'.
+         "<a href=\"../dashboard#$from,$to\">".
          str_replace('.', ',', sprintf('%.1f', $monthly)).
+	 "</a>".
          "</td></tr>\n";
     while ($monthnr - $lastmonthnr > 0) {
      list ($y, $m) = str_split($lastmonthnr, 4);
@@ -220,7 +228,11 @@
    $prev = $mday;
 
    $bgcolor = "hsl(".(120-$dur*10).", 75%, 75%)";
-   echo "<td title=\"$date: $fmtdur\" style=\"background-color: $bgcolor\">$hours:$mins</td>";
+   $from = "$y-$m-${mday}T04:00:00";
+   $to = "$y-$m-".($mday+1)."T04:00:00";
+   echo "<td title=\"$date: $fmtdur\" style=\"background-color: $bgcolor\">".
+        "<a href=\"../dashboard#$from,$to\">$hours:$mins</a>".
+        "</td>\n";
    if ($mday == 31) {
     $monthnr++;
     if ($monthnr > 12) {
@@ -233,43 +245,59 @@
  if ($mday < 31) {
    echo "<td class=\"that\" colspan=\"".(31-$mday)."\"></td>";
  }
+ $from = "$y-$m-01T04:00:00";
+ $to = "$y-".sprintf('%02d', $m+1)."-01T04:00:00";
  echo '<td class="total">'.
-      str_replace('.', ',', sprintf('%.1f', $monthly))."</td></tr>\n";
+      "<a href=\"../dashboard#$from,$to\">".
+      str_replace('.', ',', sprintf('%.1f', $monthly)).
+      "</a>".
+      "</td></tr>\n";
  $monthly = 0;
  $monthnr = $month;
 ?>
 </table>
 <?php
 
-  $totaltimespan = $lastts - $firstts;
-  $totaldays = ceil($totaltimespan/60/60/24);
-  $dayaverage = $total/$totaldays;
-  $adayaverage = $total/$days;
-  $totalweeks = ceil($totaldays/7);
-  $weekaverage = $total/$totalweeks;
-  $monthaverage = $total/$totalmonths;
+ $totaltimespan = $lastts - $firstts;
+ $totaldays = ceil($totaltimespan/60/60/24);
+ $dayaverage = $total/$totaldays;
+ $adayaverage = $total/$days;
+ $totalweeks = ceil($totaldays/7);
+ $weekaverage = $total/$totalweeks;
+ $monthaverage = $total/$totalmonths;
 
-echo '<table class="total">'."\n";
-echo '<tr class="hour"><th>Hours</th><td></td><td class="total">'.
-     number_format($total, 1, ',', '&nbsp;').
-     "</td><td class=\"unit\">h</td></tr>\n";
-echo '<tr class="hour"><th>Man days</th><td></td><td class="total">'.
-     number_format($total/7.5, 1, ',', '&nbsp;').
-     "</td><td class=\"unit\">mwd</td></tr>\n";
-echo '<tr class="week"><th>Months</th><td>'.$totalmonths.
-     '</td><td class="total">'.
-     number_format($monthaverage, 1, ',', '&nbsp;').
-     "</td><td class=\"unit\">h/month</td></tr>\n";
-echo '<tr class="week"><th>Weeks</th><td>'.$totalweeks.
-     '</td><td class="total">'.
-     number_format($weekaverage, 1, ',', '&nbsp;').
-     "</td><td class=\"unit\">h/week</td></tr>\n";
-echo '<tr class="aday"><th>Active days</th><td>'.$days.
-     '</td><td class="total">'.
-     number_format($adayaverage, 1, ',', '&nbsp;').
-     "</td><td class=\"unit\">h/day</td></tr>\n";
-echo '<tr class="day"><th>Days</th><td>'.$totaldays.
-     '</td><td class="total">'.
-     number_format($dayaverage, 1, ',', '&nbsp;').
-     "</td><td class=\"unit\">h/day</td></tr>\n";
+ if (isset($_REQUEST['starttime'])) {
+  $firstts = strtotime($_REQUEST['starttime']);
+ }
+ if (isset($_REQUEST['endtime'])) {
+  $lastts = strtotime($_REQUEST['endtime']);
+ }
+ $from = date('Y-m-d\TH:i:s', $firstts);
+ $to = date('Y-m-d\TH:i:s', $lastts);
+
+ echo '<table class="total">'."\n";
+ echo '<tr class="hour"><th>Hours</th><td></td><td class="total">'.
+      "<a href=\"../dashboard#$from,$to\">".
+      number_format($total, 1, ',', '&nbsp;').
+      "</a>".
+      "</td><td class=\"unit\">h</td></tr>\n";
+ echo '<tr class="hour"><th>Man days</th><td></td><td class="total">'.
+      number_format($total/7.5, 1, ',', '&nbsp;').
+      "</td><td class=\"unit\">mwd</td></tr>\n";
+ echo '<tr class="week"><th>Months</th><td>'.$totalmonths.
+      '</td><td class="total">'.
+      number_format($monthaverage, 1, ',', '&nbsp;').
+      "</td><td class=\"unit\">h/month</td></tr>\n";
+ echo '<tr class="week"><th>Weeks</th><td>'.$totalweeks.
+      '</td><td class="total">'.
+      number_format($weekaverage, 1, ',', '&nbsp;').
+      "</td><td class=\"unit\">h/week</td></tr>\n";
+ echo '<tr class="aday"><th>Active days</th><td>'.$days.
+      '</td><td class="total">'.
+      number_format($adayaverage, 1, ',', '&nbsp;').
+      "</td><td class=\"unit\">h/day</td></tr>\n";
+ echo '<tr class="day"><th>Days</th><td>'.$totaldays.
+      '</td><td class="total">'.
+      number_format($dayaverage, 1, ',', '&nbsp;').
+      "</td><td class=\"unit\">h/day</td></tr>\n";
 ?>
