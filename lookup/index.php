@@ -2,6 +2,7 @@
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet" />
 <style>
  body {
+  background-color: #EEE;
   color: #000;
   font-family: Source Sans Pro,sans-serif;
   margin: 0;
@@ -18,11 +19,16 @@
   float: left;
   margin: 1em;
  }
+ table.total {
+  position: sticky;
+  top: 2em;
+ }
  th a, td a {
   color: inherit;
   text-decoration: none;
  }
  table.total th, table.total td {
+   background-color: #FFF;
    border: 1px solid #CCC;
    padding: 0 0.5em;
  }
@@ -33,6 +39,7 @@
   color: rgb(37, 55, 100);
  }
  td {
+/*  border-radius: 0.25em; */
   padding: 0 4px;
   text-align: right;
  }
@@ -192,7 +199,7 @@
     if ($prev < 31) {
       echo "<td class=\"this\" colspan=\"".(31-$prev)."\">";
     }
-    $bgcolor = "hsl(".(120-$monthly/3).", 75%, 75%)";
+    $bgcolor = "hsla(".(120-$monthly/3).", 75%, 75%, 100%)";
     $from = "$y-$m-01T04:00:00";
     $to = "$y-".sprintf('%02d', $m+1)."-01T04:00:00";
     echo '<td class="total" style="background-color: '.$bgcolor.'">'.
@@ -227,9 +234,9 @@
    $total += $dur;
    $prev = $mday;
 
-   $bgcolor = "hsl(".(120-$dur*10).", 75%, 75%)";
-   $from = "$y-$m-${mday}T04:00:00";
-   $to = "$y-$m-".($mday+1)."T04:00:00";
+   $bgcolor = "hsla(".(120-$dur*10).", 75%, 75%, 100%)";
+   $from = "$y-$m-".sprintf('%02d', $mday)."T04:00:00";
+   $to = "$y-$m-".sprintf('%02d', $mday+1)."T04:00:00";
    echo "<td title=\"$date: $fmtdur\" style=\"background-color: $bgcolor\">".
         "<a href=\"../dashboard#$from,$to\">$hours:$mins</a>".
         "</td>\n";
