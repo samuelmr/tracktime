@@ -15,8 +15,10 @@ server, you can use e.g. phpMyAdmin to create a new database.
 
 Or you can use the command line as follows:
 
-    SQLUSER=myusername
+    SQLADDR=localhost
     SQLDB=mydatabase
+    SQLTABLE=timetrack
+    SQLUSER=myusername
     read -p 'type your SQL password: ' SQLPW
 
 The last command allows you to store the password into a variable so that it
@@ -25,13 +27,13 @@ history.
 
 Let's continue:
 
-    echo "CREATE USER '$SQLUSER'@'localhost' IDENTIFIED BY '$SQLPW';
+    echo "CREATE USER '$SQLUSER'@'$SQLADDR' IDENTIFIED BY '$SQLPW';
     CREATE DATABASE $SQLDB;
-    GRANT USAGE ON $SQLDB . * TO '$SQLUSER'@'localhost';
-    GRANT ALL PRIVILEGES ON $SQLDB . * TO '$SQLUSER'@'localhost';
+    GRANT USAGE ON $SQLDB . * TO '$SQLUSER'@'$SQLADDR';
+    GRANT ALL PRIVILEGES ON $SQLDB . * TO '$SQLUSER'@'$SQLADDR';
     FLUSH PRIVILEGES;" | mysql -u root -p    
 
-Your database is created.
+You will be prompted for the database root password. Your database is created.
 
 Installation
 ============
@@ -44,35 +46,23 @@ Get files
 You can put all files in the same web folder (e.g. ~/public_html/tracktime/
 or ~/Sites/tracktime).
 
-Create a database config based on the sample file.
+Create database table and configuration file
+--------------------------------------------
 
-    cd ~/Sites/tracktime
-    cp dbconfig-sample.php dbconfig.php
+The installer script can create the database configuration file and initialize
+a new table to your database.
 
-Edit the file.
+    php install.php -l $SQLADDR -n $SQLDB -u $SQLUSER -p $SQLPW -t $SQLTABLE
 
-    nano dbconfig.php
+Or you can manually copy `dbconfig-sample.php` to `dboconfig.php` and edit its
+contents. You can also and copy the SQL statement from `install.php` and
+execute them manually.
 
-Replace the following strings
-* `localhost`
-* `mydatabase`
-* `myusername`
-* `mypassword`
-with your own information. You can also modify `tracktime` if you want the
-table name to be something else.
+After you have created the table, you can delete (or archive) `install.php`.
 
 Advanced users with extra security concerns may want to move `dbconfig.php`
 into a folder with no web access. The path should be included in PHP's
-`include_path`.
-
-Create database table
----------------------
-You need to create a table into your database. 
-
-    php install.php
-    
-Or you can look inside `install.php` and copy the SQL statement from there.
-After you have created the table, you can delete (or archive) `install.php`.
+`include_path`, though.
 
 That's it
 ---------
@@ -90,20 +80,7 @@ TODO
 The first version only allows you to store data but not much else.
 
 Future plans (in no particular order):
-* Convert codes to [HETUS][1]
-    * [Activity coding list with definitions, notes and examples][2]
-* Various charts, tables and other views to the stored data
-    * Also comparisons to public statistics
-    * montly/yearly graphs like [Statistics Sweden][3]
+* Comparisons to public statistics
 * Mobile client with calendar integration and location tracking 
-    * also call logs
 * Offline storage and syncing with server
 * Sharing your data with others
-
-References
-==========
-[1]: http://epp.eurostat.ec.europa.eu/cache/ITY_SDDS/en/tus_esms.htm
-     "Time Usage Survey (TUS) database on Eurostat site"
-[2]: http://epp.eurostat.ec.europa.eu/cache/ITY_OFFPUB/KS-RA-08-014/EN/KS-RA-08-014-EN.PDF#page=163 
-     "PDF publication on Eurostat site"
-[3]: https://www.h2.scb.se/tus/tus/AreaGraphCID.html
