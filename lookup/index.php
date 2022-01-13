@@ -252,9 +252,10 @@
  if ($mday < 31) {
    echo "<td class=\"that\" colspan=\"".(31-$mday)."\"></td>";
  }
+ $bgcolor = "hsla(".(120-$monthly/3).", 75%, 75%, 100%)";
  $from = "$y-$m-01T04:00:00";
  $to = "$y-".sprintf('%02d', $m+1)."-01T04:00:00";
- echo '<td class="total">'.
+ echo '<td class="total" style="background-color: '.$bgcolor.'">'.
       "<a href=\"../dashboard#$from,$to\">".
       str_replace('.', ',', sprintf('%.1f', $monthly)).
       "</a>".
