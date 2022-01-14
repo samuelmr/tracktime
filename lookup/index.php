@@ -127,7 +127,7 @@
    $params[] = "description LIKE '%".mysqli_real_escape_string($conn, $_REQUEST['desc'])."%'";
  }
  if (isset($_REQUEST['not']) && $_REQUEST['not']) {
-   $params[] = "description NOT LIKE '%".mysqli_real_escape_string($conn, $_REQUEST['not'])."%'";
+   $params[] = "(description IS NULL OR description NOT LIKE '%".mysqli_real_escape_string($conn, $_REQUEST['not'])."%')";
  }
  if (count($params) > 0) {
   $select .= " WHERE ";
