@@ -37,6 +37,7 @@
  }
  th {
   color: rgb(37, 55, 100);
+  min-width: 3ex;
  }
  td {
 /*  border-radius: 0.25em; */
