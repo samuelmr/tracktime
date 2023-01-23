@@ -96,6 +96,8 @@
   exit;
  }
 
+ $hsl_base = 200; // degrees of HSL color wheel
+
  $select = "SELECT UNIX_TIMESTAMP(starttime) AS `tstamp`".
    ", SUM(UNIX_TIMESTAMP(endtime) - UNIX_TIMESTAMP(starttime)) AS `Time`".
    ", YEAR(starttime) AS `Y`, MONTH(starttime) AS `M`, DAY(starttime) AS `D`".
@@ -200,7 +202,7 @@
     if ($prev < 31) {
       echo "<td class=\"this\" colspan=\"".(31-$prev)."\">";
     }
-    $bgcolor = "hsla(".(120-$monthly/3).", 75%, 75%, 100%)";
+    $bgcolor = "hsla(".($hsl_base-$monthly/1.35).", 75%, 75%, 100%)";
     $from = "$y-$m-01T04:00:00";
     $to = "$y-".sprintf('%02d', $m+1)."-01T04:00:00";
     echo '<td class="total" style="background-color: '.$bgcolor.'">'.
@@ -235,7 +237,7 @@
    $total += $dur;
    $prev = $mday;
 
-   $bgcolor = "hsla(".(120-$dur*10).", 75%, 75%, 100%)";
+   $bgcolor = "hsla(".($hsl_base-$dur*15).", 75%, 75%, 100%)";
    $from = "$y-$m-".sprintf('%02d', $mday)."T04:00:00";
    $to = "$y-$m-".sprintf('%02d', $mday+1)."T04:00:00";
    echo "<td title=\"$date: $fmtdur\" style=\"background-color: $bgcolor\">".
@@ -253,7 +255,7 @@
  if ($mday < 31) {
    echo "<td class=\"that\" colspan=\"".(31-$mday)."\"></td>";
  }
- $bgcolor = "hsla(".(120-$monthly/3).", 75%, 75%, 100%)";
+ $bgcolor = "hsla(".($hsl_base-$monthly/1.35).", 75%, 75%, 100%)";
  $from = "$y-$m-01T04:00:00";
  $to = "$y-".sprintf('%02d', $m+1)."-01T04:00:00";
  echo '<td class="total" style="background-color: '.$bgcolor.'">'.
