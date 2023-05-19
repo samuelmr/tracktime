@@ -95,9 +95,6 @@
   display: inline;
  }
  input, select, option {
-  background: -moz-linear-gradient(#EEE, #DDD);
-  background: -webkit-linear-gradient(#EEE, #DDD);
-  background: -o-linear-gradient(#EEE, #DDD);
   background: linear-gradient(#EEE, #DDD);
   color: #000;
   height: 2em;
@@ -337,8 +334,8 @@
        "rating sideaction";
    grid-template-rows: auto;
    grid-template-columns: 5em auto;
-   margin: 0.25em auto;
-   padding: 0.25em;
+   margin: 0.25em auto 0 auto;
+   padding: 0 0 0.25em 0;
    width: 98%;
   }
   th.starttime, td.starttime {
@@ -498,6 +495,22 @@
   }
  }
  @media (max-width: 1024px) {
+ }
+ @media (prefers-color-scheme: dark) {
+  body {
+   background-color: #333;
+   color: #DDD;
+  }
+  #hetus a {
+   box-shadow: -0.2em 0.2em 0.6em #666;
+  }
+  h1 {
+   text-shadow: -0.05em 0.05em 0.15em #666;
+  }
+  #table thead th {
+   background: #CCC;
+   background: linear-gradient(0deg, rgba(51,51,51,0) 0%, rgba(51,51,51,1) 50%, rgba(51,51,51,1) 100%);
+  }
  }
 </style>
 </head>
