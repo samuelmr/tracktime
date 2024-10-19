@@ -61,16 +61,16 @@
 
 CREATE TABLE IF NOT EXISTS ".DB_TABLE." (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `starttime` time NOT NULL,
-  `endtime` time NOT NULL,
-  `mainaction` char(2) NOT NULL DEFAULT '26',
+  `starttime` datetime NOT NULL,
+  `endtime` datetime NOT NULL,
+  `mainaction` char(2) NOT NULL DEFAULT '99',
   `sideaction` char(2) DEFAULT NULL,
-  `with` int(1) NOT NULL DEFAULT '0',
+  `with` int(3) NOT NULL DEFAULT '0',
+  `usecomputer` tinyint(1) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
   `rating` int(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
-
 ";
 
  $res = mysqli_query($conn, $query);
