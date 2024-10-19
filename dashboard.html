@@ -74,6 +74,12 @@
   font-size: 13px;
   line-height: 1;
  }
+ h1 a, h1 a:visited {
+  color: #000;
+  font-size: smaller;
+  font-weight: normal;
+  margin-left: 2em;
+ }
  section {
   padding: 4px;
  }
@@ -171,6 +177,17 @@
   globalEnd = toDate(ti.value);
   getInterval();
  }
+
+ var h1 = document.querySelector('h1');
+ var a = document.createElement('a');
+ a.href = '/'; // index.html
+ a.className = 'eventslink';
+ a.textContent = 'All events';
+ a.onclick = function(e) {
+  this.href += '?starttime=' + encodeURIComponent(fi.value) +
+               '&endtime=' + encodeURIComponent(ti.value);
+ }
+ h1.appendChild(a);
 
  var labels = {};
  labels['01'] = 'Sleep';
@@ -442,7 +459,7 @@
   var dateRegex = '(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{0,2})'
   var m;
   if (m = document.location.hash.match('#'+dateRegex+','+dateRegex)) {
-   console.log(m);
+   // console.log(m);
    globalStart = new Date(m[1]);
    globalEnd = new Date(m[2]);
   }
