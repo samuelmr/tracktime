@@ -67,6 +67,7 @@ CREATE TABLE IF NOT EXISTS ".DB_TABLE." (
   `sideaction` char(2) DEFAULT NULL,
   `with` int(3) NOT NULL DEFAULT '0',
   `usecomputer` tinyint(1) DEFAULT NULL,
+  `location` int(2) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
   `rating` int(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
