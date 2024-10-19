@@ -265,7 +265,7 @@
  #pickmonth, #pickday {
   width: 2.25ex;
  }
- #submit {
+ #submit, #submitfi {
   margin-top: 1.5em;
  }
 /*
@@ -358,7 +358,7 @@
   label[for="rating"] {
    display: inline-block;
   }
-  #submit {
+  #submit, #submitfi {
    margin: 0 0 1.5em 0;
   }
   #table {
@@ -594,8 +594,19 @@
   color: #0d0342;
  }
  /* simplification
- .sideaction, .with, .extra {
+ .sideaction, .with, .description, .location, .rating {
     display: none;
+ }
+ table#table {
+  width: auto;
+ }
+ fieldset.submit {
+  grid-area: sideaction;
+ }
+ @media (min-width: 90em) {
+  #add fieldset.submit {
+   margin: 9em 0 0 0 !important;
+  }
  }
      */
 </style>
@@ -746,7 +757,7 @@
 <fieldset class="sideaction">
 <label for="sideaction"><span lang="fi">Sivutoiminto</span><span lang="en">Parallel action</span></label>
 <select id="sideaction" name="sideaction">
-<option> </option>
+<option selected="selected"> </option>
 <optgroup lang="fi" label="Henkilökohtaiset tarpeet">
 <option lang="fi" value="01">Nukkuminen</option>
 <option lang="fi" value="02">Ruokailu</option>
@@ -809,7 +820,7 @@
 </optgroup>
 <option lang="fi" value="99">Erittelemätön ajankäyttö</option>
 <optgroup lang="en" label="Personal care">
-<option lang="en" value="01" selected="selected">Sleeping</option>
+<option lang="en" value="01">Sleeping</option>
 <option lang="en" value="02">Eating</option>
 <option lang="en" value="03">Other personal care</option>
 </optgroup>
@@ -957,7 +968,7 @@
 <input id="rating" name="rating" type="range" min="0" max="5" step="1" value="0" />
 </fieldset>
 <fieldset class="extra submit">
- <input lang="fi" type="submit" id="submit" value="Tallenna" />
+ <input lang="fi" type="submit" id="submitfi" value="Tallenna" />
  <input lang="en" type="submit" id="submit" value="Save" />
 </fieldset>
 </form>
@@ -1220,6 +1231,7 @@
  var st = document.getElementById('starttime');
  var h = document.getElementById('hiddenid');
  var sub = document.getElementById('submit');
+ var subfi = document.getElementById('submitFi');
  var rat = document.getElementById('rating');
  var dp = document.getElementById('datetimepicker');
  var py = document.getElementById('pickyear');
@@ -1731,7 +1743,9 @@
   resetEndDate();
   if (sub.value != 'Save') {
    sub.value = 'Save';
+   subfi.value = 'Tallenna';
    hilite(sub, 15, 12, 7)
+   hilite(subfi, 15, 12, 7)
   }
   var currEnd = '';
   for (var i=values.length-1; i>=0; i--) {
@@ -1790,7 +1804,9 @@
    rat.value = values['rating'] || 0;
    updateStars();
    sub.value = 'Edit';
+   subfi.value = 'Muokkaa';
    hilite(sub, 15, 12, 7)
+   hilite(subfi, 15, 12, 7)
    for (var i=0; i<boxes.length; i++) {
     var val = boxes[i].value;
     if (parseInt(values['with']) & Math.pow(2, (val-1))) {
