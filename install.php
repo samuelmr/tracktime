@@ -3,11 +3,12 @@
  $create_config = true;
 
  $a = getopt("l:n:u:p:t:");
+ echo count($a);
  if (!isset($a) || count($a) != 5 ||
      !isset($a['l']) || !isset($a['n']) || !isset($a['t']) ||
      !isset($a['u']) || !isset($a['p'])) {
   echo "Usage:\n\n  php ".basename(__FILE__).
-       " -l <db location> -n <db name> -u <db user> -p <db password>\n\n";
+       " -l <db location> -n <db name> -u <db user> -p <db password> -t <db table>\n\n";
   die();
  }
  chdir(dirname(__FILE__));
