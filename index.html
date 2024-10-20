@@ -11,7 +11,7 @@
 <title>Tracktime</title>
 <style>
  *[lang]:not([lang="en"]) {
-  display: none;
+  display: none !important;
  }
  body {
   color: #333;
@@ -1172,16 +1172,18 @@
  let currentLanguage = params.get('lang') || 'en'
  const lcontainer = document.querySelector('#language')
  const languages = ['fi', 'en']
- const defaultLanguage = currentLanguage
  const translatedElementsSelector = '[lang]'
  const switcher = document.createElement('ul')
  const css = document.styleSheets[1];
  switcher.className = 'language-switcher'
+ setLanguage(currentLanguage)
  languages.forEach((lang) => {
   const li = document.createElement('li')
   li.textContent = lang
+  if (lang == currentLanguage) {
+   li.className = 'selected'
+  }
   li.onclick = (e) => {
-   currentLanguage = lang
    const currentParams = new URLSearchParams(document.location.search)
    let newParams = `lang=${encodeURIComponent(lang)}`
    const currentUrl = currentParams.get('url')
@@ -1189,19 +1191,25 @@
     newParams += `&url=${encodeURIComponent(currentUrl)}`
    }
    history.pushState({lang, currentUrl}, '', `${document.location.href.split('?')[0]}?${newParams}`)
-   const lis = switcher.querySelectorAll('li')
-   for (l of lis) {
-    l.classList.remove('selected')
-   }
+   const prev = switcher.querySelector('li.selected')
+   prev.classList.remove('selected')
    li.classList.add('selected')
-   const html = document.querySelector(':root')
+   setLanguage(lang)
+  }
+  switcher.appendChild(li)
+ })
+ lcontainer.appendChild(switcher)
+
+ function setLanguage(lang) {
+  currentLanguage = lang
+  const html = document.querySelector(':root')
    const oldLang = html.lang
    html.lang = lang
    for (let i = 0; i < css.cssRules.length; i++) {
     const rule = css.cssRules[i]
     if (rule.selectorText == `[lang]:not([lang="${oldLang}"])`) {
      css.deleteRule(i)
-     css.insertRule(`[lang]:not([lang="${lang}"]) { display: none; }`, i)
+     css.insertRule(`[lang]:not([lang="${lang}"]) { display: none !important; }`, i)
     }
    }
    const opts = document.querySelectorAll('option[lang]:checked')
@@ -1212,14 +1220,7 @@
      otherOpt.selected = "selected"
     }
    }
-  }
-  if (lang == defaultLanguage) {
-   li.className = 'selected'
-  }
-  switcher.appendChild(li)
- })
- lcontainer.appendChild(switcher)
-
+ }
  var startTime = params.get('starttime');
  var endTime = params.get('endtime');
 
@@ -1421,28 +1422,28 @@
  }
 
  var wlabels = [];
- wlabels[1] = 'Alone';
- wlabels[2] = 'Partner';
- wlabels[3] = 'Parent';
- wlabels[4] = 'Kids';
- wlabels[5] = 'Family';
- wlabels[6] = 'Others';
+ wlabels[1] = {en: 'Alone', fi: 'Yksin'};
+ wlabels[2] = {en: 'Partner', fi: 'Kumppanin'};
+ wlabels[3] = {en: 'Parent', fi: 'Vanhemman'};
+ wlabels[4] = {en: 'Kids', fi: 'Lasten'};
+ wlabels[5] = {en: 'Family', fi: 'Perheen'};
+ wlabels[6] = {en: 'Others', fi: 'Muiden'};
 
  var llabels = [];
- llabels[11] = 'at home';
- llabels[12] = 'at other home';
- llabels[13] = 'at work';
- llabels[14] = 'at other\'s home';
- llabels[15] = 'at restaurant';
- llabels[16] = 'at shop';
- llabels[17] = 'at hotel';
- llabels[19] = 'at other';
- llabels[21] = 'by foot';
- llabels[22] = 'by bicycle';
- llabels[23] = 'by motorbike';
- llabels[24] = 'by car';
- llabels[29] = 'by other';
- llabels[31] = 'by public transport';
+ llabels[11] = {en: 'at home', fi: 'kotona'};
+ llabels[12] = {en: 'at other home', fi: 'mökillä'};
+ llabels[13] = {en: 'at work', fi: 'töissä'};
+ llabels[14] = {en: 'at other\'s home', fi: 'kylässä'};
+ llabels[15] = {en: 'at restaurant', fi: 'ravintolassa'};
+ llabels[16] = {en: 'at shop', fi: 'kaupassa'};
+ llabels[17] = {en: 'at hotel', fi: 'hotellissa'};
+ llabels[19] = {en: 'at other', fi: 'muualla'};
+ llabels[21] = {en: 'by foot', fi: 'jalkaisin'};
+ llabels[22] = {en: 'by bicycle', fi: 'pyörällä'};
+ llabels[23] = {en: 'by motorbike', fi: 'moottoripyörällä'};
+ llabels[24] = {en: 'by car', fi: 'autolla'};
+ llabels[29] = {en: 'by other', fi: 'muussa liikennevälineellä'};
+ llabels[31] = {en: 'by public transport', fi: 'joukkoliikenteessä'};
 
  var guesses = [];
  guesses["01"] = 11; // sleep at home
@@ -1480,7 +1481,7 @@
  guesses["91"] = 24; // commuting by car
  guesses["92"] = 31; // school travel by public transport
  guesses["93"] = 24; // shopping travel by car
- guesses["94"] = 22; // participatory and meetings by bike
+ guesses["94"] = 24; // participatory and meetings by car
  guesses["95"] = 24; // travel related to social life by car
  guesses["96"] = 24; // travel related to leisure by car
  guesses["98"] = 24; // travel related to moving by car
@@ -1492,7 +1493,10 @@
  var acts = {'null': '', 'undefined': ''};
  var opts = document.getElementById('sideaction').options;
  for (var i=0; i<opts.length; i++) {
-  acts[opts[i].value] = opts[i].text;
+  if (!acts[opts[i].value]) {
+    acts[opts[i].value] = {}
+  }
+  acts[opts[i].value][opts[i].lang] = opts[i].text;
  }
 
  var lbs = dp.getElementsByTagName('label');
@@ -1624,12 +1628,9 @@
   var guess = new String(guesses[action]);
   var current = f.location.value;
   if (guess && current && (guess[0] != current[0])) {
-   for (var i=0; i<f.location.options.length; i++) {
-    if (f.location.options[i].value == guess) {
-     f.location.selectedIndex = i;
-     return;
-    }
-   }
+   f.location[f.location.selectedIndex].selected = false;
+   const opt = f.location.querySelector(`option[lang="${currentLanguage}"][value="${guess}"]`)
+   if (opt) opt.selected = "selected"
   }
  }
 
@@ -1701,7 +1702,9 @@
    return false;
   }
   showRows(values);
-  f.location.value = values[0].location;
+  f.location[f.location.selectedIndex].selected = false;
+  const opt = f.location.querySelector(`option[lang="${currentLanguage}"][value="${values[0].location}"]`)
+  if (opt) opt.selected = "selected"
  }
  
  function handleError(method) {
@@ -1777,12 +1780,8 @@
    et.value = toString(toDate(values['endtime']));
 
    f.mainaction[f.mainaction.selectedIndex].selected = false;
-   console.log(f.mainaction)
    const mainOpt = f.mainaction.querySelector(`option[lang="${currentLanguage}"][value="${values['mainaction']}"]`)
-   console.log(mainOpt)
-   if (mainOpt) {
-    mainOpt.selected = "selected"
-   }
+   if (mainOpt) mainOpt.selected = "selected"
    f.sideaction.value = values['sideaction'];
    if (!values['sideaction']) {
     f.sideaction.selectedIndex = 0;
@@ -1790,15 +1789,11 @@
    else {
     f.sideaction[f.sideaction.selectedIndex].selected = false;
     const sideOpt = f.sideaction.querySelector(`option[lang="${currentLanguage}"][value="${values['sideaction']}"]`)
-    if (sideOpt) {
-     sideOpt.selected = "selected"
-    }
+    if (sideOpt) sideOpt.selected = "selected"
    }
    f.location[f.location.selectedIndex].selected = false;
    const locOpt = f.location.querySelector(`option[lang="${currentLanguage}"][value="${values['location']}"]`)
-   if (locOpt) {
-    locOpt.selected = "selected"
-   }
+   if (locOpt) locOpt.selected = "selected"
    f.usecomputer.checked = values['usecomputer'] ? true : false;
    f.description.value = values['description'] || '';
    rat.value = values['rating'] || 0;
@@ -1836,28 +1831,45 @@
     }
    }
    else if ((key == 'mainaction') || (key == 'sideaction')) {
-    val = acts[val] || '';
-    cellval = document.createTextNode(val);
+    cellval = document.createElement('span');
+    const en = document.createElement('span');
+    en.lang = 'en'
+    en.textContent = acts[val].en || ''
+    const fi = document.createElement('span');
+    fi.lang = 'fi'
+    fi.textContent = acts[val].fi || ''
+    cellval.appendChild(en)
+    cellval.appendChild(fi)
    }
    else if (key == 'with') {
     cellval = document.createElement('span');
-    var span = document.createElement('span');
-    span.className = 'with';
-    var tmp = [];
+    var en = document.createElement('span');
+    en.lang = 'en'
+    en.className = 'with';
+    var fi = document.createElement('span');
+    fi.lang = 'fi'
+    fi.className = 'with';
+    var tmp = {en: [], fi: []};
     for (var i=0; i<boxes.length; i++) {
      var val = boxes[i].value;
      if (parseInt(values['with']) & Math.pow(2, (val-1))) {
-      tmp.push(wlabels[boxes[i].value].toLowerCase());
+      tmp.en.push(wlabels[boxes[i].value].en.toLowerCase());
+      tmp.fi.push(wlabels[boxes[i].value].fi.toLowerCase());
      }
     }
-    val = (values['with'] != 1) ? 'with ' + tmp.join(', ') : 'alone';
+    enVal = (values['with'] != 1) ? 'with ' + tmp.en.join(', ') : wlabels[1].en.toLowerCase();
+    fiVal = (values['with'] != 1) ? ' ' + tmp.fi.join(' ja ') + ' kanssa' : wlabels[1].fi.toLowerCase();
     if (values['location'] && llabels[values['location']]) {
-     val += ' ' + llabels[values['location']];
+     enVal += ' ' + llabels[values['location']].en;
+     fiVal += ' ' + llabels[values['location']].fi;
     }
     // val += (values['usecomputer']) ? ' using computer/net' : '';
-    val += (values['usecomputer']) ? ' \u2328' : '';
-    span.appendChild(document.createTextNode(val));
-    cellval.appendChild(span);
+    fiVal += (values['usecomputer']) ? ' \u2328' : '';
+    enVal += (values['usecomputer']) ? ' \u2328' : '';
+    en.textContent = enVal
+    fi.textContent = fiVal
+    cellval.appendChild(en);
+    cellval.appendChild(fi);
     var rv = parseInt(values['rating']);
     if (rv > 0) {
      val = new Array(rv+1).join('\u2605');
