@@ -1,0 +1,32 @@
+{
+ "background_color": "#FFF",
+ "categories": [
+  "business", "lifestyle", "personalization", "productivity", "utilities"
+ ],
+ "description": "Track time use",
+ "display": "fullscreen",
+ "icons": [
+  {
+   "src": "./favicon.ico",
+   "type": "image/x-icon",
+   "sizes": "16x16"
+  }
+ ],
+ "id": "?homescreen=1",
+ "name": "Track time use",
+ "orientation": "natural",
+ "scope": "/",
+ "short_name": "Tracktime",
+ "shortcuts": [
+  {
+   "name": "Enter data",
+   "url": "index.html"
+  },
+  {
+    "name": "Dashboard",
+    "url": "dashboard.html" 
+  }
+ ],
+ "start_url": "index.html",
+ "theme_color": "#FFF"
+}
