@@ -31,6 +31,7 @@
   }
  }
  $act = isset($_REQUEST['act']) ? intval($_REQUEST['act']) : NULL;
+ $sub = isset($_REQUEST['subject']) ? $_REQUEST['subject'] : NULL;
  $rat = isset($_REQUEST['rating']) ? intval($_REQUEST['rating']) : NULL;
  $min = isset($_REQUEST['minrating']) ? intval($_REQUEST['minrating']) : NULL;
  $max = isset($_REQUEST['maxrating']) ? intval($_REQUEST['maxrating']) : NULL;
@@ -85,6 +86,9 @@
  if ($act) {
   $select .= ' AND (mainaction = '.$act.' OR sideaction = '.$act.')';
  }
+ if ($sub) {
+  $select .= " AND subject LIKE '%".mysqli_real_escape_string($sub)."%'";
+ }
  if ($rat) {
   $select .= ' AND rating = '.$rat;
  }
@@ -134,5 +138,5 @@
  function is_not_null($val){
    return !is_null($val);
  }
-    
+
 ?>

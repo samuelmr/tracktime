@@ -70,6 +70,7 @@ CREATE TABLE IF NOT EXISTS ".DB_TABLE." (
   `location` int(2) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
   `rating` int(1) DEFAULT NULL,
+  `subject` varchar(30) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
 ";

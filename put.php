@@ -25,6 +25,9 @@
   $sideaction = sprintf('%02d', intval($_REQUEST['sideaction']));
   $values['sideaction'] = $sideaction;
  }
+ if (isset($_REQUEST['subject']) && $_REQUEST['subject']) {
+  $values['subject'] = $subject;
+ }
  $with = 0;
  if (isset($_REQUEST['with'])) {
   if (is_array($_REQUEST['with'])) {
@@ -63,6 +66,7 @@
             (isset($location) ? ', location' : '').
             (isset($description) ? ', description' : '').
             (isset($rating) ? ', rating' : '').
+            (isset($subject) ? ', subject' : '').
             ") VALUES (".
             "'".mysqli_real_escape_string($conn, $starttime)."'".
             ", '".mysqli_real_escape_string($conn, $endtime)."'".
@@ -75,6 +79,7 @@
             # (isset($description) ? ", '".mysqli_real_escape_string($conn, utf8_decode($description))."'" : '').
             (isset($description) ? ", '".mysqli_real_escape_string($conn, $description)."'" : '').
             (isset($rating) ? ", $rating" : '').
+            (isset($subject) ? ", '".mysqli_real_escape_string($conn, $subject)."'" : '').
             ')';
   $result = mysqli_query($conn, $insert);
   if ($result) {

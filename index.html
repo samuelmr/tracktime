@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,6 +35,9 @@
  }
  #calendar {
   background-color: transparent;
+  border-color: #CCC;
+  border-radius: 0.25em;
+  border-width: 1px;
   left: 0.5em;
   position: relative;
   top: -0.25em;
@@ -94,9 +96,9 @@
        "starttime mainaction mainaction with"
        "endtime sideaction sideaction with"
        "rating location location with"
-       "description description submit with";
+       "subject description submit with";
   grid-template-rows: auto;
-  grid-template-columns: 15em 20em 5em auto;
+  grid-template-columns: 13em 20em 5em auto;
  }
  form fieldset {
    font-size: 1em;
@@ -124,6 +126,12 @@
  }
  fieldset.rating {
   grid-area: rating;
+ }
+ fieldset.location {
+  grid-area: location;
+ }
+ fieldset.subject {
+  grid-area: subject;
  }
  fieldset.description {
   grid-area: description;
@@ -158,7 +166,7 @@
   border-color: #FFF;
  }
  #description {
-  max-width: 90%;
+  max-width: 70%;
  }
  select {
   border-color: #CCC;
@@ -207,10 +215,11 @@
   font-style: italic;
   max-width: 30em;
   overflow: hidden;
+  padding-right: 1em;
   text-overflow:ellipsis;
   white-space: nowrap;
  }
- tr:hover .wtih .description {
+ tr:hover .with .description {
   max-width: none;
   white-space: normal;
  }
@@ -272,8 +281,8 @@
  #pickmonth, #pickday {
   width: 2.25ex;
  }
- #submit, #submitfi {
-  margin-top: 1.5em;
+ fieldset.submit {
+  padding-top: 1.5em;
  }
 /*
  @media (max-width: 320px) {
@@ -337,7 +346,7 @@
    clear: none;
   }
   #description {
-   width: 30em;
+   width: 25em;
   }
   #submit {
    clear: both;
@@ -354,19 +363,22 @@
         "mainaction mainaction with"
         "sideaction sideaction with"
         "location location with"
-        "description description with"
-        "rating submit with";
+        "description description subject"
+        "rating rating submit";
    grid-template-rows: 4em 4em 4em 4em 4em 4em 4em;
    grid-template-columns: 15em 10em 15em;
+  }
+  #description {
+   width: 32em;
   }
   fieldset.check input[type="checkbox"], input[type="range"] {
    height: auto;
   }
+  fieldset.rating, fieldset.submit {
+   padding-top: 0.5em;
+  }
   label[for="rating"] {
    display: inline-block;
-  }
-  #submit, #submitfi {
-   margin: 0 0 1.5em 0;
   }
   #table {
    display: block;
@@ -422,12 +434,16 @@
         "with with"
         "location location"
         "description description"
-        "rating submit";
-   grid-template-rows: 4em 4em 4em 4em auto 4em 4em 4em;
+        "rating rating"
+        "subject submit";
+   grid-template-rows: 4em 4em 4em 4em auto 4em 4em 4em 4em;
    grid-template-columns: 15em 10em;
   }
+  fieldset.submit {
+   padding-top: 1.5em;
+  }
  }
- @media (min-width: 90em) {
+ @media (min-width: 80em) {
   html, body {
    height: 99%;
    margin-top: 0;
@@ -454,10 +470,10 @@
   }
   #add {
    grid-template-areas:
-        "starttime endtime mainaction sideaction with with"
-        "location location description description rating submit";
+        "starttime endtime mainaction sideaction sideaction with with"
+        "location location description description subject rating submit";
    grid-template-rows: auto;
-   grid-template-columns: 13em 13em 25em 25em 12em 8em;
+   grid-template-columns: 13em 13em 25em 13em 12em 12em 5em;
   }
   #add fieldset {
    float: left;
@@ -482,7 +498,7 @@
    left: -2.75em;
    position: absolute;
    top: -3em;
-   transform: rotate(-90deg); 
+   transform: rotate(-90deg);
    -moz-transform: rotate(-90deg);	
    -webkit-transform: rotate(-90deg);
    white-space: nowrap;
@@ -495,6 +511,9 @@
   }
   #description {
    width: 50em;
+  }
+  fieldset.submit {
+   padding-top: 1.3em !important;
   }
 /*
   header {
@@ -966,9 +985,13 @@
 </optgroup>
 </select>
 </fieldset>
+<fieldset class="extra subject">
+<label for="subject"><span lang="fi">Kohde</span><span lang="en">Subject</span></label>
+<input type="text" name="subject" id="subject" size="10" maxlength="30" />
+</fieldset>
 <fieldset class="extra description">
 <label for="description"><span lang="fi">Kuvaus</span><span lang="en">Description</span></label>
-<input id="description" name="description" type="text" size="40" maxlength="255" />
+<input id="description" name="description" type="text" size="30" maxlength="255" />
 </fieldset>
 <fieldset class="extra rating">
 <label for="rating"><span lang="fi">Arvio</span><span lang="en">Rating</span> <span id="star1">&#9734;</span><span id="star2">&#9734;</span><span id="star3">&#9734;</span><span id="star4">&#9734;</span><span id="star5">&#9734;</span></label>
@@ -1341,16 +1364,30 @@
  let begin = false
  const times = ts.querySelectorAll('span')
  times.forEach(t => {
-  t.ondragstart = (e) => {
-   t.classList.add('painted')
-  }
   t.onclick = (e) => {
    if (painting) {
+    if (t.textContent == begin.textContent) {
+     begin.classList.remove('painted')
+     begin = false
+     painting = false
+     return
+    }
+    if (t.textContent < begin.textContent) {
+     begin.classList.remove('painted')
+     t.classList.add('painted')
+     begin = t
+     return
+    }
     st.value = `${d.value} ${begin.textContent}:00`
     et.value = `${d.value} ${t.textContent}:00`
+    const selection = ts.querySelectorAll('.painted')
+    selection.forEach(span => {
+     span.classList.remove('painted')
+    })
     painting = false
     begin = false
     ts.classList.toggle('hidden')
+    return
    }
    else {
     const selection = ts.querySelectorAll('.painted')
@@ -1364,44 +1401,71 @@
   }
   t.onmouseover = (e) => {
    if (begin) {
-    const selection = ts.querySelectorAll('.painted')
-    const beginH = begin.className.substring(1, 3)
-    const endH = t.className.substring(1, 3)
-    selection.forEach(span => {
-     if (span.textContent != begin.textContent) {
-      span.classList.remove('painted')
-     }
-    })
-    if (endH < beginH) return
-    if (endH > beginH) {
-     const block1 = ts.querySelectorAll(`.h${beginH}`)
-     block1.forEach(span => {
-      if (span.className.substring(5, 6) > begin.className.substring(5, 6)) {
-       span.classList.add('painted')
-      }
-     })
-     for (let h=parseInt(beginH)+1; h<parseInt(endH); h++) {
-      const block2 = ts.querySelectorAll(`.h${h.toString().padStart(2, '0')}`)
-      block2.forEach(span => {
-       span.classList.add('painted')
-      })
-     }
-    }
-    const block3 = ts.querySelectorAll(`.h${endH}`)
-    block3.forEach(span => {
-     if (span.className.substring(5, 6) < t.className.substring(5, 6)) {
-      if (beginH < endH || span.className.substring(5, 6) > begin.className.substring(5, 6)) {
-       span.classList.add('painted')
-      }
-     }
-    })
-    t.classList.add('painted')
+    paint(begin, t)
    }
   }
  })
 
-// const xhr = new XMLHttpRequest();
-// xhr.onload = handleResult;
+ document.addEventListener('pointerup', (e) => {
+  const sel = document.getSelection()
+  if (sel.isCollapsed) return
+  let begin = sel.anchorNode
+  const p = Node.DOCUMENT_POSITION_PRECEDING | Node.DOCUMENT_POSITION_CONTAINS
+  if (begin.compareDocumentPosition(ts) != p) {
+   return
+  }
+  if (begin.nodeType == Node.TEXT_TYPE) {
+   begin = begin.parentElement
+  }
+  let end = sel.focusNode
+  if (end.nodeType == Node.TEXT_TYPE) {
+   end = end.parentElement
+  }
+  if (begin.textContent > end.textContent) {
+   const tmp = end
+   end = begin
+   begin = tmp
+  }
+  st.value = `${d.value} ${begin.textContent}:00`
+  et.value = `${d.value} ${end.textContent}:00`
+  sel.empty()
+  ts.classList.toggle('hidden')
+ })
+
+ function paint(begin, end) {
+  const beginH = begin.className.substring(1, 3)
+  const endH = end.className.substring(1, 3)
+  const selection = ts.querySelectorAll('.painted')
+  selection.forEach(span => {
+   if (span.textContent != begin.textContent) {
+    span.classList.remove('painted')
+   }
+  })
+  if (endH < beginH) return
+  if (endH > beginH) {
+   const block1 = ts.querySelectorAll(`.h${beginH}`)
+   block1.forEach(span => {
+    if (span.className.substring(5, 6) > begin.className.substring(5, 6)) {
+     span.classList.add('painted')
+    }
+   })
+   for (let h=parseInt(beginH)+1; h<parseInt(endH); h++) {
+    const block2 = ts.querySelectorAll(`.h${h.toString().padStart(2, '0')}`)
+    block2.forEach(span => {
+     span.classList.add('painted')
+    })
+   }
+  }
+  const block3 = ts.querySelectorAll(`.h${endH}`)
+  block3.forEach(span => {
+   if (span.className.substring(5, 6) < end.className.substring(5, 6)) {
+    if (beginH < endH || span.className.substring(5, 6) > begin.className.substring(5, 6)) {
+     span.classList.add('painted')
+    }
+   }
+  })
+  end.classList.add('painted')
+ }
 
  const stars = [];
  for (let i=1; i<=5; i++) {
@@ -1418,27 +1482,27 @@
  f.sideaction.onfocus = hidePicker;
 
  st.onkeydown = et.onkeydown = function(e) {
-   const event = window.event ? window.event : e;
-   if (event.keyCode == 38) { // up
-    this.value = toString(upTen(toDate(this.value)));
-    // this.stepUp();
-   }
-   else if (event.keyCode == 40) { // down
-    this.value = toString(downTen(toDate(this.value)));
-    // this.stepDown();
-   }
+  const event = window.event ? window.event : e;
+  if (event.keyCode == 38) { // up
+   this.value = toString(upTen(toDate(this.value)));
+   // this.stepUp();
+  }
+  else if (event.keyCode == 40) { // down
+   this.value = toString(downTen(toDate(this.value)));
+   // this.stepDown();
+  }
  }
 
  function upTen(d) {
   d.setTime(d.getTime() + tenMinutes);
   return d;
  }
- 
+
  function downTen(d) {
   d.setTime(d.getTime() - tenMinutes);
   return d;
  }
- 
+
  f.onsubmit = async function(e) {
   if (e && e.preventDefault) {
    e.preventDefault();
@@ -1470,8 +1534,8 @@
     handleError(f.method);
   }
   return false;
- };
- 
+ }
+
  const boxes = [];
  const ips = document.getElementsByTagName('input');
  for (let i=0; i<ips.length; i++) {
@@ -1680,7 +1744,7 @@
  }
 
  function hidePicker(e) {
-  dp.style.display = 'none';  
+  dp.style.display = 'none';
  }
 
  function guessLocation() {
@@ -1712,12 +1776,12 @@
   g = (g < 15) ? ++g : g;
   b = (b < 15) ? ++b : b;
  }
- 
+
  function setRating() {
   rat.value = this.id.at(-1);
   updateStars();
  }
- 
+
  function updateStars() {
   for (let i=1; i<=5; i++) {
    stars[i].innerHTML = (rat.value >= i) ? '\u2605' : '\u2606';
@@ -1758,7 +1822,7 @@
   const opt = f.location.querySelector(`option[lang="${currentLanguage}"][value="${values[0].location}"]`)
   if (opt) opt.selected = "selected"
  }
- 
+
  function handleError(method) {
   console.log(method + ' error');
   if (!localStorage) {
@@ -1788,11 +1852,12 @@
    showRows(values);
   }
  }
- 
+
  function showRows(values) {
   h.value = null;
   if (values[0]) {
    st.value = toString(toDate(values[0]['endtime']));
+   document.getElementById('subject')?.value = values[0]?.subject || '';
   }
   hilite(st, 15, 12, 7)
   resetEndDate();
@@ -1806,7 +1871,7 @@
   for (let i=values.length-1; i>=0; i--) {
    if (currEnd && (values[i]['starttime'] > currEnd)) {
     tmp = {'starttime': currEnd,
-           'endtime': values[i]['starttime'], 
+           'endtime': values[i]['starttime'],
            'mainaction': 99,
            'rating': 0,
            'with': 1};
@@ -1815,7 +1880,7 @@
    const tr = addRow(values[i], (values.length < 2));
    if (currEnd && (values[i]['starttime'] < currEnd)) {
     tr.className += ' alert';
-   }   
+   }
    currEnd = values[i]['endtime'];
   }
  }
@@ -1862,7 +1927,7 @@
     else {
      boxes[i].checked = false;
     }
-   }  
+   }
   }
   for (let i=0; i<keys.length; i++) {
    key = keys[i];
@@ -1975,7 +2040,7 @@
   }
   return val;
  }
- 
+
  function toNum(str) {
   while (str[0] == '0') {
    str = str.substring(1, str.length);
@@ -1990,11 +2055,11 @@
   if (!d || !d.getFullYear) {
    return;
   }
-  return d.getFullYear() + '-' + 
-         pad(d.getMonth()+1) + '-' + 
+  return d.getFullYear() + '-' +
+         pad(d.getMonth()+1) + '-' +
          pad(d.getDate()) + ' ' +
          // pad(d.getDate()) + 'T' +
-         pad(d.getHours()) + ':' + 
+         pad(d.getHours()) + ':' +
          pad(10*Math.floor(d.getMinutes()/10)) + ':00';
  }
 
@@ -2008,7 +2073,7 @@
   const date = new Date(d[0], d[1]-1, d[2], t[0], t[1]);
   return date;
  }
- 
+
 </script>
 </body>
 </html>
