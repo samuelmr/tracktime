@@ -85,7 +85,7 @@
   return "./?".http_build_query($params, '&amp;');
  }
  
- require_once('dbconfig.php');
+ require_once('../dbconfig.php');
  $conn = mysqli_connect(DB_ADDR, DB_USER, DB_PASS);
  $res = mysqli_select_db($conn, DB_DB);
  if (!$res) {
@@ -168,19 +168,28 @@
   $wday = 0;
   $prev = 0;
   $init = FALSE;
+  $leftover = 0;
   while ($row = mysqli_fetch_assoc($stmt)) {
-   # $date = date('j.n.', $row['tstamp']);
-   $lastts = $row['tstamp'];
+   $start = $row['tstamp'];
+   $lastts = $start;
    $date = $row['D'].".".$row['M'];
-   echo "\n<!-- $date: $row[Y], $row[M], $row[D] ($row[tstamp]) -->";
-   # $year = date('y', $row['tstamp']);
-   # $month = date('n', $row['tstamp']);
    $year = $row['Y'] - 2000; // simple way of changing year to 2 digit format
    $month = $row['M'];
-   $monthnr = date('Ym', $row['tstamp']);
-   # $mday = date('j', $row['tstamp']);
+   $monthnr = date('Ym', $start);
    $mday = $row['D'];
    $time = $row['Time'];
+   if ($leftover) {
+    $time += $leftover;
+    $leftover = 0;
+    $start = mktime(0, 0, 0, $month, $mday, $row['Y']);
+   }
+   $end = $start + $time;
+   $midnight = mktime(0, 0, 0, $month, $mday+1, $row['Y']);
+   $time_to_midnight = $midnight - $end;
+   if ($time_to_midnight < 0) {
+    $leftover = 0 - $time_to_midnight;
+    $time -= $leftover;
+   }
    $dur = $time / 60 / 60;
    $hours = floor($time / 3600);
    $mins = ($time % 3600)/60;
@@ -203,12 +212,12 @@
       echo "<td class=\"this\" colspan=\"".(31-$prev)."\">";
     }
     $bgcolor = "hsla(".($hsl_base-$monthly/1.35).", 75%, 75%, 100%)";
-    $from = "$y-$m-01T04:00:00";
-    $to = "$y-".sprintf('%02d', $m+1)."-01T04:00:00";
+    $from = "$y-$m-01T00:00:00";
+    $to = "$y-".sprintf('%02d', $m+1)."-01T00:00:00";
     echo '<td class="total" style="background-color: '.$bgcolor.'">'.
-         "<a href=\"../dashboard#$from,$to\">".
+         "<a href=\"../dashboard.html#$from,$to\">".
          str_replace('.', ',', sprintf('%.1f', $monthly)).
-	 "</a>".
+         "</a>".
          "</td></tr>\n";
     while ($monthnr - $lastmonthnr > 0) {
      list ($y, $m) = str_split($lastmonthnr, 4);
@@ -230,7 +239,7 @@
    }
    if ($diff = ($mday - ($prev + 1))) {
     echo "<td colspan=\"$diff\">&nbsp;</td>";
-    echo "<!-- $diff = ($mday - ($prev + 1)) -->\n";
+    # echo "<!-- $diff = ($mday - ($prev + 1)) -->\n";
    }
 
    $monthly += $dur;
@@ -238,10 +247,10 @@
    $prev = $mday;
 
    $bgcolor = "hsla(".($hsl_base-$dur*15).", 75%, 75%, 100%)";
-   $from = "$y-$m-".sprintf('%02d', $mday)."T04:00:00";
-   $to = "$y-$m-".sprintf('%02d', $mday+1)."T04:00:00";
+   $from = "$y-$m-".sprintf('%02d', $mday)."T00:00:00";
+   $to = "$y-$m-".sprintf('%02d', $mday+1)."T00:00:00";
    echo "<td title=\"$date: $fmtdur\" style=\"background-color: $bgcolor\">".
-        "<a href=\"../dashboard#$from,$to\">$hours:$mins</a>".
+        "<a href=\"../dashboard.html#$from,$to\">$hours:$mins</a>".
         "</td>\n";
    if ($mday == 31) {
     $monthnr++;
@@ -256,10 +265,10 @@
    echo "<td class=\"that\" colspan=\"".(31-$mday)."\"></td>";
  }
  $bgcolor = "hsla(".($hsl_base-$monthly/1.35).", 75%, 75%, 100%)";
- $from = "$y-$m-01T04:00:00";
- $to = "$y-".sprintf('%02d', $m+1)."-01T04:00:00";
+ $from = "$y-$m-01T00:00:00";
+ $to = "$y-".sprintf('%02d', $m+1)."-01T00:00:00";
  echo '<td class="total" style="background-color: '.$bgcolor.'">'.
-      "<a href=\"../dashboard#$from,$to\">".
+      "<a href=\"../dashboard.html#$from,$to\">".
       str_replace('.', ',', sprintf('%.1f', $monthly)).
       "</a>".
       "</td></tr>\n";
@@ -288,7 +297,7 @@
 
  echo '<table class="total">'."\n";
  echo '<tr class="hour"><th>Hours</th><td></td><td class="total">'.
-      "<a href=\"../dashboard#$from,$to\">".
+      "<a href=\"../dashboard.html#$from,$to\">".
       number_format($total, 1, ',', '&nbsp;').
       "</a>".
       "</td><td class=\"unit\">h</td></tr>\n";
