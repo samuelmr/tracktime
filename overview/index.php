@@ -112,10 +112,10 @@
   }
   $params['starttime'] = $st;
   $params['endtime'] = $et;
-  return "./?".http_build_query($params, '&amp;');
+  return "../?".http_build_query($params, '&amp;');
  }
  
- require_once('./dbconfig.php');
+ require_once('../dbconfig.php');
  $conn = mysqli_connect(DB_ADDR, DB_USER, DB_PASS);
  $res = mysqli_select_db($conn, DB_DB);
  if (!$res) {
