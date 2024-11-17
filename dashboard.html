@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width" />
-<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="HandheldFriendly" content="True" />
 <meta name="MobileOptimized" content="width" />
 <title>Tracktime Dashboard</title>
@@ -164,6 +164,9 @@
  var xhr = new XMLHttpRequest();
  xhr.onload = update;
 
+ const params = new URLSearchParams(document.location.search)
+ let subject = params.get('subject') || ''
+
  var pb = document.getElementById('prev');
  pb.onclick = showprev;
 
@@ -180,11 +183,11 @@
 
  var h1 = document.querySelector('h1');
  var a = document.createElement('a');
- a.href = '/'; // index.html
+ a.href = '/?subject=' + encodeURIComponent(subject); // index.html
  a.className = 'eventslink';
  a.textContent = 'All events';
  a.onclick = function(e) {
-  this.href += '?starttime=' + encodeURIComponent(fi.value) +
+  this.href += '&starttime=' + encodeURIComponent(fi.value) +
                '&endtime=' + encodeURIComponent(ti.value);
  }
  h1.appendChild(a);
@@ -628,7 +631,8 @@
   document.title = newTitle;
   stateStatus = 'wait';
   xhr.abort();
-  var href = GET_URI + '?starttime=' + Math.round(globalStart.getTime()/1000) +
+  var href = GET_URI + '?subject=' + encodeURIComponent(subject) +
+             '&starttime=' + Math.round(globalStart.getTime()/1000) +
              '&endtime=' + Math.round(globalEnd.getTime()/1000);
   xhr.open('GET', href, true);
   xhr.send(null);
