@@ -78,33 +78,33 @@
 
  $select = 'SELECT * FROM '.DB_TABLE.' WHERE 1';
  if ($start) {
-  $select .= " AND endtime >= '".date('Y-m-d H:i:s',$start)."'";
+  $select .= " AND `endtime` >= '".date('Y-m-d H:i:s',$start)."'";
  }
  if ($end) {
-  $select .= " AND starttime <= '".date('Y-m-d H:i:s',$end)."'";
+  $select .= " AND `starttime` <= '".date('Y-m-d H:i:s',$end)."'";
  }
  if ($act) {
-  $select .= ' AND (mainaction = '.$act.' OR sideaction = '.$act.')';
+  $select .= ' AND (`mainaction` = '.$act.' OR `sideaction` = '.$act.')';
  }
  if ($sub) {
-  $select .= " AND subject LIKE '%".mysqli_real_escape_string($sub)."%'";
+  $select .= " AND `subject` = '".mysqli_real_escape_string($conn, $sub)."'";
  }
  if ($rat) {
-  $select .= ' AND rating = '.$rat;
+  $select .= ' AND `rating` = '.$rat;
  }
  if ($min) {
-  $select .= ' AND rating >= '.$min;
+  $select .= ' AND `rating` >= '.$min;
  }
  if ($max) {
-  $select .= ' AND rating <= '.$max;
+  $select .= ' AND `rating` <= '.$max;
  }
  if ($desc) {
-  $select .= " AND description LIKE '%".mysqli_real_escape_string($desc)."%'";
+  $select .= " AND `description` LIKE '%".mysqli_real_escape_string($conn, $desc)."%'";
  }
  if ($with) {
-  $select .= ' AND with = '.$with;
+  $select .= ' AND `with` = '.$with;
  }
- $select .= ' ORDER BY endtime DESC, starttime DESC, id DESC';
+ $select .= ' ORDER BY `endtime` DESC, `starttime` DESC, `id` DESC';
  if ($limit) {
   $select .= ' LIMIT '.$limit;
  }
