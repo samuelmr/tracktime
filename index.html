@@ -1200,6 +1200,10 @@
  const DB_NAME = 'times'
 
  const params = new URLSearchParams(document.location.search)
+ let subject = params.get('subject') || ''
+ if (subject) {
+  document.getElementById('subject').value = subject
+ }
  let currentLanguage = params.get('lang') || 'en'
  const lcontainer = document.querySelector('#language')
  const languages = ['fi', 'en']
@@ -1808,6 +1812,9 @@
   }
   if (endTime) {
     href += '&endtime=' + encodeURIComponent(endTime)
+  }
+  if (document.getElementById('subject').value) {
+    href += '&subject=' + encodeURIComponent(document.getElementById('subject').value)
   }
   const resp = await fetch(href)
   handleResult(await resp.json())
