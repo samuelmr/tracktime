@@ -5,8 +5,8 @@
  if (!$res) {
   die(mysqli_error($conn));
  }
+ $format = isset($_REQUEST['format']) ? $_REQUEST['format'] : 'json';
  $limit = isset($_REQUEST['limit']) ? intval($_REQUEST['limit']) : NULL;
- $interval = isset($_REQUEST['interval']) ? intval($_REQUEST['interval']) : 0;
  $end = time();
  $start = $end - 24 * 60 * 60;
  if (isset($_REQUEST['latest'])) {
@@ -38,88 +38,111 @@
  $desc = isset($_REQUEST['description']) ? $_REQUEST['description'] : NULL;
 
  $acts = array(
-"1" => "Sleep",
-"2" => "Eating",
-"3" => "Other personal care",
-"4" => "Main and second job",
-"5" => "Employment activities",
-"6" => "School and university",
-"7" => "Homework",
-"8" => "Freetime study",
-"9" => "Food preparation",
-"10" => "Dish washing",
-"11" => "Cleaning dwelling",
-"12" => "Other household upkeep",
-"13" => "Laundry",
-"14" => "Ironing",
-"15" => "Handicraft",
-"16" => "Gardening",
-"17" => "Tending domestic animals",
-"18" => "Caring for pets",
-"19" => "Walking the dog",
-"20" => "Construction and repairs",
-"21" => "Shopping and services",
-"22" => "Child care",
-"23" => "Playing with and teaching kids",
-"24" => "Other domestic work",
-"25" => "Organisational work",
-"26" => "Help to other households",
-"27" => "Participatory activities",
-"28" => "Visits and feasts",
-"29" => "Other social life",
-"30" => "Entertainment and culture",
-"31" => "Resting",
-"32" => "Walking and hiking",
-"33" => "Sports and outdoors",
-"34" => "Computer and video games",
-"35" => "Other computing",
-"36" => "Other hobbies and games",
-"37" => "Reading books",
-"38" => "Other reading",
-"39" => "TV and video",
-"40" => "Radio and music",
-"41" => "Unspecified leisure",
-"42" => "Travel to/from work",
-"43" => "Travel related to study",
-"44" => "Travel related to shopping",
-"45" => "Transporting a child",
-"46" => "Travel related to other domestic",
-"47" => "Travel related to leisure",
-"48" => "Unspecified travel",
-"49" => "Unspecified");
+  "01" => "Sleeping",
+  "02" => "Eating",
+  "03" => "Other personal care",
+  "11" => "Main job and second job",
+  "12" => "Activities related to employment",
+  "21" => "School or university",
+  "22" => "Free time study",
+  "30" => "Unspecified household and family care",
+  "31" => "Food management",
+  "32" => "Household upkeep",
+  "33" => "Care for textiles",
+  "34" => "Gardening and pet care",
+  "35" => "Construction and repairs",
+  "36" => "Shopping and services",
+  "37" => "Household management",
+  "38" => "Childcare",
+  "39" => "Help to an adult household member",
+  "41" => "Organisational work",
+  "42" => "Informal help to other households",
+  "43" => "Participatory and religious activities",
+  "51" => "Social life",
+  "52" => "Entertainment and culture",
+  "53" => "Resting - time out",
+  "61" => "Physical excercise",
+  "62" => "Productive excercise",
+  "63" => "Sports related activities",
+  "71" => "Arts and hobbies",
+  "72" => "Computing",
+  "73" => "Games",
+  "81" => "Reading",
+  "82" => "TV, video and DVD",
+  "83" => "Radio and recordings",
+  "91" => "Travel to/from work",
+  "92" => "Travel related to study",
+  "93" => "Travel r. to shopping, services, childcare &amp;c.",
+  "94" => "Travel related to voluntary work and meetings",
+  "95" => "Travel related to social life",
+  "96" => "Travel related to other leisure",
+  "98" => "Travel related to changing locality",
+  "90" => "Other or unspecified travel purpose",
+  "99" => "Other unspecified time use"
+ );
+ $locs = array(
+  "0" => "Unspecified",
+  "10" => "Unspecified",
+  "11" => "Home",
+  "12" => "Weekend home or holiday apartment",
+  "13" => "Workplace or school",
+  "14" => "Other people's home",
+  "15" => "Restaurant, cafe or pub",
+  "16" => "Shopping centres, malls, markets, other shops",
+  "17" => "Hotel, guesthouse, camping site",
+  "19" => "Other specified location",
+  "20" => "Unspecified",
+  "21" => "Travelling on foot",
+  "22" => "Travelling by bicycle",
+  "23" => "Travelling by moped, motorcycle or motorboat",
+  "24" => "Travelling by passenger car",
+  "29" => "Other or unspecified private transport mode",
+  "31" => "Travelling by public transport"
+ );
 
-$locs = array(
-"10" => "Unspecified",
-"11" => "Home",
-"12" => "Second home",
-"13" => "Workplace/school",
-"14" => "Other's home",
-"15" => "Restaurant",
-"16" => "Shop, market",
-"17" => "Hotel, camping",
-"19" => "Other",
-"20" => "Unspecified",
-"21" => "Walking, waiting",
-"22" => "Bicycle",
-"23" => "Motorbike",
-"24" => "Car",
-"29" => "Other private",
-"31" => "Public transport");
+ $with_labels = array("", "alone", "partner", "parent", "kids", "family", "others");
 
-$with_labels = array("", "alone", "partner", "parent", "kids", "family", "others");
-
- $select = 'SELECT * FROM '.DB_TABLE.' WHERE 1';
+ $select = 'SELECT * FROM '.DB_TABLE.' WHERE 1 ORDER BY starttime';
+ if ($limit) {
+  $select .= " LIMIT $limit";
+ }
  $stmt = mysqli_query($conn, $select);
  if (!$stmt) {
   header('500 Internal Server Error');
   $values = array('code' => mysqli_errno($conn), 'msg' => mysqli_error($conn));
  }
  else {
+  $titlerow = array(
+   'subject',
+   'timestamp',
+   'starttime',
+   'endtime',
+   'duration',
+   'mainaction',
+   'sideaction',
+   'with',
+   'location',
+   'usecomputer',
+   'rating',
+   'description',
+  );
   header('Access-Control-Allow-Origin: *');
-  header('Content-Type: application/json');
+  $filename = "tracktime-".date('Y-m-d\THis');
+  if ($format == 'csv') {
+   header('Content-Type: text/csv');
+   header("Content-Disposition: attachment; filename=\"$filename.csv\"");
+   echo join("\t", $titlerow)."\n";
+  }
+  if ($format == 'excel') {
+   header('Content-Type: application/vnd.ms-excel');
+   header("Content-Disposition: attachment; filename=\"$filename.xls\"");
+   echo "<table><tr><th>".join("</th><th>", $titlerow)."</th></tr>\n";
+  }
+  else {
+   header('Content-Type: application/json');
+   echo "[\n";
+  }
   while ($row = mysqli_fetch_assoc($stmt)) {
-   $id = array('index' => array('_index' => 'correl8-time', '_type' => 'time', '_id'=> $row['id']));
-   echo json_encode($id)."\n";
    if ($row['with'] == 1) {
     $with = 'Alone';
    }
@@ -131,29 +154,46 @@ $with_labels = array("", "alone", "partner", "parent", "kids", "family", "others
       $with[] = strtolower($with_labels[$i]);
      }
     }
-    $with = join($with, " ");
+    $with = join(" ", $with);
    }
    $start = strtotime($row['starttime']);
    $end = strtotime($row['endtime']);
-   $values = array('timestamp' => date("c", $start),
+   $values = array('subject' => $row['subject'],
+                   'timestamp' => date("c", $start),
                    'starttime' => $start,
                    'endtime' => $end,
-		   'duration' => ($end - $start),
-		   'mainaction' => $acts[$row['mainaction']],
+                   'duration' => ($end - $start),
+                   'mainaction' => $acts[$row['mainaction']],
+                   'sideaction' => $acts[$row['sideaction']],
                    'with' => $with,
                    'location' => $locs[$row['location']],
-                   'usecomputer' => $row['usecomputer'] ? true : false
-		   );
+                   'usecomputer' => $row['usecomputer'] ? TRUE : FALSE,
+                   'rating' => $row['rating'],
+                   'description' => $row['description'],
+                  );
    if ($row['sideaction']) {
     $values['sideaction'] = $acts[$row['sideaction']];
    }
-   echo json_encode($values)."\n";
+   if ($format == 'csv') {
+    echo join("\t", $values)."\n";
+   }
+   else if ($format == 'excel') {
+    echo "<tr><td>".join("</td><td>", $values)."</td></tr>\n";
+   }
+   else {
+    echo json_encode($values).",\n";
+   }
    # if (!$row['location'] || ! $locs[$row['location']]) {
     # var_dump($row);
     # var_dump($with);
     # exit;
    # }
   }
+  if ($format == 'excel') {
+   echo "</table>\n";
+  }
+  else if ($format == 'json') {
+   echo "]\n";
+  }
  }
-
 ?>
