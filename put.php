@@ -15,18 +15,17 @@
  if (isset($_REQUEST['id']) && $_REQUEST['id']) {
   $id = intval($_REQUEST['id']);
  }
+ $subject = $_REQUEST['subject'];
  $starttime = $_REQUEST['starttime'];
  $endtime = $_REQUEST['endtime'];
  $mainaction = sprintf('%02d', intval($_REQUEST['mainaction']));
- $values = array('starttime' => $starttime,
+ $values = array('subject' => $subject,
+                 'starttime' => $starttime,
                  'endtime' => $endtime,
                  'mainaction' => $mainaction);
  if (isset($_REQUEST['sideaction']) && $_REQUEST['sideaction']) {
   $sideaction = sprintf('%02d', intval($_REQUEST['sideaction']));
   $values['sideaction'] = $sideaction;
- }
- if (isset($_REQUEST['subject']) && $_REQUEST['subject']) {
-  $values['subject'] = $subject;
  }
  $with = 0;
  if (isset($_REQUEST['with'])) {
@@ -97,7 +96,7 @@
  else {
   header('400 Bad Request');
   $code = '400';
-  $msg = 'Required parameters: starttime, endtime, mainaction, with[]';
+  $msg = 'Required parameters: subject, starttime, endtime, mainaction, with[]';
   $response = array('code' => $code, 'msg' => $msg);
  }
 

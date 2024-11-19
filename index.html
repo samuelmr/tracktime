@@ -991,7 +991,7 @@
 </fieldset>
 <fieldset class="extra subject">
 <label for="subject"><span lang="fi">Kohde</span><span lang="en">Subject</span></label>
-<input type="text" name="subject" id="subject" size="10" maxlength="30" />
+<input type="text" name="subject" id="subject" size="10" maxlength="30" required aria-required="true" />
 </fieldset>
 <fieldset class="extra rating">
 <label for="rating"><span lang="fi">Arvio</span><span lang="en">Rating</span> <span id="star1">&#9734;</span><span id="star2">&#9734;</span><span id="star3">&#9734;</span><span id="star4">&#9734;</span><span id="star5">&#9734;</span></label>
@@ -1863,6 +1863,7 @@
  function showRows(values) {
   h.value = null
   if (values[0]) {
+   console.log(values[0])
    st.value = toString(toDate(values[0]['endtime']))
    document.getElementById('subject').value = values[0]?.subject || ''
   }
