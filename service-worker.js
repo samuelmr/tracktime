@@ -2,11 +2,11 @@ const NETWORK_STATE_CHECK_INTERVAL = 10 * 1000 // ms
 const OFFLINE_DB_NAME = 'OfflineTempStorage'
 const OFFLINE_DB_STORE = 'PostRequests'
 
-let client, poller
+let db, client, poller
 
 const dbRequest = indexedDB.open(OFFLINE_DB_NAME, 1)
 dbRequest.onupgradeneeded = function(event) {
-const db = event.target.result
+  db = event.target.result
   const cache = db.createObjectStore(OFFLINE_DB_STORE, { keyPath: 'id', autoIncrement: true })
   const timeIndex = cache.createIndex("by_time", "timestamp", { unique: false })
   const subjectIndex = cache.createIndex("by_url", "url", { unique: false })
