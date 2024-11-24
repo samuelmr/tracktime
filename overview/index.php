@@ -114,7 +114,7 @@
   $params['endtime'] = $et;
   return "../?".http_build_query($params, '&amp;');
  }
- 
+
  require_once('../dbconfig.php');
  $conn = mysqli_connect(DB_ADDR, DB_USER, DB_PASS);
  $res = mysqli_select_db($conn, DB_DB);
@@ -137,12 +137,12 @@
  if (isset($_REQUEST['oper']) && $_REQUEST['oper'] == 'OR') {
   $oper = ' OR ';
  }
- 
+
  if (isset($_REQUEST['starttime']) && $_REQUEST['starttime']) {
-   $params[] = "starttime >= '".date('Y-m-d', strtotime($_REQUEST['starttime']))."'"; 
+   $params[] = "starttime >= '".date('Y-m-d', strtotime($_REQUEST['starttime']))."'";
  }
  if (isset($_REQUEST['endtime']) && $_REQUEST['endtime']) {
-   $params[] = "endtime <= '".date('Y-m-d', strtotime($_REQUEST['endtime']))."'"; 
+   $params[] = "endtime <= '".date('Y-m-d', strtotime($_REQUEST['endtime']))."'";
  }
  if (isset($_REQUEST['action']) && $_REQUEST['action']) {
    $params[] = "(`mainaction` = ".intval($_REQUEST['action'])." OR `sideaction` = ".intval($_REQUEST['action']).")";
@@ -166,7 +166,7 @@
   $select .= " WHERE ";
   $select .= implode($oper, $params);
  }
- 
+
  $select .= " GROUP BY Y, M, D, subject ORDER BY subject, starttime";
  # $select .= " GROUP BY YEAR(starttime), MONTH(starttime), DAY(starttime) ORDER BY starttime";
  # $select .= " GROUP BY DATE_FORMAT(starttime, '%Y%m%d') ORDER BY starttime";
@@ -211,7 +211,7 @@
           "</a>".
           "</td></tr></table>\n";
      $monthly = 0;
-     $monthnr = $month; 
+     $monthnr = $month;
     }
     echo "<table class=\"days\"><caption>$subject</caption>\n";
     echo "<tr><th>Month</th>";
