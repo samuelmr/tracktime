@@ -1200,10 +1200,6 @@
  const DB_NAME = 'times'
 
  const params = new URLSearchParams(document.location.search)
- let subject = params.get('subject') || ''
- if (subject) {
-  document.getElementById('subject').value = subject
- }
  let currentLanguage = params.get('lang') || 'en'
  const lcontainer = document.querySelector('#language')
  const languages = ['fi', 'en']
@@ -1258,6 +1254,7 @@
  }
  let startTime = params.get('starttime')
  let endTime = params.get('endtime')
+ let numRows = params.get('limit') || MAX_ROWS
 
  const prevMonthLength = [30, 31, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30]
 
@@ -1266,8 +1263,9 @@
  const et = document.getElementById('endtime')
  const st = document.getElementById('starttime')
  const h = document.getElementById('hiddenid')
- const sub = document.getElementById('submit')
- const subfi = document.getElementById('submitFi')
+ const sub = document.getElementById('subject')
+ const send = document.getElementById('submit')
+ const sendFi = document.getElementById('submitFi')
  const rat = document.getElementById('rating')
  const dp = document.getElementById('datetimepicker')
  const py = document.getElementById('pickyear')
@@ -1278,6 +1276,14 @@
 
  let offLineSupport = false
 
+ let subject = params.get('subject') || ''
+ if (subject) {
+  sub.value = subject
+  getLatest(numRows)
+ }
+ sub.onchange = () => {
+  getLatest(numRows)
+ }
 /*
  const dbRequest = indexedDB.open(DB_NAME, 1)
  dbRequest.onupgradeneeded = function(event) {
@@ -1678,12 +1684,6 @@
    ip.onchange()
   }
  }
- let numRows = MAX_ROWS
- let found
- if (found = new String(window.location).match(/(\d{2,5})/)) {
-  numRows = found[1]
- }
- getLatest(numRows)
  resetEndDate()
  window.setInterval(resetEndDate, 60 * 10 * 1000)
 
@@ -1813,8 +1813,8 @@
   if (endTime) {
     href += '&endtime=' + encodeURIComponent(endTime)
   }
-  if (document.getElementById('subject').value) {
-    href += '&subject=' + encodeURIComponent(document.getElementById('subject').value)
+  if (sub.value) {
+    href += '&subject=' + encodeURIComponent(sub.value)
   }
   const resp = await fetch(href)
   handleResult(await resp.json())
@@ -1863,17 +1863,16 @@
  function showRows(values) {
   h.value = null
   if (values[0]) {
-   console.log(values[0])
    st.value = toString(toDate(values[0]['endtime']))
-   document.getElementById('subject').value = values[0]?.subject || ''
+   sub.value = values[0]?.subject || ''
   }
   hilite(st, 15, 12, 7)
   resetEndDate()
-  if (sub.value != 'Save') {
-   sub.value = 'Save'
-   subfi.value = 'Tallenna'
-   hilite(sub, 15, 12, 7)
-   hilite(subfi, 15, 12, 7)
+  if (send.value != 'Save') {
+   send.value = 'Save'
+   sendFi.value = 'Tallenna'
+   hilite(send, 15, 12, 7)
+   hilite(sendFi, 15, 12, 7)
   }
   let currEnd = ''
   for (let i=values.length-1; i>=0; i--) {
@@ -1923,10 +1922,10 @@
    f.description.value = values['description'] || ''
    rat.value = values['rating'] || 0
    updateStars()
-   sub.value = 'Edit'
-   subfi.value = 'Muokkaa'
-   hilite(sub, 15, 12, 7)
-   hilite(subfi, 15, 12, 7)
+   send.value = 'Edit'
+   sendFi.value = 'Muokkaa'
+   hilite(send, 15, 12, 7)
+   hilite(sendFi, 15, 12, 7)
    for (let i=0; i<boxes.length; i++) {
     const val = boxes[i].value
     if (parseInt(values['with']) & Math.pow(2, (val-1))) {
