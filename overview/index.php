@@ -96,17 +96,20 @@
 <header>
  <h1>Time analysis</h1>
  <div id="download">
-  <a href="./export.php?format=csv">Export CSV</a>
-  <a href="./export.php?format=excel">Export to Excel</a>
-  <a href="./export.php?format=json">Export JSON</a>
+  <a href="./export.php?<?php echo http_build_query($_REQUEST, '&amp;')?>&format=csv">Export CSV</a>
+  <a href="./export.php?<?php echo http_build_query($_REQUEST, '&amp;')?>&format=excel">Export to Excel</a>
+  <a href="./export.php?<?php echo http_build_query($_REQUEST, '&amp;')?>&format=json">Export JSON</a>
  </div>
 </header>
 <?php
 
  function mkhref($sy, $sm, $sd, $ey, $em, $ed, $subject=NULL) {
-  $st = sprintf("%d-%02d-%02d", $sy, $sm, $sd);
-  $et = sprintf("%d-%02d-%02d", $ey, $em, $ed);
+  # $st = sprintf("%d-%02d-%02d", $sy, $sm, $sd);
+  # $et = sprintf("%d-%02d-%02d", $ey, $em, $ed);
+  $st = date('Y-m-d', mktime(0, 0, 0, $sm, $sd, $sy));
+  $et = date('Y-m-d', mktime(0, 0, 0, $em, $ed, $ey));
   $params = $_REQUEST;
+  $params['limit'] = 0;
   if ($subject) {
     $params['subject'] = $subject;
   }
