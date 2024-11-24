@@ -1,0 +1,100 @@
+[
+    {
+        "en": "Personal care",
+        "fi": "Henkilökohtaiset tarpeet",
+        "activities": [
+            { "id": "01", "en": "Sleeping", "fi": "Nukkuminen"},
+            { "id": "02", "en": "Eating", "fi": "Ruokailu"},
+            { "id": "03", "en": "Other personal care", "fi": "Peseytyminen, pukeutuminen"}
+        ]
+    },
+    {
+        "en": "Employment",
+        "fi": "Ansiotyö",
+        "activities": [
+            { "id": "11", "en": "Main job and second job", "fi": "Ansiotyö"},
+            { "id": "12", "en": "Activities related to employment", "fi": "Ansiotyöhön liittyvä aika"}
+        ]
+    },
+    {
+        "en": "Study",
+        "fi": "Opiskelu",
+        "activities": [
+            { "id": "21", "en": "School or university", "fi": "Koulunkäynti ja opiskelu"},
+            { "id": "22", "en": "Free time study", "fi": "Vapaa-ajan opiskelu"}
+        ]
+    },
+    {
+        "en": "Household and family care",
+        "fi": "Kotityö",
+        "activities": [
+            { "id": "30", "en": "Unspecified household and family care", "fi": "Määrittelemätön kotityö"},
+            { "id": "31", "en": "Food management", "fi": "Ruoan valmistus"},
+            { "id": "32", "en": "Household upkeep", "fi": "Huoltotyö"},
+            { "id": "33", "en": "Care for textiles", "fi": "Vaatehuolto"},
+            { "id": "34", "en": "Gardening and pet care", "fi": "Pihan ja eläinten hoito"},
+            { "id": "35", "en": "Construction and repairs", "fi": "Korjaus- ja rakennustyöt"},
+            { "id": "36", "en": "Shopping and services", "fi": "Ostokset ja asiointi"},
+            { "id": "37", "en": "Household management", "fi": "Taloudenhoito"},
+            { "id": "38", "en": "Childcare", "fi": "Lastenhoito"},
+            { "id": "39", "en": "Help to an adult household member", "fi": "Perheenjäsenen auttaminen"}
+        ]
+    },
+    {
+        "en": "Voluntary work and meetings",
+        "fi": "Vapaaehtoistyö",
+        "activities": [
+            { "id": "41", "en": "Organisational work", "fi": "Järjestötoiminta"},
+            { "id": "42", "en": "Informal help to other households", "fi": "Toisen kotitalouden auttaminen"},
+            { "id": "43", "en": "Participatory and religious activities", "fi": "Osallistuva ja uskonnollinen toiminta"}
+        ]
+    },
+    {
+        "en": "Social life and entertainment",
+        "fi": "Vapaa-aika",
+        "activities": [
+            { "id": "51", "en": "Social life", "fi": "Sosiaalinen kanssakäyminen"},
+            { "id": "52", "en": "Entertainment and culture", "fi": "Kulttuuri- ja huvitilaisuudet"},
+            { "id": "53", "en": "Resting - time out", "fi": "Lepäily"}
+        ]
+    },
+    {
+        "en": "Sports and outdoor activities",
+        "fi": "Liikunta",
+        "activities": [
+            { "id": "61", "en": "Physical excercise", "fi": "Kuntoliikunta"},
+            { "id": "62", "en": "Productive excercise", "fi": "Hyötyliikunta"},
+            { "id": "63", "en": "Sports related activities", "fi": "Liikuntaan liittyvä toiminta"}
+        ]
+    },    {
+        "en": "Hobbies",
+        "fi": "Harrastukset",
+        "activities": [
+            { "id": "71", "en": "Arts and hobbies", "fi": "Soittaminen, piirtäminen tms."},
+            { "id": "72", "en": "Computing", "fi": "ATK-harrastus"},
+            { "id": "73", "en": "Games", "fi": "Seurapelit ja -leikit"}
+        ]
+    },    {
+        "en": "Mass media",
+        "fi": "Viestintä",
+        "activities": [
+            { "id": "81", "en": "Reading", "fi": "Lukeminen"},
+            { "id": "82", "en": "TV, video and DVD", "fi": "TV:n ja videoiden katselu"},
+            { "id": "83", "en": "Radio and recordings", "fi": "Radion ja musiikin kuuntelu"}
+        ]
+    },    {
+        "en": "Travel by purpose",
+        "fi": "Matkustaminen",
+        "activities": [
+            { "id": "91", "en": "Travel to/from work", "fi": "Työmatkat"},
+            { "id": "92", "en": "Travel related to study", "fi": "Opiskeluun liittyvät matkat"},
+            { "id": "93", "en": "Travel r. to shopping, services, childcare &c.", "fi": "Ostoksiin ja asiointiin liittyvät matkat"},
+            { "id": "94", "en": "Travel related to voluntary work and meetings", "fi": "Osallistuvan toiminnan matkat"},
+            { "id": "95", "en": "Travel related to social life", "fi": "Sosiaaliseen kanssakäymiseen liittyvät matkat"},
+            { "id": "96", "en": "Travel related to other leisure", "fi": "Muuhun vapaa-aikaan liittyvät matkat"},
+            { "id": "98", "en": "Travel related to changing locality", "fi": "Matkustaminen paikkakunnalta toiselle"},
+            { "id": "90", "en": "Other or unspecified travel purpose", "fi": "Muu tai määrittelemätön matkustaminen"}
+        ]
+    },
+    { "id": "99", "en": "Other unspecified time use", "fi": "Erittelemätön ajankäyttö"}
+]

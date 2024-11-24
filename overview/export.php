@@ -5,8 +5,14 @@
  if (!$res) {
   die(mysqli_error($conn));
  }
+
+ $actfile = '../activities.json';
+ $json = file_get_contents($actfile);
+ $activities = json_decode($json, TRUE);
+
  $format = isset($_REQUEST['format']) ? $_REQUEST['format'] : 'json';
  $limit = isset($_REQUEST['limit']) ? intval($_REQUEST['limit']) : NULL;
+ $lang = isset($_REQUEST['lang']) ? $_REQUEST['lang'] : 'en';
  $end = time();
  $start = $end - 24 * 60 * 60;
  if (isset($_REQUEST['latest'])) {
@@ -37,7 +43,21 @@
  $with = isset($_REQUEST['with']) ? intval($_REQUEST['with']) : NULL;
  $desc = isset($_REQUEST['description']) ? $_REQUEST['description'] : NULL;
 
- $acts = array(
+ $acts = array("" => "", NULL => "");
+ for ($i=0; $i<count($activities); $i++) {
+  $cat = $activities[$i];
+  if (isset($cat['activities'])) {
+   for ($j=0; $j<count($cat['activities']); $j++) {
+    $a = $cat['activities'][$j];
+    $acts[$a['id']] = $a[$lang];
+   }
+  }
+  else {
+   $a = $cat;
+   $acts[$a['id']] = $a[$lang];
+  }
+ }
+/*
   "01" => "Sleeping",
   "02" => "Eating",
   "03" => "Other personal care",
@@ -72,7 +92,7 @@
   "83" => "Radio and recordings",
   "91" => "Travel to/from work",
   "92" => "Travel related to study",
-  "93" => "Travel r. to shopping, services, childcare &amp;c.",
+  "93" => "Travel r. to shopping, services, childcare &c.",
   "94" => "Travel related to voluntary work and meetings",
   "95" => "Travel related to social life",
   "96" => "Travel related to other leisure",
@@ -80,7 +100,9 @@
   "90" => "Other or unspecified travel purpose",
   "99" => "Other unspecified time use"
  );
+*/
  $locs = array(
+  "" => "",
   "0" => "Unspecified",
   "10" => "Unspecified",
   "11" => "Home",
@@ -102,7 +124,35 @@
 
  $with_labels = array("", "alone", "partner", "parent", "kids", "family", "others");
 
- $select = 'SELECT * FROM '.DB_TABLE.' WHERE 1 ORDER BY starttime';
+ $select = 'SELECT * FROM '.DB_TABLE.' WHERE 1 ';
+ if ($start) {
+  $select .= " AND `endtime` >= '".date('Y-m-d H:i:s',$start)."'";
+ }
+ if ($end) {
+  $select .= " AND `starttime` <= '".date('Y-m-d H:i:s',$end)."'";
+ }
+ if ($act) {
+  $select .= ' AND (`mainaction` = '.$act.' OR `sideaction` = '.$act.')';
+ }
+ if ($sub) {
+  $select .= " AND `subject` = '".mysqli_real_escape_string($conn, $sub)."'";
+ }
+ if ($rat) {
+  $select .= ' AND `rating` = '.$rat;
+ }
+ if ($min) {
+  $select .= ' AND `rating` >= '.$min;
+ }
+ if ($max) {
+  $select .= ' AND `rating` <= '.$max;
+ }
+ if ($desc) {
+  $select .= " AND `description` LIKE '%".mysqli_real_escape_string($conn, $desc)."%'";
+ }
+ if ($with) {
+  $select .= ' AND `with` = '.$with;
+ }
+ $select .= " ORDER BY starttime";
  if ($limit) {
   $select .= " LIMIT $limit";
  }
@@ -133,7 +183,7 @@
    header("Content-Disposition: attachment; filename=\"$filename.csv\"");
    echo join("\t", $titlerow)."\n";
   }
-  if ($format == 'excel') {
+  else if ($format == 'excel') {
    header('Content-Type: application/vnd.ms-excel');
    header("Content-Disposition: attachment; filename=\"$filename.xls\"");
    echo "<table><tr><th>".join("</th><th>", $titlerow)."</th></tr>\n";
@@ -144,7 +194,7 @@
   }
   while ($row = mysqli_fetch_assoc($stmt)) {
    if ($row['with'] == 1) {
-    $with = 'Alone';
+    $with = $with_labels[1];
    }
    else {
     $with = array();
@@ -158,6 +208,9 @@
    }
    $start = strtotime($row['starttime']);
    $end = strtotime($row['endtime']);
+   if (!$acts[$row['mainaction']]) {
+    echo $row['mainaction']."\n";
+   }
    $values = array('subject' => $row['subject'],
                    'timestamp' => date("c", $start),
                    'starttime' => $start,
@@ -171,9 +224,6 @@
                    'rating' => $row['rating'],
                    'description' => $row['description'],
                   );
-   if ($row['sideaction']) {
-    $values['sideaction'] = $acts[$row['sideaction']];
-   }
    if ($format == 'csv') {
     echo join("\t", $values)."\n";
    }
