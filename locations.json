@@ -1,0 +1,65 @@
+[
+    {
+        "id": "", "en": "Unspecified", "fi": "Määrittelemätön"
+    },
+    {
+        "en": "Location",
+        "fi": "Sijainti",
+        "options": [
+            {
+                "id": "10", "en": "Unspecified", "fi": "Määrittelemätön"
+            },
+            {
+                "id": "11", "en": "Home", "fi": "Koti"
+            },
+            {
+                "id": "12", "en": "Weekend home or holiday apartment", "fi": "Vapaa-ajan asunto"
+            },
+            {
+                "id": "13", "en": "Workplace or school", "fi": "Työpaikka tai koulu"
+            },
+            {
+                "id": "14", "en": "Other people's home", "fi": "Toisen koti"
+            },
+            {
+                "id": "15", "en": "Restaurant, cafe or pub", "fi": "Ravintola tai kahvila"
+            },
+            {
+                "id": "16", "en": "Shopping centres, malls, markets, other shops", "fi": "Ostoskeskus tai kauppa"
+            },
+            {
+                "id": "17", "en": "Hotel, guesthouse, camping site", "fi": "Hotelli, majatalo, leirintäalue"
+            },
+            {
+                "id": "19", "en": "Other specified location", "fi": "Muu sijainti"
+            }
+        ]
+    },
+    {
+        "en": "Transport mode",
+        "fi": "Liikkumistapa",
+        "options": [
+            {
+                "id": "20", "en": "Unspecified", "fi": "Määrittelemätön"
+            },
+            {
+                "id": "21", "en": "Travelling on foot", "fi": "Jalkaisin"
+            },
+            {
+                "id": "22", "en": "Travelling by bicycle", "fi": "Polkupyörä"
+            },
+            {
+                "id": "23", "en": "Travelling by moped, motorcycle or motorboat", "fi": "Mopo, moottoripyörä tai -vene"
+            },
+            {
+                "id": "24", "en": "Travelling by passenger car", "fi": "Henkilöauto"
+            },
+            {
+                "id": "29", "en": "Other or unspecified private transport mode<", "fi": "Muu yksityinen kulkuväline"
+            },
+            {
+                "id": "31", "en": "Travelling by public transport", "fi": "Julkinen liikenne"
+            }
+        ]
+    }
+]

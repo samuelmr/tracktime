@@ -697,48 +697,6 @@
 <fieldset class="extra location">
 <label for="location"><span lang="fi">Sijainti</span><span lang="en">Location</span></label>
 <select id="location" name="location">
-<option lang="fi" value="0">Määrittelemätön</option>
-<optgroup  lang="fi" label="Sijainti">
-<option  lang="fi" value="10">Määrittelemätön</option>
-<option  lang="fi" value="11">Koti</option>
-<option  lang="fi" value="12">Vapaa-ajan asunto</option>
-<option  lang="fi" value="13">Työpaikka tai koulu</option>
-<option  lang="fi" value="14">Toisen koti</option>
-<option  lang="fi" value="15">Ravintola tai kahvila</option>
-<option  lang="fi" value="16">Ostoskeskus tai kauppa</option>
-<option  lang="fi" value="17">Hotelli, majatalo, leirintäalue</option>
-<option  lang="fi" value="19">Muu sijainti</option>
-</optgroup>
-<optgroup  lang="fi" label="Liikkumistapa">
-<option  lang="fi" value="20">Määrittelemätön</option>
-<option  lang="fi" value="21">Jalkaisin</option>
-<option  lang="fi" value="22">Polkupyörä</option>
-<option  lang="fi" value="23">Mopo, moottoripyörä tai -vene</option>
-<option  lang="fi" value="24">Henkilöauto</option>
-<option  lang="fi" value="29">Muu yksityinen kulkuväline</option>
-<option  lang="fi" value="31">Julkinen liikenne</option>
-</optgroup>
-<option lang="en" value="0">Unspecified</option>
-<optgroup lang="en" label="Location">
-<option lang="en" value="10">Unspecified</option>
-<option lang="en" value="11" selected="selected">Home</option>
-<option lang="en" value="12">Weekend home or holiday apartment</option>
-<option lang="en" value="13">Workplace or school</option>
-<option lang="en" value="14">Other people's home</option>
-<option lang="en" value="15">Restaurant, cafe or pub</option>
-<option lang="en" value="16">Shopping centres, malls, markets, other shops</option>
-<option lang="en" value="17">Hotel, guesthouse, camping site</option>
-<option lang="en" value="19">Other specified location</option>
-</optgroup>
-<optgroup lang="en" label="Transport mode">
-<option lang="en" value="20">Unspecified</option>
-<option lang="en" value="21">Travelling on foot</option>
-<option lang="en" value="22">Travelling by bicycle</option>
-<option lang="en" value="23">Travelling by moped, motorcycle or motorboat</option>
-<option lang="en" value="24">Travelling by passenger car</option>
-<option lang="en" value="29">Other or unspecified private transport mode</option>
-<option lang="en" value="31">Travelling by public transport</option>
-</optgroup>
 </select>
 </fieldset>
 <fieldset class="extra description">
@@ -974,6 +932,7 @@
 
 
  const acts = {'null': '', 'undefined': ''}
+ const locs = {}
  try {
   let activities
   (async () => {
@@ -1017,7 +976,47 @@
     }
    }
   })()
- }
+  let locations
+  (async () => {
+   const file = './locations.json'
+   const resp = await fetch(file)
+   locations = await resp.json()
+   console.log(locations)
+   for (const cat of locations) {
+    const grp = []
+    if (cat.options) {
+     for (const lang of languages) {
+      grp[lang] = document.createElement('optgroup')
+      grp[lang].lang = lang
+      grp[lang].label = cat[lang]
+     }
+     for (const loc of cat.options) {
+      locs[loc.id] = loc
+      for (const lang of languages) {
+       const opt = document.createElement('option')
+       opt.lang = lang
+       opt.value = loc.id
+       opt.textContent = loc[lang]
+       grp[lang].appendChild(opt)
+      }
+     }
+     for (const lang of languages) {
+      f.location.appendChild(grp[lang])
+     }
+    }
+    else {
+     locs[cat.id] = cat
+     for (const lang of languages) {
+      const opt = document.createElement('option')
+      opt.lang = lang
+      opt.value = cat.id
+      opt.textContent = cat[lang]
+      f.location.appendChild(opt)
+     }
+    }
+   }
+  })()
+}
  catch(e) {
   console.error(e)
  }
