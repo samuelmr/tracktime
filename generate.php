@@ -17,15 +17,12 @@
 
  $json = file_get_contents($actfile);
  $activities = json_decode($json, TRUE);
- $acts = array("" => "", NULL => "");
+ $acts = array();
  for ($i=0; $i<count($activities); $i++) {
   $cat = $activities[$i];
   if (isset($cat['activities'])) {
    for ($j=0; $j<count($cat['activities']); $j++) {
     $a = $cat['activities'][$j];
-    if (!$a['id']) {
-      var_dump($a);
-    }
     $acts[$a['id']] = $a[$lang];
    }
   }
@@ -37,21 +34,14 @@
 
  $json = file_get_contents($locfile);
  $locations = json_decode($json, TRUE);
- $locs = array("" => "", NULL => "");
+ $locs = array();
  for ($i=0; $i<count($locations); $i++) {
   $cat = $locations[$i];
   if (isset($cat['options'])) {
    for ($j=0; $j<count($cat['options']); $j++) {
     $l = $cat['options'][$j];
     $locs[$l['id']] = $l[$lang];
-    if (!$l['id']) {
-      var_dump($l);
-    }
    }
-  }
-  else {
-   $l = $cat;
-   $locs[$l['id']] = $l[$lang];
   }
  }
 
