@@ -13,8 +13,8 @@
  $format = isset($_REQUEST['format']) ? $_REQUEST['format'] : 'json';
  $limit = isset($_REQUEST['limit']) ? intval($_REQUEST['limit']) : NULL;
  $lang = isset($_REQUEST['lang']) ? $_REQUEST['lang'] : 'en';
- $end = time();
- $start = $end - 24 * 60 * 60;
+ # $end = time();
+ # $start = $end - 24 * 60 * 60;
  if (isset($_REQUEST['latest'])) {
   $limit = intval($_REQUEST['latest']);
   $start = NULL;
