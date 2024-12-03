@@ -12,68 +12,43 @@
  $START_DATE = mktime(0, 0, 0, 1, 1, 2025);
  $END_DATE = mktime(0, 0, 0, 31, 12, 2025);
 
- $acts = array(
-  "01" => "Sleeping",
-  "02" => "Eating",
-  "03" => "Other personal care",
-  "11" => "Main job and second job",
-  "12" => "Activities related to employment",
-  "21" => "School or university",
-  "22" => "Free time study",
-  "30" => "Unspecified household and family care",
-  "31" => "Food management",
-  "32" => "Household upkeep",
-  "33" => "Care for textiles",
-  "34" => "Gardening and pet care",
-  "35" => "Construction and repairs",
-  "36" => "Shopping and services",
-  "37" => "Household management",
-  "38" => "Childcare",
-  "39" => "Help to an adult household member",
-  "41" => "Organisational work",
-  "42" => "Informal help to other households",
-  "43" => "Participatory and religious activities",
-  "51" => "Social life",
-  "52" => "Entertainment and culture",
-  "53" => "Resting - time out",
-  "61" => "Physical excercise",
-  "62" => "Productive excercise",
-  "63" => "Sports related activities",
-  "71" => "Arts and hobbies",
-  "72" => "Computing",
-  "73" => "Games",
-  "81" => "Reading",
-  "82" => "TV, video and DVD",
-  "83" => "Radio and recordings",
-  "91" => "Travel to/from work",
-  "92" => "Travel related to study",
-  "93" => "Travel r. to shopping, services, childcare &c.",
-  "94" => "Travel related to voluntary work and meetings",
-  "95" => "Travel related to social life",
-  "96" => "Travel related to other leisure", 
-  "98" => "Travel related to changing locality",
-  "90" => "Other or unspecified travel purpose",
-  "99" => "Other unspecified time use"
- );
- $locs = array(
-  "0" => "Unspecified",
-  "10" => "Unspecified",
-  "11" => "Home",
-  "12" => "Weekend home or holiday apartment",
-  "13" => "Workplace or school",
-  "14" => "Other people's home",
-  "15" => "Restaurant, cafe or pub",
-  "16" => "Shopping centres, malls, markets, other shops",
-  "17" => "Hotel, guesthouse, camping site",
-  "19" => "Other specified location",
-  "20" => "Unspecified",
-  "21" => "Travelling on foot",
-  "22" => "Travelling by bicycle",
-  "23" => "Travelling by moped, motorcycle or motorboat",
-  "24" => "Travelling by passenger car",
-  "29" => "Other or unspecified private transport mode",
-  "31" => "Travelling by public transport"
- );
+ $actfile = '../activities.json';
+ $json = file_get_contents($actfile);
+ $activities = json_decode($json, TRUE);
+
+ $acts = array("" => "", NULL => "");
+ for ($i=0; $i<count($activities); $i++) {
+  $cat = $activities[$i];
+  if (isset($cat['activities'])) {
+   for ($j=0; $j<count($cat['activities']); $j++) {
+    $a = $cat['activities'][$j];
+    $acts[$a['id']] = $a[$lang];
+   }
+  }
+  else {
+   $a = $cat;
+   $acts[$a['id']] = $a[$lang];
+  }
+ }
+
+ $locfile = '../locations.json';
+ $json = file_get_contents($locfile);
+ $locations = json_decode($json, TRUE);
+
+ $locs = array("" => "", NULL => "");
+ for ($i=0; $i<count($locations); $i++) {
+  $cat = $locations[$i];
+  if (isset($cat['options'])) {
+   for ($j=0; $j<count($cat['options']); $j++) {
+    $l = $cat['options'][$j];
+    $locs[$l['id']] = $l[$lang];
+   }
+  }
+  else {
+   $l = $cat;
+   $locs[$l['id']] = $l[$lang];
+  }
+ }
 
  $with_labels = array("alone", "partner", "parent", "kids", "family", "others");
 
@@ -98,7 +73,7 @@
         $wi = pow(2, array_rand($with_labels));
         $lo = array_rand($locs);
         $uc = floor(rand(0, 1));
-        $de = "'".mysqli_real_escape_string($conn, "$acts[$ma] / $acts[$sa]")."'";
+        $de = "'".mysqli_real_escape_string($conn, "$acts[$ma] / $acts[$sa] @ $locs[$lo]")."'";
         $ra = floor(rand(0, 5));
         $insert = "INSERT INTO ".DB_TABLE." (`subject`, `starttime`, `endtime`, `mainaction`, `sideaction`, `with`, `location`, `rating`, `description`)".
          " VALUES('$id', '$sts', '$ets', '$ma', '$sa', $wi, $lo, $ra, $de)";
