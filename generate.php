@@ -11,17 +11,21 @@
  $MAX_DAYS = 14;
  $START_DATE = mktime(0, 0, 0, 1, 1, 2025);
  $END_DATE = mktime(0, 0, 0, 31, 12, 2025);
+ $lang = 'en';
+ $actfile = './activities.json';
+ $locfile = './locations.json';
 
- $actfile = '../activities.json';
  $json = file_get_contents($actfile);
  $activities = json_decode($json, TRUE);
-
  $acts = array("" => "", NULL => "");
  for ($i=0; $i<count($activities); $i++) {
   $cat = $activities[$i];
   if (isset($cat['activities'])) {
    for ($j=0; $j<count($cat['activities']); $j++) {
     $a = $cat['activities'][$j];
+    if (!$a['id']) {
+      var_dump($a);
+    }
     $acts[$a['id']] = $a[$lang];
    }
   }
@@ -31,10 +35,8 @@
   }
  }
 
- $locfile = '../locations.json';
  $json = file_get_contents($locfile);
  $locations = json_decode($json, TRUE);
-
  $locs = array("" => "", NULL => "");
  for ($i=0; $i<count($locations); $i++) {
   $cat = $locations[$i];
@@ -42,6 +44,9 @@
    for ($j=0; $j<count($cat['options']); $j++) {
     $l = $cat['options'][$j];
     $locs[$l['id']] = $l[$lang];
+    if (!$l['id']) {
+      var_dump($l);
+    }
    }
   }
   else {
