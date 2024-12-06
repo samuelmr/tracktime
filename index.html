@@ -1718,10 +1718,10 @@
     cellval = document.createElement('span')
     const en = document.createElement('span')
     en.lang = 'en'
-    en.textContent = acts[val].en || ''
+    en.textContent = acts[val]?.en || ''
     const fi = document.createElement('span')
     fi.lang = 'fi'
-    fi.textContent = acts[val].fi || ''
+    fi.textContent = acts[val]?.fi || ''
     cellval.appendChild(en)
     cellval.appendChild(fi)
    }
@@ -1737,8 +1737,8 @@
     for (let i=0; i<boxes.length; i++) {
      const val = boxes[i].value
      if (parseInt(values['with']) & Math.pow(2, (val-1))) {
-      tmp.en.push(wlabels[boxes[i].value].en.toLowerCase())
-      tmp.fi.push(wlabels[boxes[i].value].fi.toLowerCase())
+      tmp.en.push(wlabels[boxes[i].value]?.en.toLowerCase())
+      tmp.fi.push(wlabels[boxes[i].value]?.fi.toLowerCase())
      }
     }
     enVal = (values['with'] != 1) ? 'with ' + tmp.en.join(', ') : wlabels[1].en.toLowerCase()
