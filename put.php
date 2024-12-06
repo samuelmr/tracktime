@@ -18,13 +18,13 @@
  $subject = $_REQUEST['subject'];
  $starttime = $_REQUEST['starttime'];
  $endtime = $_REQUEST['endtime'];
- $mainaction = sprintf('%02d', intval($_REQUEST['mainaction']));
+ $mainaction = sprintf("%'02.2s", $_REQUEST['mainaction']);
  $values = array('subject' => $subject,
                  'starttime' => $starttime,
                  'endtime' => $endtime,
                  'mainaction' => $mainaction);
  if (isset($_REQUEST['sideaction']) && $_REQUEST['sideaction']) {
-  $sideaction = sprintf('%02d', intval($_REQUEST['sideaction']));
+  $sideaction = sprintf("%'02.2s", $_REQUEST['sideaction']);
   $values['sideaction'] = $sideaction;
  }
  $with = 0;
