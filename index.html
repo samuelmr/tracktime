@@ -937,6 +937,8 @@
  let activities = []
  let locations = []
  let guesses = {}
+ let llabels = {}
+
  try {
   (async () => {
    const file = './activities.json'
@@ -1017,6 +1019,11 @@
      }
     }
    }
+  })();
+  (async () => {
+   const file = './locationlabels.json'
+   const resp = await fetch(file)
+   llabels = await resp.json()
   })();
   (async () => {
    const file = './guesses.json'
@@ -1374,22 +1381,6 @@
  wlabels[4] = {en: 'Kids', fi: 'Lasten'}
  wlabels[5] = {en: 'Family', fi: 'Perheen'}
  wlabels[6] = {en: 'Others', fi: 'Muiden'}
-
- const llabels = []
- llabels[11] = {en: 'at home', fi: 'kotona'}
- llabels[12] = {en: 'at other home', fi: 'mökillä'}
- llabels[13] = {en: 'at work', fi: 'töissä'}
- llabels[14] = {en: 'at other\'s home', fi: 'kylässä'}
- llabels[15] = {en: 'at restaurant', fi: 'ravintolassa'}
- llabels[16] = {en: 'at shop', fi: 'kaupassa'}
- llabels[17] = {en: 'at hotel', fi: 'hotellissa'}
- llabels[19] = {en: 'at other', fi: 'muualla'}
- llabels[21] = {en: 'by foot', fi: 'jalkaisin'}
- llabels[22] = {en: 'by bicycle', fi: 'pyörällä'}
- llabels[23] = {en: 'by motorbike', fi: 'moottoripyörällä'}
- llabels[24] = {en: 'by car', fi: 'autolla'}
- llabels[29] = {en: 'by other', fi: 'muussa liikennevälineellä'}
- llabels[31] = {en: 'by public transport', fi: 'joukkoliikenteessä'}
 
  const keys = ['starttime', 'endtime', 'mainaction', 'sideaction', 'with']
 
