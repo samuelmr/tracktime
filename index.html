@@ -640,7 +640,7 @@
 <body>
 <header>
 <div id="language"></div>
-<h1><a href="./"><span lang="fi">Ajankäyttö</span><span lang="en">Track time</span></a></h1>
+<h1><a href="./" id="reset"><span lang="fi">Ajankäyttö</span><span lang="en">Track time</span></a></h1>
 <form id="add" method="POST" action="put.php" enctype="application/x-www-form-urlencoded">
 <input type="hidden" name="id" id="hiddenid" />
 <fieldset class="starttime">
@@ -928,13 +928,16 @@
  const pm = document.getElementById('pickmonth')
  const pd = document.getElementById('pickday')
  const pt = document.getElementById('picktime')
+ const reset = document.getElementById('reset')
  const tenMinutes = 10 * 60 * 1000
 
 
  const acts = {'null': '', 'undefined': ''}
  const locs = {}
+ let activities = []
+ let locations = []
+ let guesses = {}
  try {
-  let activities = []
   (async () => {
    const file = './activities.json'
    const resp = await fetch(file)
@@ -975,8 +978,7 @@
      }
     }
    }
-  })()
-  let locations
+  })();
   (async () => {
    const file = './locations.json'
    const resp = await fetch(file)
@@ -1015,13 +1017,12 @@
      }
     }
    }
-  })()
-  let guesses = {}
+  })();
   (async () => {
    const file = './guesses.json'
    const resp = await fetch(file)
    guesses = await resp.json()
-  })()
+  })();
  }
  catch(e) {
   console.error(e)
@@ -1089,9 +1090,11 @@
  if (subject) {
   sub.value = subject
   getLatest(numRows)
+  reset.href = `/?subject=${encodeURIComponent(subject)}`
  }
  sub.onchange = () => {
   getLatest(numRows)
+  reset.href = `/?subject=${encodeURIComponent(sub.value)}`
  }
 /*
  const dbRequest = indexedDB.open(DB_NAME, 1)
