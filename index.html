@@ -934,12 +934,12 @@
  const acts = {'null': '', 'undefined': ''}
  const locs = {}
  try {
-  let activities
+  let activities = []
   (async () => {
    const file = './activities.json'
    const resp = await fetch(file)
    activities = await resp.json()
-   console.log(activities)
+   // console.log(activities)
    for (const cat of activities) {
     const grp = []
     if (cat.activities) {
@@ -981,7 +981,7 @@
    const file = './locations.json'
    const resp = await fetch(file)
    locations = await resp.json()
-   console.log(locations)
+   // console.log(locations)
    for (const cat of locations) {
     const grp = []
     if (cat.options) {
@@ -1016,7 +1016,13 @@
     }
    }
   })()
-}
+  let guesses = {}
+  (async () => {
+   const file = './guesses.json'
+   const resp = await fetch(file)
+   guesses = await resp.json()
+  })()
+ }
  catch(e) {
   console.error(e)
  }
@@ -1381,49 +1387,6 @@
  llabels[24] = {en: 'by car', fi: 'autolla'}
  llabels[29] = {en: 'by other', fi: 'muussa liikennevälineellä'}
  llabels[31] = {en: 'by public transport', fi: 'joukkoliikenteessä'}
-
- const guesses = []
- guesses["01"] = 11; // sleep at home
- guesses["02"] = 11; // eat at home
- guesses["03"] = 11; // personal care at home
- guesses["11"] = 13; // work at workplace
- guesses["12"] = 13; // employment at workplace
- guesses["21"] = 13; // study at school
- guesses["22"] = 11; // freetime study at home
- guesses["30"] = 11; // household care at home
- guesses["31"] = 11; // food preparation at home
- guesses["32"] = 11; // household upkeep at home
- guesses["33"] = 11; // laundry at home
- guesses["34"] = 11; // gardening at home
- guesses["35"] = 11; // repairs at home
- guesses["36"] = 16; // shopping at shop
- guesses["37"] = 11; // household management at home
- guesses["38"] = 11; // childcare at home
- guesses["39"] = 11; // adult help at other's home
- guesses["41"] = 19; // organizational work at other
- guesses["42"] = 14; // household help at other's home
- guesses["43"] = 19; // participatory activities and meetings at other
- guesses["51"] = 11; // social life at home
- guesses["52"] = 19; // entertainment at other
- guesses["53"] = 11; // resting at home
- guesses["61"] = 19; // sports at other
- guesses["62"] = 19; // productive at other
- guesses["63"] = 19; // sports at other
- guesses["71"] = 11; // hobbies at home
- guesses["72"] = 11; // computing at home
- guesses["73"] = 11; // games at home
- guesses["81"] = 11; // reading at home
- guesses["82"] = 11; // TV and video at home
- guesses["83"] = 11; // radio and music at home
- guesses["91"] = 24; // commuting by car
- guesses["92"] = 31; // school travel by public transport
- guesses["93"] = 24; // shopping travel by car
- guesses["94"] = 24; // participatory and meetings by car
- guesses["95"] = 24; // travel related to social life by car
- guesses["96"] = 24; // travel related to leisure by car
- guesses["98"] = 24; // travel related to moving by car
- guesses["90"] = 24; // other travel by car
- guesses["99"] = 11; // unspecified at home
 
  const keys = ['starttime', 'endtime', 'mainaction', 'sideaction', 'with']
 
