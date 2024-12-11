@@ -996,6 +996,7 @@
      }
      for (const loc of cat.options) {
       locs[loc.id] = loc
+      llabels[loc.id] = {en: loc.atEn, fi: loc.atFi}
       for (const lang of languages) {
        const opt = document.createElement('option')
        opt.lang = lang
@@ -1019,11 +1020,6 @@
      }
     }
    }
-  })();
-  (async () => {
-   const file = './locationlabels.json'
-   const resp = await fetch(file)
-   llabels = await resp.json()
   })();
   (async () => {
    const file = './guesses.json'

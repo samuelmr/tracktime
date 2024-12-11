@@ -7,31 +7,31 @@
         "fi": "Sijainti",
         "options": [
             {
-                "id": "10", "en": "Unspecified", "fi": "Määrittelemätön"
+                "id": "10", "en": "Unspecified", "atEn": "at unknown", "fi": "Määrittelemätön", "atFi": "tuntemattomassa paikassa"
             },
             {
-                "id": "11", "en": "Home", "fi": "Koti"
+                "id": "11", "en": "Home", "atEn": "at home", "fi": "Koti", "atFi": "kotona"
             },
             {
-                "id": "12", "en": "Weekend home or holiday apartment", "fi": "Vapaa-ajan asunto"
+                "id": "12", "en": "Weekend home or holiday apartment", "atEn": "at other home", "fi": "Vapaa-ajan asunto", "atFi": "mökillä"
             },
             {
-                "id": "13", "en": "Workplace or school", "fi": "Työpaikka tai koulu"
+                "id": "13", "en": "Workplace or school", "atEn": "at work", "fi": "Työpaikka tai koulu", "atFi": "töissä"
             },
             {
-                "id": "14", "en": "Other people's home", "fi": "Toisen koti"
+                "id": "14", "en": "Other people's home", "atEn": "at other's home", "fi": "Toisen koti", "atFi": "kylässä"
             },
             {
-                "id": "15", "en": "Restaurant, cafe or pub", "fi": "Ravintola tai kahvila"
+                "id": "15", "en": "Restaurant, cafe or pub", "atEn": "at restaurant", "fi": "Ravintola tai kahvila", "atFi": "ravintolassa"
             },
             {
-                "id": "16", "en": "Shopping centres, malls, markets, other shops", "fi": "Ostoskeskus tai kauppa"
+                "id": "16", "en": "Shopping centres, malls, markets, other shops", "atEn": "at shop", "fi": "Ostoskeskus tai kauppa", "atFi": "kaupassa"
             },
             {
-                "id": "17", "en": "Hotel, guesthouse, camping site", "fi": "Hotelli, majatalo, leirintäalue"
+                "id": "17", "en": "Hotel, guesthouse, camping site", "atEn": "at hotel", "fi": "Hotelli, majatalo, leirintäalue", "atFi": "hotellissa"
             },
             {
-                "id": "19", "en": "Other specified location", "fi": "Muu sijainti"
+                "id": "19", "en": "Other specified location", "atEn": "at other", "fi": "Muu sijainti", "atFi": "muualla"
             }
         ]
     },
@@ -40,25 +40,25 @@
         "fi": "Liikkumistapa",
         "options": [
             {
-                "id": "20", "en": "Unspecified", "fi": "Määrittelemätön"
+                "id": "20", "en": "Unspecified", "atEn": "by unknown transport mode", "fi": "Määrittelemätön", "atFi": "tuntemattomalla tavalla"
             },
             {
-                "id": "21", "en": "Travelling on foot", "fi": "Jalkaisin"
+                "id": "21", "en": "Travelling on foot", "atEn": "by foot", "fi": "Jalkaisin", "atFi": "jalkaisin"
             },
             {
-                "id": "22", "en": "Travelling by bicycle", "fi": "Polkupyörä"
+                "id": "22", "en": "Travelling by bicycle", "atEn": "by bicycle", "fi": "Polkupyörä", "atFi": "pyörällä"
             },
             {
-                "id": "23", "en": "Travelling by moped, motorcycle or motorboat", "fi": "Mopo, moottoripyörä tai -vene"
+                "id": "23", "en": "Travelling by moped, motorcycle or motorboat", "atEn": "by motorbike", "fi": "Mopo, moottoripyörä tai -vene", "atFi": "moottoripyörällä"
             },
             {
-                "id": "24", "en": "Travelling by passenger car", "fi": "Henkilöauto"
+                "id": "24", "en": "Travelling by passenger car", "atEn": "by car", "fi": "Henkilöauto", "atFi": "autolla"
             },
             {
-                "id": "29", "en": "Other or unspecified private transport mode", "fi": "Muu yksityinen kulkuväline"
+                "id": "29", "en": "Other or unspecified private transport mode", "atEn": "by other", "fi": "Muu yksityinen kulkuväline", "atFi": "muulla liikennevälineellä"
             },
             {
-                "id": "31", "en": "Travelling by public transport", "fi": "Julkinen liikenne"
+                "id": "31", "en": "Travelling by public transport", "atEn": "by public transport", "fi": "Julkinen liikenne", "atFi": "joukkoliikenteessä"
             }
         ]
     }
