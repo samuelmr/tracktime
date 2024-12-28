@@ -151,15 +151,18 @@
    $params[] = "(`mainaction` = ".intval($_REQUEST['action'])." OR `sideaction` = ".intval($_REQUEST['action']).")";
  }
  if (isset($_REQUEST['mainaction']) && $_REQUEST['mainaction']) {
-   $params[] = "(`mainaction` = ".intval($_REQUEST['mainaction']).")";
+   $params[] = "(`mainaction` = ".sprintf("%'02.2s", $_REQUEST['mainaction']).")";
  }
  if (isset($_REQUEST['sideaction']) && $_REQUEST['sideaction']) {
-   $params[] = "(`sideaction` = ".intval($_REQUEST['sideaction']).")";
+   $params[] = "(`sideaction` = ".sprintf("%'02.2s", $_REQUEST['sideaction']).")";
  }
  if (isset($_REQUEST['with']) && $_REQUEST['with']) {
-   $params[] = "(`with` & POW(2, ".($_REQUEST['with'] - 1).") != 0)";
- }
- if (isset($_REQUEST['desc']) && $_REQUEST['desc']) {
+  $params[] = "(`with` & POW(2, ".(intval($_REQUEST['with']) - 1).") != 0)";
+}
+if (isset($_REQUEST['withOnly']) && $_REQUEST['withOnly']) {
+  $params[] = "(`with` = ".intval($_REQUEST['withOnly']).")";
+}
+if (isset($_REQUEST['desc']) && $_REQUEST['desc']) {
    $params[] = "description LIKE '%".mysqli_real_escape_string($conn, $_REQUEST['desc'])."%'";
  }
  if (isset($_REQUEST['not']) && $_REQUEST['not']) {
