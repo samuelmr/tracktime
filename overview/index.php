@@ -153,8 +153,13 @@
  if (isset($_REQUEST['mainaction']) && $_REQUEST['mainaction']) {
    $params[] = "(`mainaction` = ".sprintf("%'02.2s", $_REQUEST['mainaction']).")";
  }
- if (isset($_REQUEST['sideaction']) && $_REQUEST['sideaction']) {
-   $params[] = "(`sideaction` = ".sprintf("%'02.2s", $_REQUEST['sideaction']).")";
+ if (isset($_REQUEST['sideaction'])) {
+   if ($_REQUEST['sideaction'] == '0') {
+    $params[] = "(`sideaction` IS NULL)";
+   }
+   else {
+    $params[] = "(`sideaction` = ".sprintf("%'02.2s", $_REQUEST['sideaction']).")";
+   }
  }
  if (isset($_REQUEST['with']) && $_REQUEST['with']) {
   $params[] = "(`with` & POW(2, ".(intval($_REQUEST['with']) - 1).") != 0)";
