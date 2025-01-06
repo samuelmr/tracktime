@@ -1,10 +1,33 @@
-<title>Aika-analyysi</title>
-<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet" />
+<?php
+ $lang = 'en';
+ if (isset($_REQUEST['lang']) && $_REQUEST['lang'] == 'fi') {
+  $lang = $_REQUEST['lang'];
+ }
+?>
+<!DOCTYPE html>
+<html lang="<?php echo $lang; ?>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="width">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="white">
+<meta name="apple-mobile-web-app-title" content="TrackTime">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&amp;display=swap" rel="stylesheet">
+<meta name="theme-color" content="#FFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#333" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="../favicon.ico">
+<link rel="manifest" href="../public/manifest.json">
+<title lang="en">Time analysis</title>
 <style>
+ *[lang]:not([lang="<?php echo $lang; ?>"]) {
+  display: none !important;
+ }
  body {
   background-color: #EEE;
   color: #000;
-  font-family: Source Sans Pro,sans-serif;
+  font-family: 'Open Sans','Unicode Sans','Lucida Sans Unicode',Helvetica,Arial,Verdana,sans-serif;
   margin: 0;
   padding: 0;
  }
@@ -21,6 +44,9 @@
   float: left;
   width: 13em;
  }
+ #download {
+  margin-right: 7em;
+ }
  header a {
   background-color: #FFF;
   border-radius: 0.25em;
@@ -29,6 +55,19 @@
   float: right;
   margin: 1.75em 1em 0.5em 1em;
   padding: 0.5em;
+ }
+ form {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 2em 1em 1em 1em;
+  width: 100em;
+ }
+ input[type="submit"] {
+  border-width: 2px;
+  border-radius: 0.5em;
+  min-width: 6em;
+  height: 2em;
+  margin: 1.5em 0 0 1em;
  }
  table {
   border-collapse: collapse;
@@ -92,15 +131,364 @@
   display: block;
   font-size: x-small;
  }
+ #language {
+  background-color: #CCC;
+  border: 1px outset #CCC;
+  border-radius: 2em;
+  color: #333;
+  display: flex;
+  padding: 0.25em 0 0.25em 0.5em;
+  position: fixed;
+  right: 2em;
+  top: 2em;
+ }
+ #language ul {
+  display: flex;
+  margin: 0;
+  padding: 0;
+ }
+ .language-switcher li {
+  background-color: #666;
+  border: 1px outset #CCC;
+  border-color: #CCC;
+  border-width: 1px;
+  border-style: outset;
+  border-radius: 2em;
+  box-sizing: border-box;
+  color: #FFF;
+  list-style-type: none;
+  margin: 0em 0.5em 0 0;
+  min-height: 2em;
+  min-width: 2em;
+  padding: 0.25em 0 0 0;
+  text-align: center;
+  width: 2em;
+ }
+ .language-switcher li.selected {
+  background-color: #FFF;
+  border-color: #CCC;
+  border-style: inset;
+  color: #0d0342;
+ }
 </style>
 <header>
- <h1>Time analysis</h1>
+ <div id="language"></div>
+ <h1 lang="en">Time analysis</h1>
+ <h1 lang="fi">Aika-analyysi</h1>
  <div id="download">
   <a href="./export.php?<?php echo http_build_query($_REQUEST, '&amp;')?>&format=csv">Export CSV</a>
   <a href="./export.php?<?php echo http_build_query($_REQUEST, '&amp;')?>&format=excel">Export to Excel</a>
   <a href="./export.php?<?php echo http_build_query($_REQUEST, '&amp;')?>&format=json">Export JSON</a>
  </div>
 </header>
+<?php
+ require_once('../dbconfig.php');
+ $conn = mysqli_connect(DB_ADDR, DB_USER, DB_PASS);
+ $res = mysqli_select_db($conn, DB_DB);
+ if (!$res) {
+  header('500 Internal Server Error');
+  echo "<h1>Internal Server error</h1>\n";
+  echo "<p class=\"error\">MySQL error ".mysqli_errno($conn).": ".
+       mysqli_error($conn)."</p>\n";
+  exit;
+ }
+
+ $hsl_base = 200; // degrees of HSL color wheel
+
+ $oper = ' AND ';
+ if (isset($_REQUEST['oper']) && $_REQUEST['oper'] == 'OR') {
+  $oper = ' OR ';
+ }
+ $query = array();
+ $query['subject'] = (isset($_REQUEST['subject'])) ? $_REQUEST['subject'] : NULL;
+ $query['starttime'] = (isset($_REQUEST['starttime'])) ? $_REQUEST['starttime'] : NULL;
+ $query['endtime'] = (isset($_REQUEST['endtime'])) ? $_REQUEST['endtime'] : NULL;
+ $query['action'] = (isset($_REQUEST['action'])) ?  $_REQUEST['action'] : NULL;
+ $query['mainaction'] = (isset($_REQUEST['mainaction'])) ? $_REQUEST['mainaction'] : NULL;
+ $query['sideaction'] = (isset($_REQUEST['sideaction'])) ? $_REQUEST['sideaction'] : NULL;
+ $query['location'] = (isset($_REQUEST['location'])) ? $_REQUEST['location'] : NULL;
+ $query['withOnly'] = (isset($_REQUEST['withOnly'])) ? $_REQUEST['withOnly'] : NULL;
+ $query['with'] = NULL;
+ if (isset($_REQUEST['with'])) {
+  $with = 0;
+  if (is_array($_REQUEST['with'])) {
+   for ($i=0; $i<count($_REQUEST['with']); $i++) {
+    $with += pow(2, intval($_REQUEST['with'][$i])-1);
+   }
+  }
+  elseif (is_numeric($_REQUEST['with'])) {
+   $with = intval($_REQUEST['with']);
+  }
+  $query['with'] = $with;
+ }
+ $query['desc'] = (isset($_REQUEST['desc'])) ? $_REQUEST['desc'] : NULL;
+ $query['not'] = (isset($_REQUEST['not'])) ? $_REQUEST['not'] : NULL;
+
+?>
+<form method="get" action="./" id="query">
+ <fieldset>
+  <legend>
+   <label for="subject">Subject</label>
+  </legend>
+  <input id="subject" type="text" name="subject" value="<?php echo htmlentities($query['subject']); ?>">
+ </fieldset>
+ <fieldset>
+  <legend>
+   <label for="mainaction"><span lang="fi">Päätoiminto</span><span lang="en">Main action</span></label>
+  </legend>
+  <select id="mainaction" name="mainaction">
+   <option label=" "></option>
+   <option label="-" value="0"></option>
+  </select>
+ </fieldset>
+ <fieldset>
+  <legend>
+  <label for="sideaction"><span lang="fi">Sivutoiminto</span><span lang="en">Parallel action</span></label>
+  </legend>
+  <select id="sideaction" name="sideaction">
+   <option label=" "></option>
+   <option label="-" value="0"></option>
+  </select>
+ </fieldset>
+ <fieldset>
+  <legend>
+   <label for="location">Location</label>
+  </legend>
+  <select id="location" name="location">
+   <option label=" " value=""></option>
+  </select>
+ </fieldset>
+ <fieldset class="starttime">
+  <legend>
+   <label for="starttime"><span lang="fi">Alkaen</span><span lang="en">From</span></label>
+  </legend>
+  <input id="starttime" name="starttime" type="date" size="10" value="<?php echo htmlentities($query['starttime']); ?>">
+ </fieldset>
+ <fieldset class="endtime">
+  <legend>
+   <label for="endtime"><span lang="fi">Päättyen</span><span lang="en">To</span></label>
+  </legend>
+  <input id="endtime" name="endtime" type="date" size="10" value="<?php echo htmlentities($query['endtime']); ?>">
+ </fieldset>
+ <fieldset class="with">
+  <legend>
+   <label for="withOnly"><span lang="fi">Kanssa (vain)</span><span lang="en">With only</span></label>
+  </legend>
+  <select name="withOnly" id="withOnly">
+   <option label=" " value=""></option>
+   <option value="1" lang="fi"<?php echo $query['withOnly'] == 1 ? ' selected' : ''; ?>>yksin</option><option value="1" lang="en"<?php echo $query['withOnly'] == 1 ? ' selected' : ''; ?>>alone</option>
+   <option value="2" lang="fi"<?php echo $query['withOnly'] == 2 ? ' selected' : ''; ?>>kumppanin</option><option value="2" lang="en"<?php echo $query['withOnly'] == 2 ? ' selected' : ''; ?>>partner</option>
+   <option value="3" lang="fi"<?php echo $query['withOnly'] == 3 ? ' selected' : ''; ?>>vanhemman</option><option value="3" lang="en"<?php echo $query['withOnly'] == 3 ? ' selected' : ''; ?>>parent</option>
+   <option value="4" lang="fi"<?php echo $query['withOnly'] == 4 ? ' selected' : ''; ?>>lasten</option><option value="4" lang="en"<?php echo $query['withOnly'] == 4 ? ' selected' : ''; ?>>kids</option>
+   <option value="5" lang="fi<?php echo $query['withOnly'] == 5 ? ' selected' : ''; ?>">perheen</option><option value="5" lang="en"<?php echo $query['withOnly'] == 5 ? ' selected' : ''; ?>>family</option>
+   <option value="6" lang="fi<?php echo $query['withOnly'] == 6 ? ' selected' : ''; ?>">muiden</option><option value="6" lang="en"<?php echo $query['withOnly'] == 6 ? ' selected' : ''; ?>>others</option>
+  </select>
+ </fieldset>
+ <fieldset class="with">
+  <legend>
+   <span lang="fi">Kanssa (ainakin)</span><span lang="en">With at least</span>
+  </legend>
+  <input id="withpartner" name="with[]" value="2" type="checkbox"<?php echo (2 & POW(2, $query['with']) - 1) ? ' checked' : ''; ?>>
+  <label for="withpartner"><span lang="fi">kumppanin</span><span lang="en">partner</span></label>
+  <input id="withparent" name="with[]" value="3" type="checkbox">
+  <label for="withparent"><span lang="fi">vanhemman</span><span lang="en">parent</span></label>
+  <input id="withkids" name="with[]" value="4" type="checkbox">
+  <label for="withkids"><span lang="fi">lasten</span><span lang="en">kids</span></label>
+  <input id="withfamily" name="with[]" value="5" type="checkbox">
+  <label for="withfamily"><span lang="fi">perheen</span><span lang="en">family</span></label>
+  <input id="withothers" name="with[]" value="6" type="checkbox">
+  <label for="withothers"><span lang="fi">muiden</span><span lang="en">others</span></label>
+ </fieldset>
+ <fieldset class="check computer">
+  <legend>
+   <label for="usingcomputer"><span lang="fi">Tietokoneella</span><span lang="en">Using computer</span></label>
+  </legend>
+  <input id="usingcomputer" name="usecomputer" value="1" type="checkbox">
+ </fieldset>
+ <fieldset class="extra description">
+  <legend>
+   <label for="description"><span lang="fi">Kuvaus sisältää</span><span lang="en">Description includes</span></label>
+  </legend>
+  <input id="description" name="description" type="text" size="30" maxlength="255" value="<?php echo htmlentities($query['desc']); ?>">
+ </fieldset>
+ <fieldset class="extra description">
+  <legend>
+   <label for="not"><span lang="fi">Kuvaus ei sisällä</span><span lang="en">Description does not include</span></label>
+  </legend>
+  <input id="not" name="not" type="text" size="30" maxlength="255" value="<?php echo htmlentities($query['not']); ?>">
+ </fieldset>
+ <input lang="fi" type="submit" id="submitFi" value="Hae">
+ <input lang="en" type="submit" id="submit" value="Get">
+</form>
+<script>
+ const languages = ['en', 'fi']
+ const tb = document.getElementById('results')
+ const f = document.getElementById('query')
+ const et = document.getElementById('endtime')
+ const st = document.getElementById('starttime')
+ const reset = document.getElementById('reset')
+ const wo = document.getElementById('withOnly')
+ wo.onchange = function() {
+  const checkboxes = f.querySelectorAll('[name="with[]"]')
+  checkboxes.forEach(input => {
+    input.disabled = (this.value != '')
+  })
+ }
+
+ const acts = {'null': '', 'undefined': ''}
+ const locs = {}
+ let activities = []
+ let locations = []
+ let guesses = {}
+ let llabels = {}
+
+ try {
+  (async () => {
+   const file = '../activities.json'
+   const resp = await fetch(file)
+   activities = await resp.json()
+   // console.log(activities)
+   for (const cat of activities) {
+    const grp = []
+    if (cat.activities) {
+     for (const lang of languages) {
+      grp[lang] = document.createElement('optgroup')
+      grp[lang].lang = lang
+      grp[lang].label = cat[lang]
+     }
+     for (const act of cat.activities) {
+      acts[act.id] = act
+      for (const lang of languages) {
+       const opt = document.createElement('option')
+       opt.lang = lang
+       opt.value = act.id
+       opt.textContent = act[lang]
+       grp[lang].appendChild(opt)
+      }
+     }
+     for (const lang of languages) {
+      f.mainaction.appendChild(grp[lang])
+      f.sideaction.appendChild(grp[lang].cloneNode(true))
+     }
+    }
+    else {
+     acts[cat.id] = cat
+     for (const lang of languages) {
+      const opt = document.createElement('option')
+      opt.lang = lang
+      opt.value = cat.id
+      opt.textContent = cat[lang]
+      f.mainaction.appendChild(opt)
+      f.sideaction.appendChild(opt.cloneNode(true))
+     }
+    }
+   }
+  })();
+  (async () => {
+   const file = '../locations.json'
+   const resp = await fetch(file)
+   locations = await resp.json()
+   // console.log(locations)
+   for (const cat of locations) {
+    const grp = []
+    if (cat.options) {
+     for (const lang of languages) {
+      grp[lang] = document.createElement('optgroup')
+      grp[lang].lang = lang
+      grp[lang].label = cat[lang]
+     }
+     for (const loc of cat.options) {
+      locs[loc.id] = loc
+      llabels[loc.id] = {en: loc.atEn, fi: loc.atFi}
+      for (const lang of languages) {
+       const opt = document.createElement('option')
+       opt.lang = lang
+       opt.value = loc.id
+       opt.textContent = loc[lang]
+       grp[lang].appendChild(opt)
+      }
+     }
+     for (const lang of languages) {
+      f.location.appendChild(grp[lang])
+     }
+    }
+    else {
+     locs[cat.id] = cat
+     for (const lang of languages) {
+      const opt = document.createElement('option')
+      opt.lang = lang
+      opt.value = cat.id
+      opt.textContent = cat[lang]
+      f.location.appendChild(opt)
+     }
+    }
+   }
+  })();
+ }
+ catch(e) {
+  console.error(e)
+ }
+ const params = new URLSearchParams(document.location.search)
+ let currentLanguage = params.get('lang') || '<?php echo $lang; ?>'
+ const maOpt = f.mainaction.querySelector(`option[lang="${currentLanguage}"][value="<?php echo mysqli_real_escape_string($conn, $query['mainaction']); ?>"]`)
+ console.log(maOpt, currentLanguage)
+ if (maOpt) maOpt.selected = "selected"
+ const saOpt = f.sideaction.querySelector(`option[lang="${currentLanguage}"][value="<?php echo mysqli_real_escape_string($conn, $query['sideaction']); ?>"]`)
+ if (saOpt) saOpt.selected = "selected"
+ const lcontainer = document.querySelector('#language')
+ const translatedElementsSelector = '[lang]'
+ const switcher = document.createElement('ul')
+ const css = document.styleSheets[1]
+ switcher.className = 'language-switcher'
+ setLanguage(currentLanguage)
+ languages.forEach((lang) => {
+  const li = document.createElement('li')
+  li.textContent = lang
+  if (lang == currentLanguage) {
+   li.className = 'selected'
+  }
+  li.onclick = (e) => {
+   params.set('lang', lang)
+   history.replaceState({lang}, '', './?' + params.toString())
+   const prev = switcher.querySelector('li.selected')
+   prev.classList.remove('selected')
+   li.classList.add('selected')
+   setLanguage(lang)
+  }
+  switcher.appendChild(li)
+ })
+ lcontainer.appendChild(switcher)
+ window.addEventListener("popstate", (event) => {
+  const lang = event.state?.lang || '<?php echo $lang; ?>'
+  if (lang) {
+    setLanguage(lang)
+  }
+ })
+
+ function setLanguage(lang) {
+  currentLanguage = lang
+  const html = document.querySelector(':root')
+   const oldLang = html.lang
+   html.lang = lang
+   for (let i = 0; i < css.cssRules.length; i++) {
+    const rule = css.cssRules[i]
+    if (rule.selectorText == `[lang]:not([lang="${oldLang}"])`) {
+     css.deleteRule(i)
+     css.insertRule(`[lang]:not([lang="${lang}"]) { display: none !important; }`, i)
+    }
+   }
+   const opts = document.querySelectorAll('option[lang]:checked')
+   for (opt of opts) {
+    opt.selected = false
+    const otherOpt = opt.parentNode.parentNode.querySelector(`option[lang="${lang}"][value="${opt.value}"]`)
+    if (otherOpt) {
+     otherOpt.selected = "selected"
+    }
+   }
+ }
+
+</script>
+
 <?php
 
  function mkhref($sy, $sm, $sd, $ey, $em, $ed, $subject=NULL) {
@@ -118,60 +506,44 @@
   return "../?".http_build_query($params, '&amp;');
  }
 
- require_once('../dbconfig.php');
- $conn = mysqli_connect(DB_ADDR, DB_USER, DB_PASS);
- $res = mysqli_select_db($conn, DB_DB);
- if (!$res) {
-  header('500 Internal Server Error');
-  echo "<h1>Internal Server error</h1>\n";
-  echo "<p class=\"error\">MySQL error ".mysqli_errno($conn).": ".
-       mysqli_error($conn)."</p>\n";
-  exit;
- }
-
- $hsl_base = 200; // degrees of HSL color wheel
-
  $select = "SELECT subject, UNIX_TIMESTAMP(starttime) AS `tstamp`".
    ", SUM(UNIX_TIMESTAMP(endtime) - UNIX_TIMESTAMP(starttime)) AS `Time`".
    ", YEAR(starttime) AS `Y`, MONTH(starttime) AS `M`, DAY(starttime) AS `D`".
    " FROM `".DB_TABLE."` t";
  $params = [];
- $oper = ' AND ';
- if (isset($_REQUEST['oper']) && $_REQUEST['oper'] == 'OR') {
-  $oper = ' OR ';
- }
 
- if (isset($_REQUEST['starttime']) && $_REQUEST['starttime']) {
-   $params[] = "starttime >= '".date('Y-m-d', strtotime($_REQUEST['starttime']))."'";
+ if ($query['subject']) {
+  $params[] = "subject = '".mysqli_real_escape_string($conn, $query['subject'])."'";
  }
- if (isset($_REQUEST['endtime']) && $_REQUEST['endtime']) {
-   $params[] = "endtime <= '".date('Y-m-d', strtotime($_REQUEST['endtime']))."'";
+ if ($query['starttime']) {
+  $params[] = "starttime >= '".date('Y-m-d', strtotime($query['starttime']))."'";
  }
- if (isset($_REQUEST['action']) && $_REQUEST['action']) {
-   $params[] = "(`mainaction` = ".intval($_REQUEST['action'])." OR `sideaction` = ".intval($_REQUEST['action']).")";
+ if ($query['endtime']) {
+  $params[] = "endtime <= '".date('Y-m-d', strtotime($query['endtime']))."'";
  }
- if (isset($_REQUEST['mainaction']) && $_REQUEST['mainaction']) {
-   $params[] = "(`mainaction` = ".sprintf("%'02.2s", $_REQUEST['mainaction']).")";
+ if ($query['action']) {
+  $params[] = "(`mainaction` = ".intval($query['action'])." OR `sideaction` = ".intval($query['action']).")";
  }
- if (isset($_REQUEST['sideaction'])) {
-   if ($_REQUEST['sideaction'] == '0') {
-    $params[] = "(`sideaction` IS NULL)";
-   }
-   else {
-    $params[] = "(`sideaction` = ".sprintf("%'02.2s", $_REQUEST['sideaction']).")";
-   }
+ if ($query['mainaction']) {
+  $params[] = "(`mainaction` = ".sprintf("%'02.2s", $query['mainaction']).")";
  }
- if (isset($_REQUEST['with']) && $_REQUEST['with']) {
-  $params[] = "(`with` & POW(2, ".(intval($_REQUEST['with']) - 1).") != 0)";
-}
-if (isset($_REQUEST['withOnly']) && $_REQUEST['withOnly']) {
-  $params[] = "(`with` = ".intval($_REQUEST['withOnly']).")";
-}
-if (isset($_REQUEST['desc']) && $_REQUEST['desc']) {
-   $params[] = "description LIKE '%".mysqli_real_escape_string($conn, $_REQUEST['desc'])."%'";
+ if ($query['sideaction'] == '0') {
+  $params[] = "(`sideaction` IS NULL)";
  }
- if (isset($_REQUEST['not']) && $_REQUEST['not']) {
-   $params[] = "(description IS NULL OR description NOT LIKE '%".mysqli_real_escape_string($conn, $_REQUEST['not'])."%')";
+ elseif ($query['sideaction']){
+  $params[] = "(`sideaction` = ".sprintf("%'02.2s", $query['sideaction']).")";
+ }
+ if ($query['with']) {
+  $params[] = "(`with` & POW(2, ".(intval($query['with']) - 1).") != 0)";
+ }
+ if ($query['withOnly']) {
+  $params[] = "(`with` = POW(2, ".(intval($query['withOnly']) - 1).")";
+ }
+ if ($query['desc']) {
+   $params[] = "description LIKE '%".mysqli_real_escape_string($conn, $query['desc'])."%'";
+ }
+ if ($query['not']) {
+   $params[] = "(description IS NULL OR description NOT LIKE '%".mysqli_real_escape_string($conn, $query['not'])."%')";
  }
  if (count($params) > 0) {
   $select .= " WHERE ";
@@ -356,24 +728,22 @@ if (isset($_REQUEST['desc']) && $_REQUEST['desc']) {
  $weekaverage = $total/$totalweeks;
  $monthaverage = $total/$totalmonths;
 
- if (isset($_REQUEST['starttime'])) {
-  $firstts = strtotime($_REQUEST['starttime']);
+ if (isset($query['starttime'])) {
+  $firstts = strtotime($query['starttime']);
  }
- if (isset($_REQUEST['endtime'])) {
-  $lastts = strtotime($_REQUEST['endtime']);
+ if (isset($query['endtime'])) {
+  $lastts = strtotime($query['endtime']);
  }
  $from = date('Y-m-d\TH:i:s', $firstts);
  $to = date('Y-m-d\TH:i:s', $lastts);
 
- /*
-
  echo '<table class="total">'."\n";
- echo '<tr class="hour"><th>Hours</th><td></td><td class="total">'.
+ echo '<tr class="hour"><th>Hours</th><td colspan="2" class="total">'.
       "<a href=\"../dashboard.html#$from,$to\">".
       number_format($total, 1, ',', '&nbsp;').
       "</a>".
       "</td><td class=\"unit\">h</td></tr>\n";
- echo '<tr class="hour"><th>Man days</th><td></td><td class="total">'.
+ echo '<tr class="hour"><th>Man days</th><td colspan="2" class="total">'.
       number_format($total/7.5, 1, ',', '&nbsp;').
       "</td><td class=\"unit\">mwd</td></tr>\n";
  echo '<tr class="week"><th>Months</th><td>'.$totalmonths.
@@ -392,6 +762,6 @@ if (isset($_REQUEST['desc']) && $_REQUEST['desc']) {
       '</td><td class="total">'.
       number_format($dayaverage, 1, ',', '&nbsp;').
       "</td><td class=\"unit\">h/day</td></tr>\n";
-*/
+ echo '</table>'."\n";
 
 ?>
