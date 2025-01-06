@@ -71,13 +71,26 @@
  }
  table {
   border-collapse: collapse;
+/*
   float: left;
+*/
   margin: 1em;
  }
+ thead {
+  position: sticky;
+  top: 6.4em;
+ }
+ thead th {
+  background-color: #EEE;
+  color: #000;
+  padding-top: 0em;
+ }
+/*
  table.total {
   position: sticky;
   top: 2em;
  }
+*/
  th a, td a {
   color: inherit;
   text-decoration: none;
@@ -213,7 +226,7 @@
   $with = 0;
   if (is_array($_REQUEST['with'])) {
    for ($i=0; $i<count($_REQUEST['with']); $i++) {
-    $with += pow(2, intval($_REQUEST['with'][$i])-1);
+    $with += 2 ** (intval($_REQUEST['with'][$i])-1);
    }
   }
   elseif (is_numeric($_REQUEST['with'])) {
@@ -223,7 +236,6 @@
  }
  $query['desc'] = (isset($_REQUEST['desc'])) ? $_REQUEST['desc'] : NULL;
  $query['not'] = (isset($_REQUEST['not'])) ? $_REQUEST['not'] : NULL;
-
 ?>
 <form method="get" action="./" id="query">
  <fieldset>
@@ -288,15 +300,15 @@
   <legend>
    <span lang="fi">Kanssa (ainakin)</span><span lang="en">With at least</span>
   </legend>
-  <input id="withpartner" name="with[]" value="2" type="checkbox"<?php echo (2 & POW(2, $query['with']) - 1) ? ' checked' : ''; ?>>
+  <input id="withpartner" name="with[]" value="2" type="checkbox"<?php echo (2 & $query['with']) ? ' checked' : ''; ?>>
   <label for="withpartner"><span lang="fi">kumppanin</span><span lang="en">partner</span></label>
-  <input id="withparent" name="with[]" value="3" type="checkbox">
+  <input id="withparent" name="with[]" value="3" type="checkbox"<?php echo (4 & $query['with']) ? ' checked' : ''; ?>>
   <label for="withparent"><span lang="fi">vanhemman</span><span lang="en">parent</span></label>
-  <input id="withkids" name="with[]" value="4" type="checkbox">
+  <input id="withkids" name="with[]" value="4" type="checkbox"<?php echo (8 & $query['with']) ? ' checked' : ''; ?>>
   <label for="withkids"><span lang="fi">lasten</span><span lang="en">kids</span></label>
-  <input id="withfamily" name="with[]" value="5" type="checkbox">
+  <input id="withfamily" name="with[]" value="5" type="checkbox"<?php echo (16 & $query['with']) ? ' checked' : ''; ?>>
   <label for="withfamily"><span lang="fi">perheen</span><span lang="en">family</span></label>
-  <input id="withothers" name="with[]" value="6" type="checkbox">
+  <input id="withothers" name="with[]" value="6" type="checkbox"<?php echo (32 & $query['with']) ? ' checked' : ''; ?>>
   <label for="withothers"><span lang="fi">muiden</span><span lang="en">others</span></label>
  </fieldset>
  <fieldset class="check computer">
@@ -341,9 +353,10 @@
  let locations = []
  let guesses = {}
  let llabels = {}
+ const filePromises = []
 
  try {
-  (async () => {
+  filePromises.push((async () => {
    const file = '../activities.json'
    const resp = await fetch(file)
    activities = await resp.json()
@@ -383,8 +396,8 @@
      }
     }
    }
-  })();
-  (async () => {
+  })())
+  filePromises.push((async () => {
    const file = '../locations.json'
    const resp = await fetch(file)
    locations = await resp.json()
@@ -423,18 +436,19 @@
      }
     }
    }
-  })();
+  })())
  }
  catch(e) {
   console.error(e)
  }
  const params = new URLSearchParams(document.location.search)
  let currentLanguage = params.get('lang') || '<?php echo $lang; ?>'
- const maOpt = f.mainaction.querySelector(`option[lang="${currentLanguage}"][value="<?php echo mysqli_real_escape_string($conn, $query['mainaction']); ?>"]`)
- console.log(maOpt, currentLanguage)
- if (maOpt) maOpt.selected = "selected"
- const saOpt = f.sideaction.querySelector(`option[lang="${currentLanguage}"][value="<?php echo mysqli_real_escape_string($conn, $query['sideaction']); ?>"]`)
- if (saOpt) saOpt.selected = "selected"
+ Promise.all(filePromises).then(results => {
+  const maOpt = f.mainaction.querySelector(`option[lang="${currentLanguage}"][value="<?php echo mysqli_real_escape_string($conn, $query['mainaction']); ?>"]`)
+  if (maOpt) maOpt.selected = "selected"
+  const saOpt = f.sideaction.querySelector(`option[lang="${currentLanguage}"][value="<?php echo mysqli_real_escape_string($conn, $query['sideaction']); ?>"]`)
+  if (saOpt) saOpt.selected = "selected"
+ })
  const lcontainer = document.querySelector('#language')
  const translatedElementsSelector = '[lang]'
  const switcher = document.createElement('ul')
@@ -492,8 +506,6 @@
 <?php
 
  function mkhref($sy, $sm, $sd, $ey, $em, $ed, $subject=NULL) {
-  # $st = sprintf("%d-%02d-%02d", $sy, $sm, $sd);
-  # $et = sprintf("%d-%02d-%02d", $ey, $em, $ed);
   $st = date('Y-m-d', mktime(0, 0, 0, $sm, $sd, $sy));
   $et = date('Y-m-d', mktime(0, 0, 0, $em, $ed, $ey));
   $params = $_REQUEST;
@@ -534,10 +546,10 @@
   $params[] = "(`sideaction` = ".sprintf("%'02.2s", $query['sideaction']).")";
  }
  if ($query['with']) {
-  $params[] = "(`with` & POW(2, ".(intval($query['with']) - 1).") != 0)";
+  $params[] = "(`with` & $query[with] != 0)";
  }
  if ($query['withOnly']) {
-  $params[] = "(`with` = POW(2, ".(intval($query['withOnly']) - 1).")";
+  $params[] = "(`with` = ".(2**(intval($query['withOnly']) - 1)).")";
  }
  if ($query['desc']) {
    $params[] = "description LIKE '%".mysqli_real_escape_string($conn, $query['desc'])."%'";
@@ -553,7 +565,7 @@
  $select .= " GROUP BY Y, M, D, subject ORDER BY subject, starttime";
  # $select .= " GROUP BY YEAR(starttime), MONTH(starttime), DAY(starttime) ORDER BY starttime";
  # $select .= " GROUP BY DATE_FORMAT(starttime, '%Y%m%d') ORDER BY starttime";
- # echo "<!-- $select -->\n";
+ echo "<!-- $select -->\n";
  $stmt = mysqli_query($conn, $select);
  if (!$stmt) {
   header('500 Internal Server Error');
@@ -597,11 +609,11 @@
      $monthnr = $month;
     }
     echo "<table class=\"days\"><caption>$subject</caption>\n";
-    echo "<tr><th>Month</th>";
+    echo "<thead><tr><th>Month</th>";
     for ($d=1; $d<=31; $d++) {
       echo "<th>$d</th>";
     }
-    echo "<th>Total</th></tr>\n";
+    echo "<th>Total</th></tr></thead><tbody>\n";
     $init = FALSE;
     $prevsub = $subject;
     $prev = 0;
@@ -717,7 +729,7 @@
       "<a href=\"$href\">".
       str_replace('.', ',', sprintf('%.1f', $monthly)).
       "</a>".
-      "</td></tr></table>\n";
+      "</td></tr></tbody></table>\n";
  $monthly = 0;
  $monthnr = $month;
  $totaltimespan = $lastts - $firstts;
