@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="HandheldFriendly" content="True" />
-<meta name="MobileOptimized" content="width" />
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="width">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="white">
 <meta name="apple-mobile-web-app-title" content="TrackTime">
 <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&amp;display=swap" rel="stylesheet">
 <meta name="theme-color" content="#FFF" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#333" media="(prefers-color-scheme: dark)">
-<link rel="icon" href="/favicon.ico"/>
+<link rel="icon" href="/favicon.ico">
 <link rel="manifest" href="./public/manifest.json">
 <title>Tracktime</title>
 <style>
@@ -82,7 +82,7 @@
  }
  #timeselect span {
   display: block;
-  flex: 1 1 1;
+  flex: 1 1;
   flex-basis: 3em;
   margin: 0 0.25em;
  }
@@ -593,9 +593,6 @@
   margin: 0;
   padding: 0;
  }
- .language-switcher {
-  padding-top: -0.25em;
- }
  .language-switcher li {
   background-color: #666;
   border: 1px outset #CCC;
@@ -642,16 +639,16 @@
 <div id="language"></div>
 <h1><a href="./" id="reset"><span lang="fi">Ajankäyttö</span><span lang="en">Track time</span></a></h1>
 <form id="add" method="POST" action="put.php" enctype="application/x-www-form-urlencoded">
-<input type="hidden" name="id" id="hiddenid" />
+<input type="hidden" name="id" id="hiddenid">
 <fieldset class="starttime">
 <label for="starttime"><span lang="fi">Alkaen</span><span lang="en">From</span></label>
-<!-- <input id="starttime" name="starttime" type="datetime-local" step="600" /> -->
-<input id="starttime" name="starttime" type="datetime" step="600" />
+<!-- <input id="starttime" name="starttime" type="datetime-local" step="600"> -->
+<input id="starttime" name="starttime" type="text">
 </fieldset>
 <fieldset class="endtime">
 <label for="endtime"><span lang="fi">Päättyen</span><span lang="en">To</span></label>
-<!-- <input id="endtime" name="endtime" type="datetime-local" step="600" /> -->
-<input id="endtime" name="endtime" type="datetime" step="600" />
+<!-- <input id="endtime" name="endtime" type="datetime-local" step="600"> -->
+<input id="endtime" name="endtime" type="text">
 </fieldset>
 <fieldset class="mainaction">
 <label for="mainaction"><span lang="fi">Päätoiminto</span><span lang="en">Main action</span></label>
@@ -661,36 +658,36 @@
 <fieldset class="sideaction">
 <label for="sideaction"><span lang="fi">Sivutoiminto</span><span lang="en">Parallel action</span></label>
 <select id="sideaction" name="sideaction">
-<option selected="selected"></option>
+<option selected="selected" label=" "></option>
 </select>
 </fieldset>
 <fieldset class="with">
 <fieldset class="check">
-<input id="alone" name="with[]" value="1" type="checkbox" checked="checked" />
+<input id="alone" name="with[]" value="1" type="checkbox" checked="checked">
 <label for="alone"><span lang="fi">Yksin</span><span lang="en">Alone</span></label>
 </fieldset>
 <fieldset class="check">
-<input id="withpartner" name="with[]" value="2" type="checkbox" />
+<input id="withpartner" name="with[]" value="2" type="checkbox">
 <label for="withpartner"><span lang="fi">Kumppanin kanssa</span><span lang="en">With partner</span></label>
 </fieldset>
 <fieldset class="check">
-<input id="withparent" name="with[]" value="3" type="checkbox" />
+<input id="withparent" name="with[]" value="3" type="checkbox">
 <label for="withparent"><span lang="fi">Vanhemman kanssa</span><span lang="en">With parent</span></label>
 </fieldset>
 <fieldset class="check">
-<input id="withkids" name="with[]" value="4" type="checkbox" />
+<input id="withkids" name="with[]" value="4" type="checkbox">
 <label for="withkids"><span lang="fi">Lasten kanssa</span><span lang="en">With kids</span></label>
 </fieldset>
 <fieldset class="check">
-<input id="withfamily" name="with[]" value="5" type="checkbox" />
+<input id="withfamily" name="with[]" value="5" type="checkbox">
 <label for="withfamily"><span lang="fi">Perheen kanssa</span><span lang="en">With family</span></label>
 </fieldset>
 <fieldset class="check">
-<input id="withothers" name="with[]" value="6" type="checkbox" />
+<input id="withothers" name="with[]" value="6" type="checkbox">
 <label for="withothers"><span lang="fi">Muiden kanssa</span><span lang="en">With others</span></label>
 </fieldset>
 <fieldset class="check computer">
-<input id="usingcomputer" name="usecomputer" value="1" type="checkbox" />
+<input id="usingcomputer" name="usecomputer" value="1" type="checkbox">
 <label for="usingcomputer"><span lang="fi">Tietokoneella</span><span lang="en">Using computer</span></label>
 </fieldset>
 </fieldset>
@@ -701,25 +698,25 @@
 </fieldset>
 <fieldset class="extra description">
 <label for="description"><span lang="fi">Kuvaus</span><span lang="en">Description</span></label>
-<input id="description" name="description" type="text" size="30" maxlength="255" />
+<input id="description" name="description" type="text" size="30" maxlength="255">
 </fieldset>
 <fieldset class="extra subject">
 <label for="subject"><span lang="fi">Kohde</span><span lang="en">Subject</span></label>
-<input type="text" name="subject" id="subject" size="10" maxlength="30" required aria-required="true" />
+<input type="text" name="subject" id="subject" size="10" maxlength="30" required aria-required="true">
 </fieldset>
 <fieldset class="extra rating">
 <label for="rating"><span lang="fi">Arvio</span><span lang="en">Rating</span> <span id="star1">&#9734;</span><span id="star2">&#9734;</span><span id="star3">&#9734;</span><span id="star4">&#9734;</span><span id="star5">&#9734;</span></label>
-<input id="rating" name="rating" type="range" min="0" max="5" step="1" value="0" />
+<input id="rating" name="rating" type="range" min="0" max="5" step="1" value="0">
 </fieldset>
 <fieldset class="extra submit">
- <input lang="fi" type="submit" id="submitFi" value="Tallenna" />
- <input lang="en" type="submit" id="submit" value="Save" />
+ <input lang="fi" type="submit" id="submitFi" value="Tallenna">
+ <input lang="en" type="submit" id="submit" value="Save">
 </fieldset>
 </form>
 </header>
 <div id="data">
 <table id="table">
-<colgroup><col class="starttime" /><col class="endtime" /><col class="mainaction" /><col class="sideaction" /><col class="with" /></colgroup>
+<colgroup><col class="starttime"><col class="endtime"><col class="mainaction"><col class="sideaction"><col class="with"></colgroup>
 <thead>
  <tr>
   <th class="starttime"><span lang="fi">Alkaen</span><span lang="en">From</span></th>
@@ -735,26 +732,22 @@
 <div id="datetimepicker">
 <fieldset>
  <label for="pickyear" class="up">&#9650;</label>
- <input id="pickyear" size="4" maxlength="4" disabled="disabled" />
+ <input id="pickyear" size="4" maxlength="4" disabled="disabled">
  <label for="pickyear" class="down">&#9660;</label>
 </fieldset>
 <span class="separator">-</span>
 <fieldset>
  <label for="pickmonth" class="up">&#9650;</label>
- <input id="pickmonth" size="2" maxlength="2" disabled="disabled" />
+ <input id="pickmonth" size="2" maxlength="2" disabled="disabled">
  <label for="pickmonth" class="down">&#9660;</label>
-</fieldset>
 </fieldset>
 <span class="separator">-</span>
 <fieldset>
-<fieldset>
  <label for="pickday" class="up">&#9650;</label>
- <input id="pickday" size="2" maxlength="2" disabled="disabled" />
+ <input id="pickday" size="2" maxlength="2" disabled="disabled">
  <label for="pickday" class="down">&#9660;</label>
 </fieldset>
-</fieldset>
 <span class="separator">&nbsp;&nbsp;</span>
-<fieldset>
 <fieldset class="picktime">
  <label for="picktime" class="up">&#9650;</label>
  <select id="picktime">
@@ -939,8 +932,9 @@
  let guesses = {}
  let llabels = {}
 
+ const loadPromises = []
  try {
-  (async () => {
+  loadPromises.push((async () => {
    const file = './activities.json'
    const resp = await fetch(file)
    activities = await resp.json()
@@ -980,8 +974,8 @@
      }
     }
    }
-  })();
-  (async () => {
+  })())
+  loadPromises.push((async () => {
    const file = './locations.json'
    const resp = await fetch(file)
    locations = await resp.json()
@@ -1020,12 +1014,12 @@
      }
     }
    }
-  })();
-  (async () => {
+  })())
+  loadPromises.push((async () => {
    const file = './guesses.json'
    const resp = await fetch(file)
    guesses = await resp.json()
-  })();
+  })())
  }
  catch(e) {
   console.error(e)
@@ -1038,7 +1032,6 @@
  const switcher = document.createElement('ul')
  const css = document.styleSheets[1]
  switcher.className = 'language-switcher'
- setLanguage(currentLanguage)
  languages.forEach((lang) => {
   const li = document.createElement('li')
   li.textContent = lang
@@ -1046,13 +1039,8 @@
    li.className = 'selected'
   }
   li.onclick = (e) => {
-   const currentParams = new URLSearchParams(document.location.search)
-   let newParams = `lang=${encodeURIComponent(lang)}`
-   const currentUrl = currentParams.get('url')
-   if (currentUrl) {
-    newParams += `&url=${encodeURIComponent(currentUrl)}`
-   }
-   history.pushState({lang, currentUrl}, '', `${document.location.href.split('?')[0]}?${newParams}`)
+   params.set('lang', lang)
+   history.replaceState({lang}, '', './?' + params.toString())
    const prev = switcher.querySelector('li.selected')
    prev.classList.remove('selected')
    li.classList.add('selected')
@@ -1061,6 +1049,15 @@
   switcher.appendChild(li)
  })
  lcontainer.appendChild(switcher)
+ window.addEventListener("popstate", (event) => {
+  const lang = event.state?.lang || '<?php echo $lang; ?>'
+  if (lang) {
+    setLanguage(lang)
+  }
+ })
+ Promise.all(loadPromises).then(results => {
+  setLanguage(currentLanguage)
+ })
 
  function setLanguage(lang) {
   currentLanguage = lang
@@ -1082,6 +1079,11 @@
      otherOpt.selected = "selected"
     }
    }
+   let maOpt = f.mainaction.querySelector('option[lang]:checked')
+   if (!maOpt) {
+    maOpt = f.mainaction.querySelector(`option[lang="${lang}"]`)
+    if (maOpt) maOpt.selected = "selected"
+  }
  }
  let startTime = params.get('starttime')
  let endTime = params.get('endtime')
