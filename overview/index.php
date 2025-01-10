@@ -234,10 +234,13 @@
   }
   $query['with'] = $with;
  }
+ $query['usecomputer'] = isset($_REQUEST['usecomputer']) ? ($_REQUEST['usecomputer'] ? 1 : 0) : NULL;
+ $query['rating'] = (isset($_REQUEST['rating'])) ? $_REQUEST['rating'] : NULL;
  $query['desc'] = (isset($_REQUEST['desc'])) ? $_REQUEST['desc'] : NULL;
  $query['not'] = (isset($_REQUEST['not'])) ? $_REQUEST['not'] : NULL;
 ?>
 <form method="get" action="./" id="query">
+ <input type="hidden" name="lang">
  <fieldset>
   <legend>
    <label for="subject">Subject</label>
@@ -292,8 +295,8 @@
    <option value="2" lang="fi"<?php echo $query['withOnly'] == 2 ? ' selected' : ''; ?>>kumppanin</option><option value="2" lang="en"<?php echo $query['withOnly'] == 2 ? ' selected' : ''; ?>>partner</option>
    <option value="3" lang="fi"<?php echo $query['withOnly'] == 3 ? ' selected' : ''; ?>>vanhemman</option><option value="3" lang="en"<?php echo $query['withOnly'] == 3 ? ' selected' : ''; ?>>parent</option>
    <option value="4" lang="fi"<?php echo $query['withOnly'] == 4 ? ' selected' : ''; ?>>lasten</option><option value="4" lang="en"<?php echo $query['withOnly'] == 4 ? ' selected' : ''; ?>>kids</option>
-   <option value="5" lang="fi<?php echo $query['withOnly'] == 5 ? ' selected' : ''; ?>">perheen</option><option value="5" lang="en"<?php echo $query['withOnly'] == 5 ? ' selected' : ''; ?>>family</option>
-   <option value="6" lang="fi<?php echo $query['withOnly'] == 6 ? ' selected' : ''; ?>">muiden</option><option value="6" lang="en"<?php echo $query['withOnly'] == 6 ? ' selected' : ''; ?>>others</option>
+   <option value="5" lang="fi"<?php echo $query['withOnly'] == 5 ? ' selected' : ''; ?>>perheen</option><option value="5" lang="en"<?php echo $query['withOnly'] == 5 ? ' selected' : ''; ?>>family</option>
+   <option value="6" lang="fi"<?php echo $query['withOnly'] == 6 ? ' selected' : ''; ?>>muiden</option><option value="6" lang="en"<?php echo $query['withOnly'] == 6 ? ' selected' : ''; ?>>others</option>
   </select>
  </fieldset>
  <fieldset class="with">
@@ -315,7 +318,7 @@
   <legend>
    <label for="usingcomputer"><span lang="fi">Tietokoneella</span><span lang="en">Using computer</span></label>
   </legend>
-  <input id="usingcomputer" name="usecomputer" value="1" type="checkbox">
+  <input id="usingcomputer" name="usecomputer" value="1" type="checkbox"<?php echo ($query['usecomputer']) ? ' checked' : ''; ?>>
  </fieldset>
  <fieldset class="extra description">
   <legend>
@@ -328,6 +331,26 @@
    <label for="not"><span lang="fi">Kuvaus ei sisällä</span><span lang="en">Description does not include</span></label>
   </legend>
   <input id="not" name="not" type="text" size="30" maxlength="255" value="<?php echo htmlentities($query['not']); ?>">
+ </fieldset>
+ <fieldset class="rating">
+  <legend>
+   <label for="rating"><span lang="fi">Arvio</span><span lang="en">Rating</span></label>
+  </legend>
+  <select name="rating" id="rating">
+   <option label=" " value=""></option>
+   <option value="1"<?php echo $query['rating'] == 1 ? ' selected' : ''; ?>>1</option>
+   <option value="lte2" lang="fi"<?php echo $query['rating'] == "lte2" ? ' selected' : ''; ?>>2 tai pienempi</option><option value="lte2" lang="en"<?php echo $query['rating'] == "lte2" ? ' selected' : ''; ?>>2 or less</option>
+   <option value="2"<?php echo $query['rating'] == 2 ? ' selected' : ''; ?>>2</option>
+   <option value="gte2" lang="fi"<?php echo $query['rating'] == "gte2" ? ' selected' : ''; ?>>2 tai suurempi</option><option value="gte2" lang="en"<?php echo $query['rating'] == "gte2" ? ' selected' : ''; ?>>2 or more</option>
+   <option value="lte3" lang="fi"<?php echo $query['rating'] == "lte3" ? ' selected' : ''; ?>>3 tai pienempi</option><option value="lte3" lang="en"<?php echo $query['rating'] == "lte3" ? ' selected' : ''; ?>>3 or less</option>
+   <option value="3"<?php echo $query['rating'] == 3 ? ' selected' : ''; ?>>3</option>
+   <option value="gte3" lang="fi"<?php echo $query['rating'] == "gte3" ? ' selected' : ''; ?>>3 tai suurempi</option><option value="gte3" lang="en"<?php echo $query['rating'] == "gte3" ? ' selected' : ''; ?>>3 or more</option>
+   <option value="lte4" lang="fi"<?php echo $query['rating'] == "lte4" ? ' selected' : ''; ?>>4 tai pienempi</option><option value="lte4" lang="en"<?php echo $query['rating'] == "lte4" ? ' selected' : ''; ?>>4 or less</option>
+   <option value="4"<?php echo $query['rating'] == 4 ? ' selected' : ''; ?>>4</option>
+   <option value="gte4" lang="fi"<?php echo $query['rating'] == "gte4" ? ' selected' : ''; ?>>4 tai suurempi</option><option value="gte4" lang="en"<?php echo $query['rating'] == "gte4" ? ' selected' : ''; ?>>4 or more</option>
+   <option value="lte5" lang="fi"<?php echo $query['rating'] == "lte5" ? ' selected' : ''; ?>>5 tai pienempi</option><option value="lte5" lang="en"<?php echo $query['rating'] == "lte5" ? ' selected' : ''; ?>>5 or less</option>
+   <option value="5"<?php echo $query['rating'] == 5 ? ' selected' : ''; ?>>5</option>
+  </select>
  </fieldset>
  <input lang="fi" type="submit" id="submitFi" value="Hae">
  <input lang="en" type="submit" id="submit" value="Get">
@@ -481,6 +504,7 @@
 
  function setLanguage(lang) {
   currentLanguage = lang
+  f.querySelector('input[name="lang"]').value = currentLanguage
   const html = document.querySelector(':root')
    const oldLang = html.lang
    html.lang = lang
@@ -551,11 +575,25 @@
  if ($query['withOnly']) {
   $params[] = "(`with` = ".(2**(intval($query['withOnly']) - 1)).")";
  }
+ if ($query['usecomputer']) {
+  $params[] = "(`usecomputer` = $query[usecomputer])";
+ }
+ if ($query['rating']) {
+  if (preg_match('/lte(\d)/', $query['rating'], $match)) {
+   $params[] = "(`rating` <= $match[1])";
+  }
+  elseif (preg_match('/gte(\d)/', $query['rating'], $match)) {
+   $params[] = "(`rating` >= $match[1])";
+  }
+  elseif (preg_match('/(\d)/', $query['rating'], $match)) {
+   $params[] = "(`rating` = $match[1])";
+  }
+ }
  if ($query['desc']) {
-   $params[] = "description LIKE '%".mysqli_real_escape_string($conn, $query['desc'])."%'";
+   $params[] = "`description` LIKE '%".mysqli_real_escape_string($conn, $query['desc'])."%'";
  }
  if ($query['not']) {
-   $params[] = "(description IS NULL OR description NOT LIKE '%".mysqli_real_escape_string($conn, $query['not'])."%')";
+   $params[] = "(`description` IS NULL OR `description` NOT LIKE '%".mysqli_real_escape_string($conn, $query['not'])."%')";
  }
  if (count($params) > 0) {
   $select .= " WHERE ";
