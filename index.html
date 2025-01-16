@@ -1635,7 +1635,7 @@
    }
    const tr = addRow(values[i], (values.length < 2))
    if (currEnd && (values[i]['starttime'] < currEnd)) {
-    tr.className += ' alert'
+    tr.classList.add('alert')
    }
    currEnd = values[i]['endtime']
   }
@@ -1771,8 +1771,13 @@
   if (values['id'] && isSingle) {
    let previous = document.getElementById('id' + values['id'])
    if (previous) {
+    const alerted = previous.parentNode.querySelectorAll('.alert')
+    if (alerted) {
+     alerted.forEach(el => {
+      el.classList.remove('alert')
+     })
+    }
     previous.parentNode.removeChild(previous)
-    // TODO: check siblings of previous for warnings, clear if necessary
    }
   }
   const times = tb.getElementsByTagName('tr')
@@ -1780,12 +1785,23 @@
    const start = times[j].firstChild.firstChild.datetime
    const end = times[j].childNodes[1].firstChild.datetime
    if (start >= values['starttime']) {
+    if (values['starttime'] < end) {
+     tr.classList.add('alert')
+    }
+    const nextStart = times[j+1]?.firstChild.firstChild.datetime
+    if (nextStart && values['endtime'] > nextStart) {
+     tr.classList.add('alert')
+    }
     added = tb.insertBefore(tr, times[j])
     break
    }
   }
   if (!added) {
    tb.appendChild(tr)
+   const prevEnd = tr.previousSibling?.childNodes[1]?.firstChild?.datetime
+    if (prevEnd && values['starttime'] < prevEnd) {
+     tr.classList.add('alert')
+    }
   }
   return tr
  }
