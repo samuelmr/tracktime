@@ -24,6 +24,16 @@
   font-family: 'Open Sans','Unicode Sans','Lucida Sans Unicode',Helvetica,Arial,Verdana,sans-serif;
   font-size: 13px;
  }
+ #logout {
+  display: block;
+  position: absolute;
+  right: 3em;
+  top: 5em;
+ }
+ #logout:hover {
+  cursor: pointer;
+  text-decoration: underline;
+ }
  h1 {
   float: left;
   max-width: 15em;
@@ -637,6 +647,7 @@
 <body>
 <header>
 <div id="language"></div>
+<a id="logout"><span lang="fi">Kirjaudu ulos</span><span lang="en">Log out</span></a>
 <h1><a href="./" id="reset"><span lang="fi">Ajankäyttö</span><span lang="en">Track time</span></a></h1>
 <form id="add" method="POST" action="put.php" enctype="application/x-www-form-urlencoded">
 <input type="hidden" name="id" id="hiddenid">
@@ -922,8 +933,8 @@
  const pd = document.getElementById('pickday')
  const pt = document.getElementById('picktime')
  const reset = document.getElementById('reset')
+ const logout = document.getElementById('logout')
  const tenMinutes = 10 * 60 * 1000
-
 
  const acts = {'null': '', 'undefined': ''}
  const locs = {}
@@ -1090,6 +1101,15 @@
  let numRows = params.get('limit') || MAX_ROWS
 
  const prevMonthLength = [30, 31, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30]
+
+ logout.onclick = () => {
+  const x = new XMLHttpRequest();
+  x.open("GET", location.href, true, "logout", new Date().getTime().toString())
+  x.setRequestHeader("Authorization", "Basic logout")
+  x.onprogress = (e) => {
+   history.go(0)
+  }
+ }
 
  let subject = params.get('subject') || ''
  if (subject) {
