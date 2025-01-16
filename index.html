@@ -188,7 +188,7 @@
  #table tr.unspecified td {
   background-color: #F8F8F8;
  }
- #table tr.alert td.starttime {
+ #table tr.alert td.starttime, td.alert {
   border: 2px solid #F60;
  }
  #table td time {
@@ -1098,6 +1098,11 @@
   reset.href = `/?subject=${encodeURIComponent(subject)}`
  }
  sub.onchange = () => {
+  if (!sub.value) {
+    alert('Subject is mandatory')
+    sub.focus()
+    return
+  }
   getLatest(numRows)
   reset.href = `/?subject=${encodeURIComponent(sub.value)}`
  }
@@ -1333,6 +1338,10 @@
  f.onsubmit = async function(e) {
   if (e && e.preventDefault) {
    e.preventDefault()
+  }
+  if (!sub.value) {
+    alert('Subject is mandatory')
+    sub.focus()
   }
   // xhr.abort()
   // const res = xhr.open(f.method, f.action, true)
@@ -1729,6 +1738,11 @@
       tmp.en.push(wlabels[boxes[i].value]?.en.toLowerCase())
       tmp.fi.push(wlabels[boxes[i].value]?.fi.toLowerCase())
      }
+    }
+    if (tmp.en.length < 1) {
+      tmp.en[0] = 'undefined'
+      tmp.fi[0] = 'tuntemattoman'
+      td.classList.add('alert')
     }
     enVal = (values['with'] != 1) ? 'with ' + tmp.en.join(', ') : wlabels[1].en.toLowerCase()
     fiVal = (values['with'] != 1) ? ' ' + tmp.fi.join(' ja ') + ' kanssa' : wlabels[1].fi.toLowerCase()
