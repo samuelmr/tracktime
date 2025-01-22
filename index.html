@@ -1816,14 +1816,19 @@
   }
   const times = tb.getElementsByTagName('tr')
   for (let j=0; j<times.length; j++) {
-   const start = times[j].firstChild.firstChild.datetime
-   const end = times[j].childNodes[1].firstChild.datetime
+   let start = times[j].firstChild.firstChild.datetime
+   let end = times[j].childNodes[1].firstChild.datetime
    if (start >= values['starttime']) {
-    if (values['starttime'] < end) {
+    if (times[j].classList.contains('unspecified')) {
+     start = times[j+1].firstChild.firstChild.datetime
+     end = times[j+1].childNodes[1].firstChild.datetime
+     times[j].parentElement.removeChild(times[j])
+    }
+    const prevEnd = times[j-1].childNodes[1].firstChild.datetime
+    if (values['starttime'] < prevEnd) {
      tr.classList.add('alert')
     }
-    const nextStart = times[j+1]?.firstChild.firstChild.datetime
-    if (nextStart && values['endtime'] > nextStart) {
+    if (values['endtime'] != start) {
      tr.classList.add('alert')
     }
     added = tb.insertBefore(tr, times[j])
