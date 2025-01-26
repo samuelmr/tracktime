@@ -942,6 +942,7 @@
  let locations = []
  let guesses = {}
  let llabels = {}
+ let undefinedAction = ''
 
  const loadPromises = []
  try {
@@ -967,6 +968,7 @@
        opt.textContent = act[lang]
        grp[lang].appendChild(opt)
       }
+      undefinedAction = act.id
      }
      for (const lang of languages) {
       f.mainaction.appendChild(grp[lang])
@@ -984,6 +986,7 @@
       f.sideaction.appendChild(opt.cloneNode(true))
      }
     }
+    undefinedAction = cat.id
    }
   })())
   loadPromises.push((async () => {
@@ -1654,18 +1657,12 @@
   }
   let currEnd = ''
   for (let i=values.length-1; i>=0; i--) {
-   if (currEnd && (values[i]['starttime'] > currEnd)) {
-    tmp = {'starttime': currEnd,
-           'endtime': values[i]['starttime'],
-           'mainaction': 99,
-           'rating': 0,
-           'with': 1}
-    addRow(tmp, false)
-   }
    const tr = addRow(values[i], (values.length < 2))
+/*
    if (currEnd && (values[i]['starttime'] < currEnd)) {
     tr.classList.add('alert')
    }
+*/
    currEnd = values[i]['endtime']
   }
  }
@@ -1673,7 +1670,7 @@
  function addRow(values, isSingle) {
   const tr = document.createElement('tr')
   tr.id = 'id' + values['id']
-  if (values['mainaction'] == 99) {
+  if (values['mainaction'] == undefinedAction) {
    tr.className = ' unspecified'
   }
   tr.ondblclick = function() {
@@ -1721,6 +1718,9 @@
    let cellval
    td.className = key
    if ((key == 'starttime') || (key == 'endtime')) {
+    if (values['starttime'] == values['endtime']) {
+     td.classList.add('alert')
+    }
     cellval = document.createElement('time')
     if (val) {
      cellval.datetime = val
@@ -1805,7 +1805,7 @@
   if (values['id'] && isSingle) {
    let previous = document.getElementById('id' + values['id'])
    if (previous) {
-    const alerted = previous.parentNode.querySelectorAll('.alert')
+    const alerted = previous.parentNode.querySelectorAll('.starttime.alert, .endtime.alert')
     if (alerted) {
      alerted.forEach(el => {
       el.classList.remove('alert')
@@ -1824,12 +1824,8 @@
      end = times[j+1].childNodes[1].firstChild.datetime
      times[j].parentElement.removeChild(times[j])
     }
-    const prevEnd = times[j-1].childNodes[1].firstChild.datetime
-    if (values['starttime'] < prevEnd) {
-     tr.classList.add('alert')
-    }
     if (values['endtime'] != start) {
-     tr.classList.add('alert')
+     tr.childNodes[1].classList.add('alert')
     }
     added = tb.insertBefore(tr, times[j])
     break
@@ -1837,10 +1833,21 @@
   }
   if (!added) {
    tb.appendChild(tr)
-   const prevEnd = tr.previousSibling?.childNodes[1]?.firstChild?.datetime
-    if (prevEnd && values['starttime'] < prevEnd) {
-     tr.classList.add('alert')
-    }
+  }
+  const prevEnd = tr.previousSibling?.childNodes[1]?.firstChild?.datetime
+  if (prevEnd && values['starttime'] < prevEnd) {
+   tr.childNodes[0].classList.add('alert')
+  }
+  else if (prevEnd && (values['starttime'] > prevEnd)) {
+   tmp = {
+    'starttime': prevEnd,
+    'endtime': values['starttime'],
+    'mainaction': undefinedAction,
+    'rating': 0,
+    'with': 1
+   }
+   console.log(Object.keys(acts), undefinedAction)
+   addRow(tmp, false)
   }
   return tr
  }
