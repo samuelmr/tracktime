@@ -39,6 +39,7 @@
   padding: 0.5em 1em;
   position: sticky;
   top: 0;
+  z-index: 3;
  }
  h1 {
   float: left;
@@ -79,6 +80,7 @@
  thead {
   position: sticky;
   top: 6.4em;
+  z-index: 2;
  }
  thead th {
   background-color: #EEE;
