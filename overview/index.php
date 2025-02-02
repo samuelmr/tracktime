@@ -755,21 +755,21 @@
     }
    }
   }
- }
- if ($mday < 31) {
-   echo "<td class=\"that\" colspan=\"".(31-$mday)."\"></td>";
- }
- $bgcolor = "hsla(".($hsl_base-$monthly/1.35).", 75%, 75%, 100%)";
- $from = "$y-$m-01T00:00:00";
- $to = "$y-".sprintf('%02d', $m+1)."-01T00:00:00";
- $href = mkhref($y, $m, 1, $y, $m+1, 1, $subject);
+  if ($mday < 31) {
+    echo "<td class=\"that\" colspan=\"".(31-$mday)."\"></td>";
+  }
+  $bgcolor = "hsla(".($hsl_base-$monthly/1.35).", 75%, 75%, 100%)";
+  $from = "$y-$m-01T00:00:00";
+  $to = "$y-".sprintf('%02d', $m+1)."-01T00:00:00";
+  $href = mkhref($y, $m, 1, $y, $m+1, 1, $subject);
 
- echo '<td class="total" style="background-color: '.$bgcolor.'">'.
-      # "<a href=\"../dashboard.html?subject=".urlencode($subject)."#$from,$to\">".
-      "<a href=\"$href\">".
-      str_replace('.', ',', sprintf('%.1f', $monthly)).
-      "</a>".
-      "</td></tr></tbody></table>\n";
+  echo '<td class="total" style="background-color: '.$bgcolor.'">'.
+       # "<a href=\"../dashboard.html?subject=".urlencode($subject)."#$from,$to\">".
+       "<a href=\"$href\">".
+       str_replace('.', ',', sprintf('%.1f', $monthly)).
+       "</a>".
+       "</td></tr></tbody></table>\n";
+ }
  if ($days && $totaldays && $totalweeks && $totalmonths) {
   $monthly = 0;
   $monthnr = $month;
