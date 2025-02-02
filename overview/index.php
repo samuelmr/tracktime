@@ -638,7 +638,7 @@
      $bgcolor = "hsla(".($hsl_base-$monthly/1.35).", 75%, 75%, 100%)";
      $from = "$y-$m-01T00:00:00";
      $to = "$y-".sprintf('%02d', $m+1)."-01T00:00:00";
-     $href = mkhref($y, $m, 1, $y, $m+1, 1, $subject);
+     $href = mkhref($y, $m, 1, $y, $m+1, 1, $prevsub);
      echo '<td class="total" style="background-color: '.$bgcolor.'">'.
           # "<a href=\"../dashboard.html?subject=".urlencode($subject)."#$from,$to\">".
           "<a href=\"$href\">".
@@ -770,50 +770,52 @@
       str_replace('.', ',', sprintf('%.1f', $monthly)).
       "</a>".
       "</td></tr></tbody></table>\n";
- $monthly = 0;
- $monthnr = $month;
- $totaltimespan = $lastts - $firstts;
- $totaldays = ceil($totaltimespan/60/60/24);
- $dayaverage = $total/$totaldays;
- $adayaverage = $total/$days;
- $totalweeks = ceil($totaldays/7);
- $weekaverage = $total/$totalweeks;
- $monthaverage = $total/$totalmonths;
+ if ($days && $totaldays && $totalweeks && $totalmonths) {
+  $monthly = 0;
+  $monthnr = $month;
+  $totaltimespan = $lastts - $firstts;
+  $totaldays = ceil($totaltimespan/60/60/24);
+  $dayaverage = $total/$totaldays;
+  $adayaverage = $total/$days;
+  $totalweeks = ceil($totaldays/7);
+  $weekaverage = $total/$totalweeks;
+  $monthaverage = $total/$totalmonths;
 
- if (isset($query['starttime'])) {
-  $firstts = strtotime($query['starttime']);
- }
- if (isset($query['endtime'])) {
-  $lastts = strtotime($query['endtime']);
- }
- $from = date('Y-m-d\TH:i:s', $firstts);
- $to = date('Y-m-d\TH:i:s', $lastts);
+  if (isset($query['starttime'])) {
+   $firstts = strtotime($query['starttime']);
+  }
+  if (isset($query['endtime'])) {
+   $lastts = strtotime($query['endtime']);
+  }
+  $from = date('Y-m-d\TH:i:s', $firstts);
+  $to = date('Y-m-d\TH:i:s', $lastts);
 
- echo '<table class="total">'."\n";
- echo '<tr class="hour"><th>Hours</th><td colspan="2" class="total">'.
-      "<a href=\"../dashboard.html#$from,$to\">".
-      number_format($total, 1, ',', '&nbsp;').
-      "</a>".
-      "</td><td class=\"unit\">h</td></tr>\n";
- echo '<tr class="hour"><th>Man days</th><td colspan="2" class="total">'.
-      number_format($total/7.5, 1, ',', '&nbsp;').
-      "</td><td class=\"unit\">mwd</td></tr>\n";
- echo '<tr class="week"><th>Months</th><td>'.$totalmonths.
-      '</td><td class="total">'.
-      number_format($monthaverage, 1, ',', '&nbsp;').
-      "</td><td class=\"unit\">h/month</td></tr>\n";
- echo '<tr class="week"><th>Weeks</th><td>'.$totalweeks.
-      '</td><td class="total">'.
-      number_format($weekaverage, 1, ',', '&nbsp;').
-      "</td><td class=\"unit\">h/week</td></tr>\n";
- echo '<tr class="aday"><th>Active days</th><td>'.$days.
-      '</td><td class="total">'.
-      number_format($adayaverage, 1, ',', '&nbsp;').
-      "</td><td class=\"unit\">h/day</td></tr>\n";
- echo '<tr class="day"><th>Days</th><td>'.$totaldays.
-      '</td><td class="total">'.
-      number_format($dayaverage, 1, ',', '&nbsp;').
-      "</td><td class=\"unit\">h/day</td></tr>\n";
- echo '</table>'."\n";
+  echo '<table class="total">'."\n";
+  echo '<tr class="hour"><th>Hours</th><td colspan="2" class="total">'.
+       "<a href=\"../dashboard.html#$from,$to\">".
+       number_format($total, 1, ',', '&nbsp;').
+       "</a>".
+       "</td><td class=\"unit\">h</td></tr>\n";
+  echo '<tr class="hour"><th>Man days</th><td colspan="2" class="total">'.
+       number_format($total/7.5, 1, ',', '&nbsp;').
+       "</td><td class=\"unit\">mwd</td></tr>\n";
+  echo '<tr class="week"><th>Months</th><td>'.$totalmonths.
+       '</td><td class="total">'.
+       number_format($monthaverage, 1, ',', '&nbsp;').
+       "</td><td class=\"unit\">h/month</td></tr>\n";
+  echo '<tr class="week"><th>Weeks</th><td>'.$totalweeks.
+       '</td><td class="total">'.
+       number_format($weekaverage, 1, ',', '&nbsp;').
+       "</td><td class=\"unit\">h/week</td></tr>\n";
+  echo '<tr class="aday"><th>Active days</th><td>'.$days.
+       '</td><td class="total">'.
+       number_format($adayaverage, 1, ',', '&nbsp;').
+       "</td><td class=\"unit\">h/day</td></tr>\n";
+  echo '<tr class="day"><th>Days</th><td>'.$totaldays.
+       '</td><td class="total">'.
+       number_format($dayaverage, 1, ',', '&nbsp;').
+       "</td><td class=\"unit\">h/day</td></tr>\n";
+  echo '</table>'."\n";
+ }
 
 ?>
