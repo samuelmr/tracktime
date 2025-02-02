@@ -1805,12 +1805,6 @@
   if (values['id'] && isSingle) {
    let previous = document.getElementById('id' + values['id'])
    if (previous) {
-    const alerted = previous.parentNode.querySelectorAll('.starttime.alert, .endtime.alert')
-    if (alerted) {
-     alerted.forEach(el => {
-      el.classList.remove('alert')
-     })
-    }
     previous.parentNode.removeChild(previous)
    }
   }
@@ -1827,6 +1821,10 @@
     if (values['endtime'] != start) {
      tr.childNodes[1].classList.add('alert')
     }
+    else {
+     // console.log('this end matches next start', start)
+     times[j]?.childNodes[0]?.classList.remove('alert')
+    }
     added = tb.insertBefore(tr, times[j])
     break
    }
@@ -1835,7 +1833,11 @@
    tb.appendChild(tr)
   }
   const prevEnd = tr.previousSibling?.childNodes[1]?.firstChild?.datetime
-  if (prevEnd && values['starttime'] < prevEnd) {
+  if (prevEnd && values['starttime'] == prevEnd) {
+   // console.log('this start matches previous end', prevEnd)
+   tr.previousSibling?.childNodes[1]?.classList.remove('alert')
+  }
+  else if (prevEnd && values['starttime'] < prevEnd) {
    tr.childNodes[0].classList.add('alert')
   }
   else if (prevEnd && (values['starttime'] > prevEnd)) {
@@ -1846,7 +1848,6 @@
     'rating': 0,
     'with': 1
    }
-   console.log(Object.keys(acts), undefinedAction)
    addRow(tmp, false)
   }
   return tr
