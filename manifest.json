@@ -20,13 +20,17 @@
  "shortcuts": [
   {
    "name": "Enter data",
-   "url": "index.html"
+   "url": "./"
   },
   {
-    "name": "Dashboard",
-    "url": "dashboard.html" 
+    "name": "Dashboard (graphs)",
+    "url": "./dashboard.html"
+   },
+   {
+    "name": "Overview (admin)",
+    "url": "./overview/"
   }
  ],
- "start_url": "index.html",
+ "start_url": "./",
  "theme_color": "#FFF"
 }
