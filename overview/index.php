@@ -18,7 +18,7 @@
 <meta name="theme-color" content="#FFF" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#333" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="../favicon.ico">
-<link rel="manifest" href="../public/manifest.json">
+<link rel="manifest" href="../manifest.json">
 <title lang="en">Time analysis</title>
 <style>
  *[lang]:not([lang="<?php echo $lang; ?>"]) {
