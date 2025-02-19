@@ -1814,8 +1814,8 @@
    let end = times[j].childNodes[1].firstChild.datetime
    if (start >= values['starttime']) {
     if (times[j].classList.contains('unspecified')) {
-     start = times[j+1].firstChild.firstChild.datetime
-     end = times[j+1].childNodes[1].firstChild.datetime
+     start = times[j+1]?.firstChild?.firstChild?.datetime || start
+     end = times[j+1]?.childNodes[1]?.firstChild?.datetime || end
      times[j].parentElement.removeChild(times[j])
     }
     if (values['endtime'] != start) {
