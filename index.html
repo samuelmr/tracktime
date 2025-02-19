@@ -1701,6 +1701,37 @@
    sendFi.value = 'Muokkaa'
    hilite(send, 15, 12, 7)
    hilite(sendFi, 15, 12, 7)
+   const deleteButton = document.createElement('button')
+   deleteButton.innerHTML = `<span lang="en">Delete</span><span lang="fi">Poista</span`
+   deleteButton.onclick = async function(e) {
+    e.preventDefault()
+    const delUrl = './del.php'
+    const delParams = {
+     method: 'POST',
+     headers:{
+      'Content-Type': 'application/x-www-form-urlencoded'
+     },
+     body: new URLSearchParams({
+      'id': values['id']
+     })
+    }
+    const delResp = await fetch(delUrl, delParams)
+    if (delResp.ok) {
+      tr.parentNode.removeChild(tr)
+      this.parentNode.removeChild(this)
+      if (send.value != 'Save') {
+      send.value = 'Save'
+      sendFi.value = 'Tallenna'
+      hilite(send, 15, 12, 7)
+      hilite(sendFi, 15, 12, 7)
+     }
+    }
+    else {
+     console.error(delResp.status, delUrl, delParams)
+    }
+   }
+   sendFi.parentNode.appendChild(deleteButton)
+   hilite(deleteButton, 15, 12, 7)
    for (let i=0; i<boxes.length; i++) {
     const val = boxes[i].value
     if (parseInt(values['with']) & Math.pow(2, (val-1))) {
