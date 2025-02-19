@@ -605,7 +605,7 @@
  $select .= " GROUP BY Y, M, D, subject ORDER BY subject, starttime";
  # $select .= " GROUP BY YEAR(starttime), MONTH(starttime), DAY(starttime) ORDER BY starttime";
  # $select .= " GROUP BY DATE_FORMAT(starttime, '%Y%m%d') ORDER BY starttime";
- echo "<!-- $select -->\n";
+ # echo "<!-- $select -->\n";
  $stmt = mysqli_query($conn, $select);
  if (!$stmt) {
   header('500 Internal Server Error');
