@@ -638,10 +638,10 @@
      $bgcolor = "hsla(".($hsl_base-$monthly/1.35).", 75%, 75%, 100%)";
      $from = "$y-$m-01T00:00:00";
      $to = "$y-".sprintf('%02d', $m+1)."-01T00:00:00";
-     $href = mkhref($y, $m, 1, $y, $m+1, 1, $prevsub);
+     # $href = mkhref($y, $m, 1, $y, $m+1, 1, $prevsub);
      echo '<td class="total" style="background-color: '.$bgcolor.'">'.
-          # "<a href=\"../dashboard.html?subject=".urlencode($subject)."#$from,$to\">".
-          "<a href=\"$href\">".
+          "<a href=\"../dashboard.html?subject=".urlencode($subject)."#$from,$to\">".
+          # "<a href=\"$href\">".
           str_replace('.', ',', sprintf('%.1f', $monthly)).
           "</a>".
           "</td></tr></table>\n";
@@ -737,14 +737,14 @@
    # $bgcolor = "hsla(".($hsl_base-$dur*15).", 75%, 75%, 100%)";
    $from = "$y-$m-".sprintf('%02d', $mday)."T00:00:00";
    $to = "$y-$m-".sprintf('%02d', $mday+1)."T00:00:00";
-   $href = mkhref($y, $m, $mday, $y, $m, $mday+1, $subject);
+   # $href = mkhref($y, $m, $mday, $y, $m, $mday+1, $subject);
    $bgcolor = "#8C8";
    if ($dur != 23 && $dur != 24 && $dur != 25) {
     $bgcolor = "#C00";
    }
    echo "<td title=\"$date: $fmtdur\" style=\"background-color: $bgcolor\">".
-        # "<a href=\"../dashboard.html?subject=".urlencode($subject)."#$from,$to\">".
-        "<a href=\"$href\">".
+        "<a href=\"../dashboard.html?subject=".urlencode($subject)."#$from,$to\">".
+        # "<a href=\"$href\">".
         # "<span class=\"subject\">".htmlentities($subject)."</span> ".
         "$hours:$mins</a></td>\n";
    if ($mday == 31) {
@@ -762,10 +762,10 @@
    $bgcolor = "hsla(".($hsl_base-$monthly/1.35).", 75%, 75%, 100%)";
    $from = "$y-$m-01T00:00:00";
    $to = "$y-".sprintf('%02d', $m+1)."-01T00:00:00";
-   $href = mkhref($y, $m, 1, $y, $m+1, 1, $subject);
+   # $href = mkhref($y, $m, 1, $y, $m+1, 1, $subject);
    echo '<td class="total" style="background-color: '.$bgcolor.'">'.
-        # "<a href=\"../dashboard.html?subject=".urlencode($subject)."#$from,$to\">".
-        "<a href=\"$href\">".
+        "<a href=\"../dashboard.html?subject=".urlencode($subject)."#$from,$to\">".
+        # "<a href=\"$href\">".
         str_replace('.', ',', sprintf('%.1f', $monthly)).
         "</a>".
         "</td></tr></tbody></table>\n";
