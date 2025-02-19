@@ -459,12 +459,12 @@
   p3data.addColumn({'type': 'string', 'id': 'Location'});
   p3data.addColumn({'type': 'number', 'id': 'Duration'});
 
-  var dateRegex = '(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{0,2})'
-  var m;
-  if (m = document.location.hash.match('#'+dateRegex+','+dateRegex)) {
-   // console.log(m);
-   globalStart = new Date(m[1]);
-   globalEnd = new Date(m[2]);
+  if (document.location.hash.includes(',')) {
+   const [start, end] = document.location.hash.substring(1).split(',')
+   fi.value = start
+   ti.value = end
+   console.log(fi.value, ti.value)
+   fi.onchange()
   }
   else {
    var d = new Date();
