@@ -66,7 +66,8 @@
             { "id": "62", "en": "Productive excercise", "fi": "Hyötyliikunta"},
             { "id": "63", "en": "Sports related activities", "fi": "Liikuntaan liittyvä toiminta"}
         ]
-    },    {
+    },
+    {
         "en": "Hobbies",
         "fi": "Harrastukset",
         "activities": [
@@ -74,7 +75,8 @@
             { "id": "72", "en": "Computing", "fi": "ATK-harrastus"},
             { "id": "73", "en": "Games", "fi": "Seurapelit ja -leikit"}
         ]
-    },    {
+    },
+    {
         "en": "Mass media",
         "fi": "Viestintä",
         "activities": [
@@ -82,7 +84,8 @@
             { "id": "82", "en": "TV, video and DVD", "fi": "TV:n ja videoiden katselu"},
             { "id": "83", "en": "Radio and recordings", "fi": "Radion ja musiikin kuuntelu"}
         ]
-    },    {
+    },
+    {
         "en": "Travel by purpose",
         "fi": "Matkustaminen",
         "activities": [
@@ -96,5 +99,7 @@
             { "id": "90", "en": "Other or unspecified travel purpose", "fi": "Muu tai määrittelemätön matkustaminen"}
         ]
     },
-    { "id": "99", "en": "Other unspecified time use", "fi": "Erittelemätön ajankäyttö"}
+    {
+        "id": "99", "en": "Other unspecified time use", "fi": "Erittelemätön ajankäyttö"
+    }
 ]
