@@ -1386,6 +1386,8 @@
     body: new URLSearchParams(new FormData(f))
    })
    f.description.value = ''
+   const delB = this.querySelector('#delete')
+   if (delB) delB.parentNode.removeChild(delB)
    handleResult(await resp.json())
   }
   catch(e) {
@@ -1702,6 +1704,7 @@
    hilite(send, 15, 12, 7)
    hilite(sendFi, 15, 12, 7)
    const deleteButton = document.createElement('button')
+   deleteButton.id = 'delete'
    deleteButton.innerHTML = `<span lang="en">Delete</span><span lang="fi">Poista</span`
    deleteButton.onclick = async function(e) {
     e.preventDefault()
