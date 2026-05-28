@@ -1,0 +1,284 @@
+{
+    "Tracktime": {
+        "fi": "Ajankäyttö"
+    },
+    "Track time": {
+        "fi": "Ajankäyttö"
+    },
+    "Log out": {
+        "fi": "Kirjaudu ulos"
+    },
+    "From": {
+        "fi": "Alkaen"
+    },
+    "To": {
+        "fi": "Päättyen"
+    },
+    "Main action": {
+        "fi": "Päätoiminto"
+    },
+    "Parallel action": {
+        "fi": "Sivutoiminto"
+    },
+    "Alone": {
+        "fi": "Yksin"
+    },
+    "With partner": {
+        "fi": "Kumppanin kanssa"
+    },
+    "With parent": {
+        "fi": "Vanhemman kanssa"
+    },
+    "With kids": {
+        "fi": "Lasten kanssa"
+    },
+    "With family": {
+        "fi": "Perheen kanssa"
+    },
+    "With others": {
+        "fi": "Muiden kanssa"
+    },
+    "Using computer": {
+        "fi": "Tietokoneella"
+    },
+    "Partner": {
+        "fi": "Kumppani"
+    },
+    "Parent": {
+        "fi": "Vanhemmat"
+    },
+    "Kids": {
+        "fi": "Lapset"
+    },
+    "Family": {
+        "fi": "Perhe"
+    },
+    "Others": {
+        "fi": "Muut"
+    },
+    "Location": {
+        "fi": "Sijainti"
+    },
+    "Description": {
+        "fi": "Kuvaus"
+    },
+    "Subject": {
+        "fi": "Kohde"
+    },
+    "Rating": {
+        "fi": "Arvio"
+    },
+    "Save": {
+        "fi": "Tallenna"
+    },
+    "With whom and where": {
+        "fi": "Kenen kanssa ja sijainti"
+    },
+    "Delete": {
+        "fi": "Poista"
+    },
+    "undefined": {
+        "fi": "tuntemattoman"
+    },
+    "Personal care": {
+        "fi": "Henkilökohtaiset tarpeet"
+    },
+    "Sleeping": {
+        "fi": "Nukkuminen"
+    },
+    "Eating": {
+        "fi": "Ruokailu"
+    },
+    "Other personal care": {
+        "fi": "Peseytyminen, pukeutuminen"
+    },
+    "Employment": {
+        "fi": "Ansiotyö"
+    },
+    "Main job and second job": {
+        "fi": "Ansiotyö"
+    },
+    "Activities related to employment": {
+        "fi": "Ansiotyöhön liittyvä aika"
+    },
+    "Study": {
+        "fi": "Opiskelu"
+    },
+    "School or university": {
+        "fi": "Koulunkäynti ja opiskelu"
+    },
+    "Free time study": {
+        "fi": "Vapaa-ajan opiskelu"
+    },
+    "Household and family care": {
+        "fi": "Kotityö"
+    },
+    "Unspecified household and family care": {
+        "fi": "Määrittelemätön kotityö"
+    },
+    "Food management": {
+        "fi": "Ruoan valmistus"
+    },
+    "Household upkeep": {
+        "fi": "Huoltotyö"
+    },
+    "Care for textiles": {
+        "fi": "Vaatehuolto"
+    },
+    "Gardening and pet care": {
+        "fi": "Pihan ja eläinten hoito"
+    },
+    "Construction and repairs": {
+        "fi": "Korjaus- ja rakennustyöt"
+    },
+    "Shopping and services": {
+        "fi": "Ostokset ja asiointi"
+    },
+    "Household management": {
+        "fi": "Taloudenhoito"
+    },
+    "Childcare": {
+        "fi": "Lastenhoito"
+    },
+    "Help to an adult household member": {
+        "fi": "Perheenjäsenen auttaminen"
+    },
+    "Voluntary work and meetings": {
+        "fi": "Vapaaehtoistyö"
+    },
+    "Organisational work": {
+        "fi": "Järjestötoiminta"
+    },
+    "Informal help to other households": {
+        "fi": "Toisen kotitalouden auttaminen"
+    },
+    "Participatory and religious activities": {
+        "fi": "Osallistuva ja uskonnollinen toiminta"
+    },
+    "Social life and entertainment": {
+        "fi": "Vapaa-aika"
+    },
+    "Social life": {
+        "fi": "Sosiaalinen kanssakäyminen"
+    },
+    "Entertainment and culture": {
+        "fi": "Kulttuuri- ja huvitilaisuudet"
+    },
+    "Resting - time out": {
+        "fi": "Lepäily"
+    },
+    "Sports and outdoor activities": {
+        "fi": "Liikunta"
+    },
+    "Physical excercise": {
+        "fi": "Kuntoliikunta"
+    },
+    "Productive excercise": {
+        "fi": "Hyötyliikunta"
+    },
+    "Sports related activities": {
+        "fi": "Liikuntaan liittyvä toiminta"
+    },
+    "Hobbies": {
+        "fi": "Harrastukset"
+    },
+    "Arts and hobbies": {
+        "fi": "Soittaminen, piirtäminen tms."
+    },
+    "Computing": {
+        "fi": "ATK-harrastus"
+    },
+    "Games": {
+        "fi": "Seurapelit ja -leikit"
+    },
+    "Mass media": {
+        "fi": "Viestintä"
+    },
+    "Reading": {
+        "fi": "Lukeminen"
+    },
+    "TV, video and DVD": {
+        "fi": "TV:n ja videoiden katselu"
+    },
+    "Radio and recordings": {
+        "fi": "Radion ja musiikin kuuntelu"
+    },
+    "Travel by purpose": {
+        "fi": "Matkustaminen"
+    },
+    "Travel to/from work": {
+        "fi": "Työmatkat"
+    },
+    "Travel related to study": {
+        "fi": "Opiskeluun liittyvät matkat"
+    },
+    "Travel r. to shopping, services, childcare &c.": {
+        "fi": "Ostoksiin ja asiointiin liittyvät matkat"
+    },
+    "Travel related to voluntary work and meetings": {
+        "fi": "Osallistuvan toiminnan matkat"
+    },
+    "Travel related to social life": {
+        "fi": "Sosiaaliseen kanssakäymiseen liittyvät matkat"
+    },
+    "Travel related to other leisure": {
+        "fi": "Muuhun vapaa-aikaan liittyvät matkat"
+    },
+    "Travel related to changing locality": {
+        "fi": "Matkustaminen paikkakunnalta toiselle"
+    },
+    "Other or unspecified travel purpose": {
+        "fi": "Muu tai määrittelemätön matkustaminen"
+    },
+    "Other unspecified time use": {
+        "fi": "Erittelemätön ajankäyttö"
+    },
+    "Unspecified": {
+        "fi": "Määrittelemätön"
+    },
+    "Home": {
+        "fi": "Koti"
+    },
+    "Weekend home or holiday apartment": {
+        "fi": "Vapaa-ajan asunto"
+    },
+    "Workplace or school": {
+        "fi": "Työpaikka tai koulu"
+    },
+    "Other people's home": {
+        "fi": "Toisen koti"
+    },
+    "Restaurant, cafe or pub": {
+        "fi": "Ravintola tai kahvila"
+    },
+    "Shopping centres, malls, markets, other shops": {
+        "fi": "Ostoskeskus tai kauppa"
+    },
+    "Hotel, guesthouse, camping site": {
+        "fi": "Hotelli, majatalo, leirintäalue"
+    },
+    "Other specified location": {
+        "fi": "Muu sijainti"
+    },
+    "Transport mode": {
+        "fi": "Liikkumistapa"
+    },
+    "Travelling on foot": {
+        "fi": "Jalkaisin"
+    },
+    "Travelling by bicycle": {
+        "fi": "Polkupyörä"
+    },
+    "Travelling by moped, motorcycle or motorboat": {
+        "fi": "Mopo, moottoripyörä tai -vene"
+    },
+    "Travelling by passenger car": {
+        "fi": "Henkilöauto"
+    },
+    "Other or unspecified private transport mode": {
+        "fi": "Muu yksityinen kulkuväline"
+    },
+    "Travelling by public transport": {
+        "fi": "Julkinen liikenne"
+    }
+}
