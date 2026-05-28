@@ -221,7 +221,7 @@
  $query['action'] = (isset($_REQUEST['action'])) ?  $_REQUEST['action'] : NULL;
  $query['mainaction'] = (isset($_REQUEST['mainaction'])) ? $_REQUEST['mainaction'] : NULL;
  $query['sideaction'] = (isset($_REQUEST['sideaction'])) ? $_REQUEST['sideaction'] : NULL;
- $query['location'] = (isset($_REQUEST['location'])) ? $_REQUEST['location'] : NULL;
+ $query['location'] = (isset($_REQUEST['location'])) ? (int) $_REQUEST['location'] : NULL;
  $query['withOnly'] = (isset($_REQUEST['withOnly'])) ? $_REQUEST['withOnly'] : NULL;
  $query['with'] = NULL;
  if (isset($_REQUEST['with'])) {
@@ -374,6 +374,7 @@
 
  const acts = {'null': '', 'undefined': ''}
  const locs = {}
+ const selectedLoc = '<?php echo $query['location'] ?>'
  let activities = []
  let locations = []
  let guesses = {}
@@ -442,6 +443,9 @@
        const opt = document.createElement('option')
        opt.lang = lang
        opt.value = loc.id
+       if (loc.id === selectedLoc) {
+         opt.setAttribute('selected', 'selected')
+       }
        opt.textContent = loc[lang]
        grp[lang].appendChild(opt)
       }
@@ -532,6 +536,7 @@
 <?php
 
  function mkhref($sy, $sm, $sd, $ey, $em, $ed, $subject=NULL) {
+/*
   $st = date('Y-m-d', mktime(0, 0, 0, $sm, $sd, $sy));
   $et = date('Y-m-d', mktime(0, 0, 0, $em, $ed, $ey));
   $params = $_REQUEST;
@@ -542,6 +547,10 @@
   $params['starttime'] = $st;
   $params['endtime'] = $et;
   return "../?".http_build_query($params, '&amp;');
+*/
+  $st = date('Y-m-d\TH:i', mktime(0, 0, 0, $sm, $sd, $sy));
+  $et = date('Y-m-d\TH:i', mktime(0, 0, 0, $em, $ed, $ey));
+  return "../dashboard.html?subject=".htmlentities($subject)."#$st,$et";
  }
 
  $select = "SELECT subject, UNIX_TIMESTAMP(starttime) AS `tstamp`".
@@ -570,6 +579,9 @@
  }
  elseif ($query['sideaction']){
   $params[] = "(`sideaction` = ".sprintf("%'02.2s", $query['sideaction']).")";
+ }
+ if ($query['location']) {
+  $params[] = "(`location` = $query[location])";
  }
  if ($query['with']) {
   $params[] = "(`with` & $query[with] != 0)";
@@ -636,12 +648,13 @@
       echo "<td class=\"that\" colspan=\"".(31-$mday)."\"></td>";
      }
      $bgcolor = "hsla(".($hsl_base-$monthly/1.35).", 75%, 75%, 100%)";
-     $from = "$y-$m-01T00:00:00";
-     $to = "$y-".sprintf('%02d', $m+1)."-01T00:00:00";
-     # $href = mkhref($y, $m, 1, $y, $m+1, 1, $prevsub);
+     # $ from = "$y-$m-01T00:00:00";
+     # $to = date('Y-m-d\TH:i:s', mktime(0, 0, 0, $m+1, 1, $y));
+     # echo "\n<!-- mktime(0, 0, 0, $m+1, 1, $y) -->";
+     $href = mkhref($y, $m, 1, $y, $m+1, 1, $prevsub);
      echo '<td class="total" style="background-color: '.$bgcolor.'">'.
-          "<a href=\"../dashboard.html?subject=".urlencode($subject)."#$from,$to\">".
-          # "<a href=\"$href\">".
+          # "<a href=\"../dashboard.html?subject=".urlencode($subject)."#$from,$to\">".
+          "<a href=\"$href\">".
           str_replace('.', ',', sprintf('%.1f', $monthly)).
           "</a>".
           "</td></tr></table>\n";
@@ -727,24 +740,28 @@
    }
    if ($diff = ($mday - ($prev + 1))) {
     echo "<td class=\"diff\" colspan=\"$diff\">&nbsp;</td>";
-    echo "<!-- $diff = ($mday - ($prev + 1)) -->\n";
+    # echo "<!-- $diff = ($mday - ($prev + 1)) -->\n";
    }
 
    $monthly += $dur;
    $total += $dur;
    $prev = $mday;
 
-   # $bgcolor = "hsla(".($hsl_base-$dur*15).", 75%, 75%, 100%)";
-   $from = "$y-$m-".sprintf('%02d', $mday)."T00:00:00";
-   $to = "$y-$m-".sprintf('%02d', $mday+1)."T00:00:00";
-   # $href = mkhref($y, $m, $mday, $y, $m, $mday+1, $subject);
-   $bgcolor = "#8C8";
-   if ($dur != 23 && $dur != 24 && $dur != 25) {
-    $bgcolor = "#C00";
+   $bgcolor = "hsla(".($hsl_base-$dur*15).", 75%, 75%, 100%)";
+   # $from = "$y-$m-".sprintf('%02d', $mday)."T00:00:00";
+   # $to = date('Y-m-d\TH:i:s', mktime(0, 0, 0, $m, $mday+1, $y));
+   # echo "\n<!-- mktime(0, 0, 0, $m, $d+1, $y) -->";
+   $href = mkhref($y, $m, $mday, $y, $m, $mday+1, $subject);
+   if ($dur == 23 || $dur == 24 || $dur == 25) {
+     $bgcolor = "#CCC";
    }
+   # $bgcolor = "#8C8";
+   # if ($dur != 23 && $dur != 24 && $dur != 25) {
+   #  $bgcolor = "#C00";
+   # }
    echo "<td title=\"$date: $fmtdur\" style=\"background-color: $bgcolor\">".
-        "<a href=\"../dashboard.html?subject=".urlencode($subject)."#$from,$to\">".
-        # "<a href=\"$href\">".
+        # "<a href=\"../dashboard.html?subject=".urlencode($subject)."#$from,$to\">".
+        "<a href=\"$href\">".
         # "<span class=\"subject\">".htmlentities($subject)."</span> ".
         "$hours:$mins</a></td>\n";
    if ($mday == 31) {
@@ -760,18 +777,18 @@
   }
   if ($total) {
    $bgcolor = "hsla(".($hsl_base-$monthly/1.35).", 75%, 75%, 100%)";
-   $from = "$y-$m-01T00:00:00";
-   $to = "$y-".sprintf('%02d', $m+1)."-01T00:00:00";
-   # $href = mkhref($y, $m, 1, $y, $m+1, 1, $subject);
+   # $from = "$y-$m-01T00:00:00";
+   # $to = date('Y-m-d\TH:i:s', mktime(0, 0, 0, $m+1, 1, $y));
+   $href = mkhref($y, $m, 1, $y, $m+1, 1, $subject);
    echo '<td class="total" style="background-color: '.$bgcolor.'">'.
-        "<a href=\"../dashboard.html?subject=".urlencode($subject)."#$from,$to\">".
-        # "<a href=\"$href\">".
+        # "<a href=\"../dashboard.html?subject=".urlencode($subject)."#$from,$to\">".
+        "<a href=\"$href\">".
         str_replace('.', ',', sprintf('%.1f', $monthly)).
         "</a>".
         "</td></tr></tbody></table>\n";
   }
  }
- if ($days && $totaldays && $totalweeks && $totalmonths) {
+ if ($days) {
   $monthly = 0;
   $monthnr = $month;
   $totaltimespan = $lastts - $firstts;
