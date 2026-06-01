@@ -402,9 +402,8 @@
    border-width: 0 0 1px 0;
    display: grid;
    grid-template-areas:
-       "starttime mainaction"
-       "endtime with"
-       "rating sideaction";
+       "starttime mainaction sideaction sideaction"
+       "endtime with rating description";
    grid-template-rows: auto;
    grid-template-columns: 5em auto;
    margin: 0.25em auto 0 auto;
@@ -433,6 +432,14 @@
   }
   td.with .description {
    display: none;
+  }
+ }
+ @media (min-width: 40em) {
+  #table tr {
+   grid-template-areas:
+       "starttime mainaction sideaction"
+       "endtime with with"
+       "rating description description";
   }
  }
  @media (max-width: 40em) {
@@ -578,6 +585,25 @@
    max-width: none;
   }
  }
+ @media (max-width: 30em) {
+  #table tr {
+   grid-template-areas:
+       "starttime mainaction"
+       "endtime with"
+       "rating sideaction"
+       "description description";
+  }
+ }
+ @media (max-width: 20em) {
+  #table tr {
+   grid-template-areas:
+       "starttime endtime"
+       "mainaction mainaction"
+       "sideaction sideaction"
+       "with with"
+       "rating description";
+  }
+ }
  @media (max-width: 1024px) {
  }
  @media (prefers-color-scheme: dark) {
@@ -616,8 +642,8 @@
 </head>
 <body>
 <header>
-<!-- script src="https://unpkg.com/translate-element/translate-element.js"></script -->
-<script src="./translate-element.js"></script>
+<script src="https://unpkg.com/translate-element/translate-element.js"></script>
+<!-- script src="./translate-element.js"></script -->
 <link rel="stylesheet" href="./translate-element.css">
 <translate-element src="./translations.json"></translate-element>
 <a id="logout"><span lang="en">Log out</span></a>
@@ -918,6 +944,12 @@
  let llabels = {}
  let undefinedAction = ''
 
+ const params = new URLSearchParams(document.location.search)
+ let startTime = params.get('starttime')
+ let endTime = params.get('endtime')
+ let numRows = params.get('limit') || MAX_ROWS
+
+ const pageLoadHandler = () => {
  const loadPromises = []
  try {
   loadPromises.push((async () => {
@@ -1015,19 +1047,15 @@
    guesses = await resp.json()
   })())
   Promise.all(loadPromises).then(results => {
-   switcher.setLanguage(currentLanguage)
+   if (switcher && switcher.setLanguage) {
+    switcher.setLanguage(currentLanguage)
+   }
    sendFi = document.getElementById('submit-fi')
   })
  }
  catch(e) {
   console.error(e)
  }
-
-
- const params = new URLSearchParams(document.location.search)
- let startTime = params.get('starttime')
- let endTime = params.get('endtime')
- let numRows = params.get('limit') || MAX_ROWS
 
  const prevMonthLength = [30, 31, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30]
 
@@ -1071,6 +1099,8 @@
   offLineSupport = true
  }
 */
+ }
+ window.addEventListener('load', pageLoadHandler)
 
  const registerServiceWorker = async () => {
   try {
