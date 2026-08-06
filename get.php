@@ -43,7 +43,7 @@
             ' ORDER BY starttime';
   $stmt = mysqli_query($conn, $select);
   if (!$stmt) {
-   header('500 Internal Server Error');
+   http_response_code(500);
    $values = array('code' => mysqli_errno($conn), 'msg' => mysqli_error($conn));
   }
   else {
@@ -63,15 +63,13 @@
    header('Access-Control-Allow-Origin: *');
    header('Access-Control-Allow-Credentials: true');
    header('Content-Type: application/json');
-   header('Content-Length: '.strlen($json));
    if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) &&
        (in_array('gzip', explode(',', $_SERVER['HTTP_ACCEPT_ENCODING'])))) {
     header('Content-Encoding: gzip');
-    echo gzencode($json);
+    $json = gzencode($json);
    }
-   else {
-    echo $json;
-   }
+   header('Content-Length: '.strlen($json));
+   echo $json;
   }
   exit;
  }
@@ -112,7 +110,7 @@
 
  $stmt = mysqli_query($conn, $select);
  if (!$stmt) {
-  header('500 Internal Server Error');
+  http_response_code(500);
   $values = array('code' => mysqli_errno($conn), 'msg' => mysqli_error($conn));
  }
  else {

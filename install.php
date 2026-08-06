@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS ".DB_TABLE." (
   `rating` int(1) DEFAULT NULL,
   `subject` varchar(30) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci AUTO_INCREMENT=1
 ";
 
  $res = mysqli_query($conn, $query);

@@ -59,7 +59,9 @@ self.addEventListener('fetch', function (event) {
         for(let [key, value] of entries) {
           values[key] = value
         }
-        const response = new Response([values])
+        const response = new Response(JSON.stringify([values]), {
+          headers: {'Content-Type': 'application/json'}
+        })
         return response
       })())
     }
@@ -113,6 +115,7 @@ function startPolling() {
 function endPolling() {
   console.log('Stopping network state polling')
   clearInterval(poller)
+  poller = null
 }
 
 function saveOffline(obj) {
@@ -126,6 +129,7 @@ function saveOffline(obj) {
 
 async function syncOnline() {
   if (!navigator.onLine) return false
+  if (!db) return false
   const tx = db.transaction(OFFLINE_DB_STORE, 'readonly')
   const store = tx.objectStore(OFFLINE_DB_STORE)
   const allRecords = store.getAll()
@@ -142,6 +146,7 @@ async function syncOnline() {
           headers: {'Content-Type': 'application/x-www-form-urlencoded'},
           body: new URLSearchParams(record.body)
         }).then(async (resp) => {
+          if (!resp.ok) throw new Error(resp.status)
 /*
           const values = await resp.json()
           self.clients.matchAll().then((clientList) => {

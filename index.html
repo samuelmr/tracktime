@@ -926,6 +926,7 @@
  const sub = document.getElementById('subject')
  const send = document.getElementById('submit')
  let sendFi // initialized after translations
+ let editMode = false
  const rat = document.getElementById('rating')
  const dp = document.getElementById('datetimepicker')
  const py = document.getElementById('pickyear')
@@ -1066,6 +1067,7 @@
   x.onprogress = (e) => {
    history.go(0)
   }
+  x.send()
  }
 
  let subject = params.get('subject') || ''
@@ -1225,11 +1227,11 @@
   if (begin.compareDocumentPosition(ts) != p) {
    return
   }
-  if (begin.nodeType == Node.TEXT_TYPE) {
+  if (begin.nodeType == Node.TEXT_NODE) {
    begin = begin.parentElement
   }
   let end = sel.focusNode
-  if (end.nodeType == Node.TEXT_TYPE) {
+  if (end.nodeType == Node.TEXT_NODE) {
    end = end.parentElement
   }
   if (begin.textContent > end.textContent) {
@@ -1281,7 +1283,7 @@
  const stars = []
  for (let i=1; i<=5; i++) {
   const str = document.getElementById('star' + i)
-  str.ontap = str.onclick = setRating
+  str.onclick = setRating
   stars[i] = str
  }
 
@@ -1321,6 +1323,7 @@
   if (!sub.value) {
     alert('Subject is mandatory')
     sub.focus()
+    return false
   }
   // xhr.abort()
   // const res = xhr.open(f.method, f.action, true)
@@ -1374,7 +1377,7 @@
 
  const lbs = dp.getElementsByTagName('label')
  for (let i=0; i<lbs.length; i++) {
-  lbs[i].onclick = lbs[i].touchend = function() {
+  lbs[i].onclick = lbs[i].ontouchend = function() {
    const ip = document.getElementById(this.getAttribute('for'))
    if (ip.id == pt.id) {
     let newIndex = ((this.className == 'up') ? -1 : 1) + pt.selectedIndex
@@ -1389,14 +1392,14 @@
     pt.selectedIndex = newIndex
    }
    else {
-    tmp = ((this.className == 'up') ? 1 : -1 ) + toNum(ip.value)
+    let tmp = ((this.className == 'up') ? 1 : -1 ) + toNum(ip.value)
     switch (ip) {
      case pm:
       if (tmp > 12) {
        tmp = 1
        py.value = toNum(py.value) + 1
       }
-      else if (tmp <= 1) {
+      else if (tmp < 1) {
        tmp = 12
        py.value = toNum(py.value) - 1
       }
@@ -1406,12 +1409,22 @@
       if (tmp > 31) {
        tmp = 1
        pm.value = toNum(pm.value) + 1
-       pm.value = (pm.value < 10) ? '0' + '' + pm.value : pm.value
+       if (toNum(pm.value) > 12) {
+        pm.value = '01'
+        py.value = toNum(py.value) + 1
+       } else {
+        pm.value = (pm.value < 10) ? '0' + '' + pm.value : pm.value
+       }
       }
       else if (tmp < 1) {
-       tmp = prevMonthLength[toNum(pm.value)]
        pm.value = toNum(pm.value) - 1
-       pm.value = (pm.value < 10) ? '0' + '' + pm.value : pm.value
+       if (toNum(pm.value) < 1) {
+        pm.value = '12'
+        py.value = toNum(py.value) - 1
+       } else {
+        pm.value = (pm.value < 10) ? '0' + '' + pm.value : pm.value
+       }
+       tmp = prevMonthLength[toNum(pm.value)]
       }
       tmp = (tmp < 10) ? '0' + '' + tmp : tmp
       break
@@ -1468,7 +1481,7 @@
   if (!dtstr) {
    return
   }
-  dt = dtstr.split(' ')
+  const dt = dtstr.split(' ')
   d = dt[0].split('-')
   const t = dt[1].split(':')
   td = new Date(d[0], d[1] - 1, d[2], t[0], t[1])
@@ -1610,9 +1623,10 @@
   }
   hilite(st, 15, 12, 7)
   resetEndDate()
-  if (send.value != 'Save') {
+  if (editMode) {
    send.value = 'Save'
    if (sendFi) sendFi.value = 'Tallenna'
+   editMode = false
    hilite(send, 15, 12, 7)
    hilite(sendFi, 15, 12, 7)
   }
@@ -1660,6 +1674,7 @@
    rat.value = values['rating'] || 0
    updateStars()
    send.value = 'Edit'
+   editMode = true
    if (sendFi) sendFi.value = 'Muokkaa'
    hilite(send, 15, 12, 7)
    hilite(sendFi, 15, 12, 7)
@@ -1675,15 +1690,17 @@
       'Content-Type': 'application/x-www-form-urlencoded'
      },
      body: new URLSearchParams({
-      'id': values['id']
+      'id': values['id'],
+      'subject': sub.value
      })
     }
     const delResp = await fetch(delUrl, delParams)
     if (delResp.ok) {
       tr.remove()
       this.remove()
-      if (send.value != 'Save') {
+      if (editMode) {
       send.value = 'Save'
+      editMode = false
       if (sendFi) sendFi.value = 'Tallenna'
       hilite(send, 15, 12, 7)
       hilite(sendFi, 15, 12, 7)
@@ -1706,7 +1723,7 @@
    }
   }
   for (let i=0; i<keys.length; i++) {
-   key = keys[i]
+   let key = keys[i]
    let val = values[key]
    const td = document.createElement('td')
    let cellval
@@ -1763,7 +1780,7 @@
     const rv = parseInt(values['rating'])
     if (rv > 0) {
      val = new Array(rv+1).join('\u2605')
-     meter = document.createElement('span')
+     const meter = document.createElement('span')
      meter.className = 'rating'
      // meter.min = 0
      // meter.max = 5
@@ -1774,7 +1791,7 @@
     }
     if (values['description']) {
      val = values['description']
-     span = document.createElement('span')
+     const span = document.createElement('span')
      span.className = 'description'
      span.appendChild(document.createTextNode(val))
      cellval.appendChild(document.createTextNode(' '))
@@ -1822,7 +1839,7 @@
    tr.childNodes[0].classList.add('alert')
   }
   else if (prevEnd && (values['starttime'] > prevEnd)) {
-   tmp = {
+   const tmp = {
     'starttime': prevEnd,
     'endtime': values['starttime'],
     'mainaction': undefinedAction,
