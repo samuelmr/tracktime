@@ -324,9 +324,9 @@
  </fieldset>
  <fieldset class="extra description">
   <legend>
-   <label for="description"><span lang="fi">Kuvaus sisältää</span><span lang="en">Description includes</span></label>
+   <label for="desc"><span lang="fi">Kuvaus sisältää</span><span lang="en">Description includes</span></label>
   </legend>
-  <input id="description" name="description" type="text" size="30" maxlength="255" value="<?php echo htmlentities($query['desc']); ?>">
+  <input id="desc" name="desc" type="text" size="30" maxlength="255" value="<?php echo htmlentities($query['desc']); ?>">
  </fieldset>
  <fieldset class="extra description">
   <legend>
