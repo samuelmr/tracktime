@@ -83,6 +83,7 @@ h1 a { color: var(--text); text-decoration: none; }
  gap: 6px;
  padding: 10px 16px;
  border-bottom: 1px solid var(--border);
+ flex-wrap: wrap;
 }
 .tg { display: flex; align-items: center; gap: 4px; }
 .tadj {
@@ -304,6 +305,22 @@ h1 a { color: var(--text); text-decoration: none; }
 }
 @media (prefers-color-scheme: dark) { #toast { background: #444; } }
 #toast.show { transform: translateX(-50%) translateY(0); }
+
+/* Date picker */
+#date-input {
+ width: 110px;
+ background: var(--bg-input);
+ border: 1px solid var(--border);
+ border-radius: 8px;
+ color: var(--text);
+ font-size: 0.9em;
+ height: 36px;
+ padding: 0 6px;
+ text-align: center;
+ -webkit-appearance: none;
+ appearance: none;
+}
+#time-bar { position: relative; flex-wrap: wrap; justify-content: center; gap: 10px; }
 </style>
 </head>
 <body>
@@ -328,6 +345,8 @@ h1 a { color: var(--text); text-decoration: none; }
   <span class="tval" id="ev">–</span>
   <button class="tadj" id="ep">+</button>
  </div>
+ <button class="tadj" id="refresh-sug" title="Refresh suggestions">↻</button>
+ <input type="date" id="date-input">
 </div>
 
 <section class="section" id="sug-section">
@@ -399,6 +418,21 @@ function adjMin(d, delta) {
  return r
 }
 
+function roundToNext10Min(d) {
+ const date = new Date(d)
+ const totalMinutes = date.getHours() * 60 + date.getMinutes()
+ const slotNumber = Math.ceil(totalMinutes / 10)
+ const minutes = slotNumber * 10
+ date.setHours(Math.floor(minutes / 60), minutes % 60, 0, 0)
+ return date
+}
+
+function setDateOnly(d, year, month, day) {
+ const result = new Date(d)
+ result.setFullYear(year, month - 1, day)
+ return result
+}
+
 function actName(id) { return acts[id]?.en || id || '' }
 function locName(id)  { return id ? (locs[id]?.en  || '') : '' }
 
@@ -443,6 +477,8 @@ const ev = document.getElementById('ev')
 function updateBar() {
  sv.textContent = fmtTime(startDt)
  ev.textContent = fmtTime(endDt)
+ const dateStr = pad(endDt.getFullYear()) + '-' + pad(endDt.getMonth()+1) + '-' + pad(endDt.getDate())
+ document.getElementById('date-input').value = dateStr
 }
 
 document.getElementById('sm').onclick = () => { startDt = adjMin(startDt, -10); updateBar() }
@@ -450,10 +486,25 @@ document.getElementById('sp').onclick = () => { startDt = adjMin(startDt, +10); 
 document.getElementById('em').onclick = () => { endDt = adjMin(endDt, -10);   endAuto = false; updateBar() }
 document.getElementById('ep').onclick = () => { endDt = adjMin(endDt, +10);   endAuto = false; updateBar() }
 
+document.getElementById('date-input').addEventListener('change', (e) => {
+ const parts = e.target.value.split('-')
+ if (parts.length === 3) {
+  const [y, m, d] = [+parts[0], +parts[1], +parts[2]]
+  startDt = setDateOnly(startDt, y, m, d)
+  endDt = setDateOnly(endDt, y, m, d)
+  updateBar()
+ }
+})
+
+document.getElementById('refresh-sug').onclick = fetchSuggestions
+
 setInterval(() => {
  if (!endAuto) return
  const now = new Date()
- if ((now - endDt) < 20 * 60000) { endDt = now; endDt.setSeconds(0); endDt.setMilliseconds(0); updateBar() }
+ if ((now - endDt) < 20 * 60000) {
+  endDt = roundToNext10Min(now)
+  updateBar()
+ }
 }, TEN_MIN)
 
 /* ── reference data ─────────────────────────────────────────── */
@@ -485,7 +536,9 @@ async function fetchSuggestions() {
  }
  sec.innerHTML = '<div class="empty">Loading suggestions…</div>'
  try {
-  const url = `${SUGGEST_URI}?subject=${encodeURIComponent(subject)}&starttime=${encodeURIComponent(dtStr(endDt))}`
+  const duration = (endDt - startDt) / 60000
+  const sugTime = duration > 120 ? startDt : endDt
+  const url = `${SUGGEST_URI}?subject=${encodeURIComponent(subject)}&starttime=${encodeURIComponent(dtStr(sugTime))}`
   const resp = await fetch(url)
   suggestions = await resp.json()
  } catch(e) {
@@ -680,7 +733,7 @@ async function submitForm(sec, entryId) {
    closeForm()
    /* advance time window: next entry starts where this one ended */
    startDt = new Date(endDt)
-   endDt   = new Date(); endDt.setSeconds(0); endDt.setMilliseconds(0)
+   endDt = roundToNext10Min(new Date())
    endAuto = true
    startFromRecent = true
    updateBar()
@@ -747,15 +800,31 @@ async function refresh() {
 }
 
 async function init() {
- endDt = new Date(); endDt.setSeconds(0); endDt.setMilliseconds(0)
+ endDt = roundToNext10Min(new Date())
  startDt = new Date(endDt.getTime() - 30 * 60000)
- updateBar()
+
  await loadRef()
- if (subject) await refresh()
- else {
+
+ if (!subject) {
   document.getElementById('sug-section').innerHTML = '<p class="empty">Enter your name above to get started.</p>'
   document.getElementById('recent-list').innerHTML = ''
+  updateBar()
+  return
  }
+
+ try {
+  const resp = await fetch(`${GET_URI}?latest=1&subject=${encodeURIComponent(subject)}`)
+  const entries = await resp.json()
+  if (entries.length) {
+   const lastEnd = parseDt(entries[0].endtime)
+   if (lastEnd && (new Date() - lastEnd) < 4 * 3600000) {
+    startDt = lastEnd
+   }
+  }
+ } catch(e) { console.warn('init getRecent failed', e) }
+
+ updateBar()
+ await refresh()
 }
 
 ;(async () => {
