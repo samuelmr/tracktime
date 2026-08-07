@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="TrackTime">
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1A1A1A" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="./public/manifest.json">
+<link rel="icon" href="/favicon.ico">
+<title>TrackTime</title>
+<style>
+:root {
+ --bg:        #FFFFFF;
+ --bg-card:   #F4F4F4;
+ --bg-input:  #EBEBEB;
+ --text:      #111111;
+ --muted:     #666666;
+ --accent:    #0055CC;
+ --border:    #DDDDDD;
+ --danger:    #CC2200;
+ --tap:       48px;
+}
+@media (prefers-color-scheme: dark) {
+ :root {
+  --bg:       #1A1A1A;
+  --bg-card:  #252525;
+  --bg-input: #333333;
+  --text:     #EEEEEE;
+  --muted:    #999999;
+  --accent:   #5599FF;
+  --border:   #444444;
+  --danger:   #FF5533;
+ }
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+ background: var(--bg);
+ color: var(--text);
+ font-family: system-ui, -apple-system, Helvetica, Arial, sans-serif;
+ font-size: 16px;
+ max-width: 600px;
+ margin: 0 auto;
+ padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+}
+a { color: var(--accent); }
+
+/* Header */
+header {
+ position: sticky;
+ top: 0;
+ background: var(--bg);
+ border-bottom: 1px solid var(--border);
+ padding: 10px 16px;
+ display: flex;
+ align-items: center;
+ gap: 12px;
+ z-index: 10;
+}
+h1 { font-size: 1.05em; font-weight: 700; flex: 0 0 auto; }
+h1 a { color: var(--text); text-decoration: none; }
+#subject-wrap { flex: 1; min-width: 0; }
+#subject {
+ width: 100%;
+ background: var(--bg-input);
+ border: 1px solid var(--border);
+ border-radius: 8px;
+ color: var(--text);
+ font-size: 1em;
+ height: 38px;
+ padding: 0 10px;
+}
+#subject::placeholder { color: var(--muted); }
+
+/* Time bar */
+#time-bar {
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ gap: 6px;
+ padding: 10px 16px;
+ border-bottom: 1px solid var(--border);
+ flex-wrap: wrap;
+}
+.tg { display: flex; align-items: center; gap: 4px; }
+.tadj {
+ width: 38px;
+ height: 38px;
+ border: 1px solid var(--border);
+ border-radius: 8px;
+ background: var(--bg-input);
+ color: var(--text);
+ font-size: 1.3em;
+ line-height: 1;
+ cursor: pointer;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ -webkit-tap-highlight-color: transparent;
+ user-select: none;
+}
+.tadj:active { background: var(--accent); color: #FFF; border-color: var(--accent); }
+.tval {
+ font-size: 1.05em;
+ font-weight: 700;
+ font-variant-numeric: tabular-nums;
+ min-width: 4.5em;
+ text-align: center;
+}
+.tarrow { color: var(--muted); font-size: 1.1em; }
+
+/* Sections */
+.section { padding: 14px 16px; }
+.section + .section { border-top: 1px solid var(--border); }
+.section-title {
+ font-size: 0.75em;
+ font-weight: 700;
+ color: var(--muted);
+ text-transform: uppercase;
+ letter-spacing: 0.06em;
+ margin-bottom: 10px;
+}
+
+/* Suggestion cards */
+.sug-card {
+ background: var(--bg-card);
+ border: 1px solid var(--border);
+ border-radius: 12px;
+ padding: 14px 16px;
+ margin-bottom: 10px;
+ cursor: pointer;
+ -webkit-tap-highlight-color: transparent;
+ user-select: none;
+ min-height: var(--tap);
+ transition: transform 0.08s;
+}
+.sug-card:active {
+ background: var(--accent);
+ color: #FFF;
+ border-color: var(--accent);
+ transform: scale(0.98);
+}
+.sug-card:active .sug-meta { color: rgba(255,255,255,0.75); }
+.sug-name { font-size: 1.05em; font-weight: 600; }
+.sug-meta { font-size: 0.85em; color: var(--muted); margin-top: 4px; }
+.btn-else {
+ display: block;
+ width: 100%;
+ padding: 12px;
+ text-align: center;
+ background: transparent;
+ border: 1.5px dashed var(--border);
+ border-radius: 12px;
+ color: var(--accent);
+ font-size: 0.95em;
+ cursor: pointer;
+ -webkit-tap-highlight-color: transparent;
+ margin-top: 4px;
+}
+.btn-else:active { background: var(--bg-card); }
+
+/* Detail form */
+#detail { display: none; }
+.fg { margin-bottom: 14px; }
+.fg label {
+ display: block;
+ font-size: 0.8em;
+ font-weight: 700;
+ color: var(--muted);
+ margin-bottom: 6px;
+ text-transform: uppercase;
+ letter-spacing: 0.04em;
+}
+.fg select, .fg input[type="text"] {
+ width: 100%;
+ background: var(--bg-input);
+ border: 1px solid var(--border);
+ border-radius: 10px;
+ color: var(--text);
+ font-size: 1em;
+ height: var(--tap);
+ padding: 0 12px;
+ -webkit-appearance: none;
+ appearance: none;
+}
+.fg select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M0 0l6 8 6-8z' fill='%23888'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+.with-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.wopt {
+ background: var(--bg-input);
+ border: 1px solid var(--border);
+ border-radius: 10px;
+ padding: 10px 6px;
+ text-align: center;
+ font-size: 0.9em;
+ cursor: pointer;
+ min-height: var(--tap);
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ -webkit-tap-highlight-color: transparent;
+ user-select: none;
+}
+.wopt.on { background: var(--accent); color: #FFF; border-color: var(--accent); }
+.comp-row {
+ background: var(--bg-input);
+ border: 1px solid var(--border);
+ border-radius: 10px;
+ padding: 12px 14px;
+ cursor: pointer;
+ -webkit-tap-highlight-color: transparent;
+ user-select: none;
+ font-size: 0.95em;
+ min-height: var(--tap);
+ display: flex;
+ align-items: center;
+}
+.comp-row.on { background: var(--accent); color: #FFF; border-color: var(--accent); }
+.stars { display: flex; gap: 8px; }
+.star { font-size: 1.8em; cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; }
+.btn-save {
+ display: block;
+ width: 100%;
+ background: var(--accent);
+ color: #FFF;
+ border: none;
+ border-radius: 12px;
+ font-size: 1.1em;
+ font-weight: 700;
+ height: 52px;
+ cursor: pointer;
+ -webkit-tap-highlight-color: transparent;
+ margin-top: 6px;
+}
+.btn-save:active { opacity: 0.8; }
+.btn-save:disabled { opacity: 0.5; }
+.btn-delete {
+ display: block;
+ width: 100%;
+ background: transparent;
+ color: var(--danger);
+ border: 1.5px solid var(--danger);
+ border-radius: 12px;
+ font-size: 0.95em;
+ height: 44px;
+ cursor: pointer;
+ -webkit-tap-highlight-color: transparent;
+ margin-top: 8px;
+}
+.btn-cancel {
+ display: block;
+ width: 100%;
+ background: transparent;
+ color: var(--muted);
+ border: none;
+ font-size: 0.95em;
+ height: 44px;
+ cursor: pointer;
+ -webkit-tap-highlight-color: transparent;
+ margin-top: 2px;
+}
+
+/* Recent entries */
+#recent-list { list-style: none; }
+.erow {
+ display: flex;
+ align-items: center;
+ gap: 10px;
+ padding: 10px 0;
+ border-bottom: 1px solid var(--border);
+ cursor: pointer;
+ min-height: var(--tap);
+ -webkit-tap-highlight-color: transparent;
+}
+.erow:last-child { border-bottom: none; }
+.etime {
+ flex: 0 0 auto;
+ font-size: 0.78em;
+ color: var(--muted);
+ font-variant-numeric: tabular-nums;
+ min-width: 5em;
+}
+.einfo { flex: 1; min-width: 0; }
+.ename { font-weight: 600; font-size: 0.95em; }
+.emeta { font-size: 0.8em; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.empty { color: var(--muted); font-size: 0.9em; padding: 8px 0; }
+
+/* Toast */
+#toast {
+ position: fixed;
+ bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+ left: 50%;
+ transform: translateX(-50%) translateY(72px);
+ background: #222;
+ color: #FFF;
+ padding: 10px 22px;
+ border-radius: 24px;
+ font-size: 0.9em;
+ transition: transform 0.22s ease;
+ z-index: 100;
+ white-space: nowrap;
+ pointer-events: none;
+}
+@media (prefers-color-scheme: dark) { #toast { background: #444; } }
+#toast.show { transform: translateX(-50%) translateY(0); }
+
+/* Date picker */
+#date-input {
+ width: 110px;
+ background: var(--bg-input);
+ border: 1px solid var(--border);
+ border-radius: 8px;
+ color: var(--text);
+ font-size: 0.9em;
+ height: 36px;
+ padding: 0 6px;
+ text-align: center;
+ -webkit-appearance: none;
+ appearance: none;
+}
+#time-bar { position: relative; flex-wrap: wrap; justify-content: center; gap: 10px; }
+</style>
+</head>
+<body>
+
+<header>
+ <h1><a href="./mobile.html" id="h1link">Track</a></h1>
+ <div id="subject-wrap">
+  <input id="subject" type="text" placeholder="Your name" maxlength="30"
+   autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+ </div>
+</header>
+
+<div id="time-bar">
+ <div class="tg">
+  <button class="tadj" id="sm">−</button>
+  <span class="tval" id="sv">–</span>
+  <button class="tadj" id="sp">+</button>
+ </div>
+ <span class="tarrow">→</span>
+ <div class="tg">
+  <button class="tadj" id="em">−</button>
+  <span class="tval" id="ev">–</span>
+  <button class="tadj" id="ep">+</button>
+ </div>
+ <button class="tadj" id="refresh-sug" title="Refresh suggestions">↻</button>
+ <input type="date" id="date-input">
+</div>
+
+<section class="section" id="sug-section">
+ <div class="empty">Loading…</div>
+</section>
+
+<section class="section" id="detail">
+</section>
+
+<section class="section" id="recent-section">
+ <div class="section-title">Recent</div>
+ <ul id="recent-list"><li class="empty">Loading…</li></ul>
+</section>
+
+<div id="toast"></div>
+
+<script>
+const PUT_URI     = './put.php'
+const GET_URI     = './get.php'
+const SUGGEST_URI = './suggest.php'
+const DEL_URI     = './del.php'
+const TEN_MIN     = 10 * 60 * 1000
+const SUBJ_KEY    = 'tracktime_subject'
+
+const wlabels = {1:'Alone', 2:'Partner', 3:'Parent', 4:'Kids', 5:'Family', 6:'Others'}
+
+let activities = [], locations = [], guesses = {}
+let acts = {}, locs = {}
+let suggestions = []
+let recentEntries = []
+
+let startDt = new Date()
+let endDt   = new Date()
+let endAuto = true
+let startFromRecent = false
+
+/* ── utilities ─────────────────────────────────────────────── */
+
+function pad(v) { return v < 10 ? '0' + v : '' + v }
+
+function dtStr(d) {
+ if (!d || !d.getFullYear) return ''
+ return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) +
+        ' ' + pad(d.getHours()) + ':' + pad(10 * Math.floor(d.getMinutes()/10)) + ':00'
+}
+
+function parseDt(str) {
+ if (!str) return null
+ const parts = str.indexOf('T') >= 0 ? str.split('T') : str.split(' ')
+ if (parts.length < 2) return null
+ const d = parts[0].split('-'), t = parts[1].split(':')
+ return new Date(+d[0], +d[1]-1, +d[2], +t[0], +t[1])
+}
+
+function fmtTime(d) {
+ if (!d) return ''
+ const now = new Date()
+ const sameDay = d.getDate()===now.getDate() && d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear()
+ const t = pad(d.getHours()) + ':' + pad(d.getMinutes())
+ if (sameDay) return t
+ const yest = new Date(now); yest.setDate(yest.getDate()-1)
+ if (d.getDate()===yest.getDate() && d.getMonth()===yest.getMonth()) return 'Yest ' + t
+ return pad(d.getDate()) + '.' + pad(d.getMonth()+1) + '. ' + t
+}
+
+function adjMin(d, delta) {
+ const r = new Date(d.getTime() + delta * 60000)
+ r.setSeconds(0); r.setMilliseconds(0)
+ return r
+}
+
+function roundToNext10Min(d) {
+ const date = new Date(d)
+ const totalMinutes = date.getHours() * 60 + date.getMinutes()
+ const slotNumber = Math.ceil(totalMinutes / 10)
+ const minutes = slotNumber * 10
+ date.setHours(Math.floor(minutes / 60), minutes % 60, 0, 0)
+ return date
+}
+
+function setDateOnly(d, year, month, day) {
+ const result = new Date(d)
+ result.setFullYear(year, month - 1, day)
+ return result
+}
+
+function actName(id) { return acts[id]?.en || id || '' }
+function locName(id)  { return id ? (locs[id]?.en  || '') : '' }
+
+function decodeWith(val) {
+ const out = []
+ for (let i=1; i<=6; i++) if (val & Math.pow(2, i-1)) out.push(wlabels[i])
+ return out
+}
+
+function esc(s) {
+ if (!s) return ''
+ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+
+function toast(msg) {
+ const el = document.getElementById('toast')
+ el.textContent = msg
+ el.classList.add('show')
+ setTimeout(() => el.classList.remove('show'), 2500)
+}
+
+/* ── subject ────────────────────────────────────────────────── */
+
+const subEl = document.getElementById('subject')
+let subject = localStorage.getItem(SUBJ_KEY) || ''
+subEl.value = subject
+
+subEl.addEventListener('change', () => {
+ subject = subEl.value.trim()
+ if (subject) {
+  localStorage.setItem(SUBJ_KEY, subject)
+  startFromRecent = false
+  refresh()
+ }
+})
+
+/* ── time bar ───────────────────────────────────────────────── */
+
+const sv = document.getElementById('sv')
+const ev = document.getElementById('ev')
+
+function updateBar() {
+ sv.textContent = fmtTime(startDt)
+ ev.textContent = fmtTime(endDt)
+ const dateStr = pad(endDt.getFullYear()) + '-' + pad(endDt.getMonth()+1) + '-' + pad(endDt.getDate())
+ document.getElementById('date-input').value = dateStr
+}
+
+document.getElementById('sm').onclick = () => { startDt = adjMin(startDt, -10); updateBar() }
+document.getElementById('sp').onclick = () => { startDt = adjMin(startDt, +10); updateBar() }
+document.getElementById('em').onclick = () => { endDt = adjMin(endDt, -10);   endAuto = false; updateBar() }
+document.getElementById('ep').onclick = () => { endDt = adjMin(endDt, +10);   endAuto = false; updateBar() }
+
+document.getElementById('date-input').addEventListener('change', (e) => {
+ const parts = e.target.value.split('-')
+ if (parts.length === 3) {
+  const [y, m, d] = [+parts[0], +parts[1], +parts[2]]
+  startDt = setDateOnly(startDt, y, m, d)
+  endDt = setDateOnly(endDt, y, m, d)
+  updateBar()
+ }
+})
+
+document.getElementById('refresh-sug').onclick = fetchSuggestions
+
+setInterval(() => {
+ if (!endAuto) return
+ const now = new Date()
+ if ((now - endDt) < 20 * 60000) {
+  endDt = roundToNext10Min(now)
+  updateBar()
+ }
+}, TEN_MIN)
+
+/* ── reference data ─────────────────────────────────────────── */
+
+async function loadRef() {
+ const [ar, lr, gr] = await Promise.all([
+  fetch('./activities.json'), fetch('./locations.json'), fetch('./guesses.json')
+ ])
+ activities = await ar.json()
+ locations  = await lr.json()
+ guesses    = await gr.json()
+ for (const cat of activities) {
+  if (cat.activities) for (const a of cat.activities) acts[a.id] = a
+  else if (cat.id) acts[cat.id] = cat
+ }
+ for (const cat of locations) {
+  if (cat.options) for (const l of cat.options) locs[l.id] = l
+  else if (cat.id) locs[cat.id] = cat
+ }
+}
+
+/* ── suggestions ────────────────────────────────────────────── */
+
+async function fetchSuggestions() {
+ const sec = document.getElementById('sug-section')
+ if (!subject) {
+  sec.innerHTML = '<p class="empty">Enter your name above to get started.</p>'
+  return
+ }
+ sec.innerHTML = '<div class="empty">Loading suggestions…</div>'
+ try {
+  const duration = (endDt - startDt) / 60000
+  const sugTime = duration > 120 ? startDt : endDt
+  const url = `${SUGGEST_URI}?subject=${encodeURIComponent(subject)}&starttime=${encodeURIComponent(dtStr(sugTime))}`
+  const resp = await fetch(url)
+  suggestions = await resp.json()
+ } catch(e) {
+  suggestions = []
+ }
+ renderSuggestions()
+}
+
+function renderSuggestions() {
+ const sec = document.getElementById('sug-section')
+ let html = '<div class="section-title">What are you doing?</div>'
+
+ if (!suggestions.length) {
+  html += '<p class="empty">No suggestions yet — log a few entries first.</p>'
+ } else {
+  for (let i=0; i<suggestions.length; i++) {
+   const s = suggestions[i]
+   const name = esc(actName(s.mainaction))
+   const side = s.sideaction ? ' <small>+ ' + esc(actName(s.sideaction)) + '</small>' : ''
+   const loc  = s.location ? esc(locName(s.location)) : ''
+   const with_ = decodeWith(s.with || 0)
+   const withStr = with_.length && with_[0] !== 'Alone' ? esc(with_.join(', ')) : ''
+   const meta = [loc, withStr].filter(Boolean).join(' · ')
+   html += `<div class="sug-card" data-i="${i}"><div class="sug-name">${name}${side}</div>${meta ? `<div class="sug-meta">${meta}</div>` : ''}</div>`
+  }
+ }
+ html += '<button class="btn-else" id="btn-else">Something else…</button>'
+ sec.innerHTML = html
+
+ sec.querySelectorAll('.sug-card').forEach(card => {
+  card.addEventListener('click', () => openForm(suggestions[+card.dataset.i], null))
+ })
+ document.getElementById('btn-else').addEventListener('click', openManual)
+}
+
+/* ── detail form ────────────────────────────────────────────── */
+
+function buildActOptions(sel) {
+ let h = ''
+ for (const cat of activities) {
+  if (cat.activities) {
+   h += `<optgroup label="${esc(cat.en)}">`
+   for (const a of cat.activities) h += `<option value="${a.id}"${a.id===sel?' selected':''}>${esc(a.en)}</option>`
+   h += '</optgroup>'
+  } else if (cat.id) {
+   h += `<option value="${cat.id}"${cat.id===sel?' selected':''}>${esc(cat.en)}</option>`
+  }
+ }
+ return h
+}
+
+function buildLocOptions(sel) {
+ let h = '<option value="">Unspecified</option>'
+ for (const cat of locations) {
+  if (cat.options) {
+   h += `<optgroup label="${esc(cat.en)}">`
+   for (const l of cat.options) h += `<option value="${l.id}"${l.id==sel?' selected':''}>${esc(l.en)}</option>`
+   h += '</optgroup>'
+  } else if (cat.id) {
+   h += `<option value="${cat.id}"${cat.id==sel?' selected':''}>${esc(cat.en)}</option>`
+  }
+ }
+ return h
+}
+
+function openForm(data, entryId) {
+ const sec = document.getElementById('detail')
+ sec.style.display = 'block'
+
+ if (entryId) {
+  const entryStart = parseDt(data.starttime)
+  const entryEnd   = parseDt(data.endtime)
+  if (entryStart) startDt = entryStart
+  if (entryEnd)   { endDt = entryEnd; endAuto = false }
+  updateBar()
+ }
+
+ const withVal = data?.with != null ? +data.with : 1
+ let withHtml = ''
+ for (let i=1; i<=6; i++) {
+  const on = !!(withVal & Math.pow(2, i-1))
+  withHtml += `<div class="wopt${on?' on':''}" data-v="${i}">${wlabels[i]}</div>`
+ }
+
+ const rating = +(data?.rating || 0)
+ let starHtml = ''
+ for (let i=1; i<=5; i++) starHtml += `<span class="star" data-v="${i}">${i<=rating?'★':'☆'}</span>`
+
+ sec.innerHTML = `
+  <div class="section-title">${entryId ? 'Edit entry' : 'New entry'}</div>
+  <div class="fg"><label>Activity</label><select id="f-main">${buildActOptions(data?.mainaction)}</select></div>
+  <div class="fg"><label>Parallel activity</label><select id="f-side"><option value="">None</option>${buildActOptions(data?.sideaction)}</select></div>
+  <div class="fg"><label>Location</label><select id="f-loc">${buildLocOptions(data?.location)}</select></div>
+  <div class="fg"><label>With whom</label><div class="with-grid" id="wg">${withHtml}</div></div>
+  <div class="fg"><div class="comp-row${data?.usecomputer?' on':''}" id="comp">Using computer</div></div>
+  <div class="fg"><label>Description</label><input type="text" id="f-desc" value="${esc(data?.description||'')}" maxlength="255" placeholder="optional"></div>
+  <div class="fg"><label>Rating</label><div class="stars" id="stars">${starHtml}</div></div>
+  <button class="btn-save" id="btn-save">Save</button>
+  ${entryId ? `<button class="btn-delete" id="btn-del">Delete entry</button>` : ''}
+  <button class="btn-cancel" id="btn-cancel">Cancel</button>
+ `
+
+ /* with-toggle */
+ sec.querySelector('#wg').addEventListener('click', e => {
+  const opt = e.target.closest('.wopt')
+  if (!opt) return
+  const v = +opt.dataset.v
+  if (v === 1) {
+   sec.querySelectorAll('.wopt').forEach(o => o.classList.toggle('on', o.dataset.v==='1'))
+  } else {
+   sec.querySelector('[data-v="1"]').classList.remove('on')
+   opt.classList.toggle('on')
+  }
+ })
+
+ sec.querySelector('#comp').addEventListener('click', function() { this.classList.toggle('on') })
+
+ sec.querySelector('#stars').addEventListener('click', e => {
+  const s = e.target.closest('.star')
+  if (!s) return
+  const v = +s.dataset.v
+  sec.querySelectorAll('.star').forEach((el, i) => { el.textContent = i < v ? '★' : '☆' })
+ })
+
+ /* activity → location guess */
+ sec.querySelector('#f-main').addEventListener('change', function() {
+  const g = guesses[this.value]
+  if (g) sec.querySelector('#f-loc').value = g
+ })
+
+ sec.querySelector('#btn-save').addEventListener('click', () => submitForm(sec, entryId))
+
+ if (entryId) {
+  sec.querySelector('#btn-del').addEventListener('click', async () => {
+   if (!confirm('Delete this entry?')) return
+   try {
+    const r = await fetch(DEL_URI, {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: new URLSearchParams({id: entryId, subject})})
+    if (r.ok) { toast('Deleted'); closeForm(); await refresh() }
+    else toast('Delete failed')
+   } catch(e) { toast('Delete failed') }
+  })
+ }
+
+ sec.querySelector('#btn-cancel').addEventListener('click', closeForm)
+ sec.scrollIntoView({behavior:'smooth', block:'start'})
+}
+
+function openManual() {
+ const firstAct = activities.find(c => c.activities)?.activities[0]?.id || '99'
+ openForm({mainaction: firstAct, with: 1}, null)
+}
+
+function closeForm() {
+ const sec = document.getElementById('detail')
+ sec.style.display = 'none'
+ sec.innerHTML = ''
+}
+
+async function submitForm(sec, entryId) {
+ if (!subject) { toast('Enter your name first'); subEl.focus(); return }
+ if (endDt <= startDt) { toast('End must be after start'); return }
+
+ let withVal = 0
+ sec.querySelectorAll('.wopt.on').forEach(o => { withVal += Math.pow(2, +o.dataset.v - 1) })
+ if (!withVal) withVal = 1
+
+ let rating = 0
+ sec.querySelectorAll('.star').forEach((s, i) => { if (s.textContent==='★') rating = i+1 })
+
+ const mainaction = sec.querySelector('#f-main').value
+ const sideaction = sec.querySelector('#f-side').value
+ const location   = sec.querySelector('#f-loc').value
+ const desc       = sec.querySelector('#f-desc').value.trim()
+ const usecomp    = sec.querySelector('#comp').classList.contains('on') ? 1 : 0
+
+ const body = new URLSearchParams({subject, starttime: dtStr(startDt), endtime: dtStr(endDt), mainaction, with: withVal})
+ if (entryId)  body.set('id',          entryId)
+ if (sideaction) body.set('sideaction', sideaction)
+ if (location)   body.set('location',   location)
+ if (desc)       body.set('description', desc)
+ if (usecomp)    body.set('usecomputer', 1)
+ if (rating)     body.set('rating',      rating)
+
+ const btn = sec.querySelector('#btn-save')
+ btn.textContent = 'Saving…'; btn.disabled = true
+
+ try {
+  const resp = await fetch(PUT_URI, {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body})
+  const result = await resp.json()
+  if (Array.isArray(result) && result.length) {
+   toast('Saved ✓')
+   closeForm()
+   /* advance time window: next entry starts where this one ended */
+   startDt = new Date(endDt)
+   endDt = roundToNext10Min(new Date())
+   endAuto = true
+   startFromRecent = true
+   updateBar()
+   await refresh()
+  } else {
+   toast('Save failed'); btn.textContent = 'Save'; btn.disabled = false
+  }
+ } catch(e) {
+  toast('Offline — will sync later')
+  closeForm()
+ }
+}
+
+/* ── recent entries ─────────────────────────────────────────── */
+
+async function getRecent() {
+ if (!subject) { document.getElementById('recent-list').innerHTML = ''; return }
+ try {
+  const resp = await fetch(`${GET_URI}?latest=15&subject=${encodeURIComponent(subject)}`)
+  recentEntries = await resp.json()
+  renderRecent()
+  /* set start time from the last entry's end, if plausible and not yet set */
+  if (!startFromRecent && recentEntries.length) {
+   const last = recentEntries[0]
+   const lastEnd = parseDt(last.endtime)
+   if (lastEnd && (new Date() - lastEnd) < 4 * 3600000) {
+    startDt = lastEnd
+    startFromRecent = true
+    updateBar()
+   }
+  }
+ } catch(e) { console.warn('getRecent failed', e) }
+}
+
+function renderRecent() {
+ const list = document.getElementById('recent-list')
+ if (!recentEntries.length) {
+  list.innerHTML = '<li class="empty">No entries yet.</li>'
+  return
+ }
+ list.innerHTML = recentEntries.map(e => {
+  const name = esc(actName(e.mainaction))
+  const loc  = e.location ? esc(locName(e.location)) : ''
+  const with_ = decodeWith(+(e.with)||0)
+  const withStr = with_.length && !(with_.length===1 && with_[0]==='Alone') ? esc(with_.join(', ')) : ''
+  const meta = [loc, withStr].filter(Boolean).join(' · ')
+  const start = parseDt(e.starttime)
+  const end   = parseDt(e.endtime)
+  const timeStr = esc(fmtTime(start)) + '–' + esc(fmtTime(end))
+  return `<li class="erow" data-id="${esc(e.id)}"><div class="etime">${timeStr}</div><div class="einfo"><div class="ename">${name}</div>${meta?`<div class="emeta">${meta}</div>`:''}</div></li>`
+ }).join('')
+ list.querySelectorAll('.erow').forEach(row => {
+  row.addEventListener('click', () => {
+   const entry = recentEntries.find(e => e.id == row.dataset.id)
+   if (entry) openForm(entry, entry.id)
+  })
+ })
+}
+
+/* ── init ───────────────────────────────────────────────────── */
+
+async function refresh() {
+ await Promise.all([fetchSuggestions(), getRecent()])
+}
+
+async function init() {
+ endDt = roundToNext10Min(new Date())
+ startDt = new Date(endDt.getTime() - 30 * 60000)
+
+ await loadRef()
+
+ if (!subject) {
+  document.getElementById('sug-section').innerHTML = '<p class="empty">Enter your name above to get started.</p>'
+  document.getElementById('recent-list').innerHTML = ''
+  updateBar()
+  return
+ }
+
+ try {
+  const resp = await fetch(`${GET_URI}?latest=1&subject=${encodeURIComponent(subject)}`)
+  const entries = await resp.json()
+  if (entries.length) {
+   const lastEnd = parseDt(entries[0].endtime)
+   if (lastEnd && (new Date() - lastEnd) < 4 * 3600000) {
+    startDt = lastEnd
+   }
+  }
+ } catch(e) { console.warn('init getRecent failed', e) }
+
+ updateBar()
+ await refresh()
+}
+
+;(async () => {
+ try {
+  const reg = await navigator.serviceWorker?.register('service-worker.js', {scope:'./'})
+  if (reg?.active) reg.active.postMessage('Ready!')
+  navigator.serviceWorker?.addEventListener('message', e => {
+   if (Array.isArray(e.data) && e.data.length) { recentEntries = e.data; renderRecent() }
+  })
+ } catch(e) { console.warn('SW registration failed:', e) }
+})()
+
+window.addEventListener('load', init)
+</script>
+</body>
+</html>

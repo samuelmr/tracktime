@@ -19,6 +19,10 @@
   "short_name": "Tracktime",
   "shortcuts": [
    {
+    "name": "Enter data (mobile)",
+    "url": "/mobile.html"
+   },
+   {
     "name": "Enter data",
     "url": "/"
    },

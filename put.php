@@ -1,7 +1,7 @@
 <?php
  require_once('dbconfig.php');
  error_reporting(E_ALL);
- $conn = mysqli_connect('localhost', DB_USER, DB_PASS);
+ $conn = mysqli_connect(DB_ADDR, DB_USER, DB_PASS);
  $res = mysqli_select_db($conn, DB_DB);
  if (!$res) {
   die(mysqli_error($conn));
@@ -18,13 +18,13 @@
  $subject = $_REQUEST['subject'];
  $starttime = $_REQUEST['starttime'];
  $endtime = $_REQUEST['endtime'];
- $mainaction = sprintf("%'02.2s", $_REQUEST['mainaction']);
+ $mainaction = mysqli_real_escape_string($conn, sprintf("%'02.2s", $_REQUEST['mainaction']));
  $values = array('subject' => $subject,
                  'starttime' => $starttime,
                  'endtime' => $endtime,
                  'mainaction' => $mainaction);
  if (isset($_REQUEST['sideaction']) && $_REQUEST['sideaction']) {
-  $sideaction = sprintf("%'02.2s", $_REQUEST['sideaction']);
+  $sideaction = mysqli_real_escape_string($conn, sprintf("%'02.2s", $_REQUEST['sideaction']));
   $values['sideaction'] = $sideaction;
  }
  $with = 0;
@@ -86,7 +86,7 @@
    $response[] = $values;
   }
   else {
-   header('500 Internal Server Error');
+   http_response_code(500);
    trigger_error($insert, E_USER_WARNING);
    $code = mysqli_errno($conn);
    $msg = mysqli_error($conn);
@@ -94,7 +94,7 @@
   }
  }
  else {
-  header('400 Bad Request');
+  http_response_code(400);
   $code = '400';
   $msg = 'Required parameters: subject, starttime, endtime, mainaction, with[]';
   $response = array('code' => $code, 'msg' => $msg);
@@ -103,13 +103,11 @@
  $json = json_encode($response);
  header('Access-Control-Allow-Origin: *');
  header('Content-Type: application/json');
- header('Content-Length: '.strlen($json));
- if (in_array('gzip', explode(',', $_SERVER['HTTP_ACCEPT_ENCODING']))) {
+if (!empty($_SERVER['HTTP_ACCEPT_ENCODING']) && stripos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false) {
   header('Content-Encoding: gzip');
-  echo gzencode($json);
+  $json = gzencode($json);
  }
- else {
-  echo $json;
- }
+ header('Content-Length: '.strlen($json));
+ echo $json;
 
 ?>
