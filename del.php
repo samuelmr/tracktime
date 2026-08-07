@@ -38,8 +38,7 @@
  $json = json_encode($response);
  header('Access-Control-Allow-Origin: *');
  header('Content-Type: application/json');
- if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) &&
-     in_array('gzip', explode(',', $_SERVER['HTTP_ACCEPT_ENCODING']))) {
+if (!empty($_SERVER['HTTP_ACCEPT_ENCODING']) && stripos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false) {
   header('Content-Encoding: gzip');
   $json = gzencode($json);
  }
