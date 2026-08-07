@@ -457,7 +457,8 @@ function toast(msg) {
 /* ── subject ────────────────────────────────────────────────── */
 
 const subEl = document.getElementById('subject')
-let subject = localStorage.getItem(SUBJ_KEY) || ''
+const params = new URLSearchParams(document.location.search)
+let subject = params.get('subject') || localStorage.getItem(SUBJ_KEY) || ''
 subEl.value = subject
 
 subEl.addEventListener('change', () => {
