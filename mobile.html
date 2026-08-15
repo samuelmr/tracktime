@@ -756,9 +756,9 @@ async function submitForm(sec, entryId) {
  const usecomp    = sec.querySelector('#comp').classList.contains('on') ? 1 : 0
 
  const body = new URLSearchParams({subject, starttime: dtStr(startDt), endtime: dtStr(endDt), mainaction, with: withVal})
- if (entryId)  body.set('id',          entryId)
- if (sideaction) body.set('sideaction', sideaction)
- if (location)   body.set('location',   location)
+ if (entryId)    body.set('id',          entryId)
+ if (sideaction) body.set('sideaction',  sideaction)
+ if (location)   body.set('location',    location)
  if (desc)       body.set('description', desc)
  if (usecomp)    body.set('usecomputer', 1)
  if (rating)     body.set('rating',      rating)
@@ -800,8 +800,11 @@ async function getRecent() {
   if (!startFromRecent && recentEntries.length) {
    const last = recentEntries[0]
    const lastEnd = parseDt(last.endtime)
-   if (lastEnd && (new Date() - lastEnd) < 4 * 3600000) {
+   if (lastEnd) {
     startDt = lastEnd
+    if ((new Date() - lastEnd) < 4 * 3600000) {
+      endDt = roundToNext10Min(new Date(lastEnd.getTime() + 30 * 60000))      
+    }
     startFromRecent = true
     updateBar()
    }
