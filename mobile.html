@@ -124,8 +124,21 @@ h1 a { color: var(--text); text-decoration: none; }
  outline: 2px solid rgba(0, 85, 204, 0.2);
  border-color: var(--accent);
 }
-.tarrow { color: var(--muted); font-size: 1.1em; }
-
+.tarrow {
+  color: var(--muted);
+  font-size: 1.1em;
+  padding-bottom: 0.5em;
+}
+.tadj {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 1em;
+  height: 40px;
+  padding: 0 10px;
+  font-variant-numeric: tabular-nums;  
+}
 /* Sections */
 .section { padding: 14px 16px; }
 .section + .section { border-top: 1px solid var(--border); }
@@ -322,7 +335,7 @@ h1 a { color: var(--text); text-decoration: none; }
 
 /* Date picker */
 #date-input {
- width: 141px;
+ width: 155px;
  background: var(--bg-input);
  border: 1px solid var(--border);
  border-radius: 10px;
@@ -366,7 +379,10 @@ h1 a { color: var(--text); text-decoration: none; }
    </label>
   </div>
  </div>
- <button class="tadj" id="refresh-sug" title="Refresh suggestions">↻</button>
+ <label class="time-field">
+  <span class="time-label">Refresh</span>
+  <button class="tadj" id="refresh-sug" title="Refresh suggestions">↻</button>
+ </label>
 </div>
 
 <section class="section" id="sug-section">
