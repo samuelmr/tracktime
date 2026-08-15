@@ -80,35 +80,49 @@ h1 a { color: var(--text); text-decoration: none; }
  display: flex;
  align-items: center;
  justify-content: center;
- gap: 6px;
+ gap: 10px;
  padding: 10px 16px;
  border-bottom: 1px solid var(--border);
  flex-wrap: wrap;
 }
-.tg { display: flex; align-items: center; gap: 4px; }
-.tadj {
- width: 38px;
- height: 38px;
- border: 1px solid var(--border);
- border-radius: 8px;
- background: var(--bg-input);
- color: var(--text);
- font-size: 1.3em;
- line-height: 1;
- cursor: pointer;
+.time-range {
  display: flex;
- align-items: center;
+ align-items: flex-end;
  justify-content: center;
- -webkit-tap-highlight-color: transparent;
- user-select: none;
+ gap: 8px;
+ flex-wrap: wrap;
 }
-.tadj:active { background: var(--accent); color: #FFF; border-color: var(--accent); }
-.tval {
- font-size: 1.05em;
- font-weight: 700;
+.time-group {
+ display: flex;
+ align-items: flex-end;
+ gap: 8px;
+}
+.time-field {
+ display: flex;
+ flex-direction: column;
+ gap: 4px;
+}
+.time-label {
+ font-size: 0.68em;
+ color: var(--muted);
+ text-transform: uppercase;
+ letter-spacing: 0.06em;
+ margin-left: 2px;
+}
+.time-input {
+ width: 112px;
+ background: var(--bg-input);
+ border: 1px solid var(--border);
+ border-radius: 10px;
+ color: var(--text);
+ font-size: 1em;
+ height: 40px;
+ padding: 0 10px;
  font-variant-numeric: tabular-nums;
- min-width: 4.5em;
- text-align: center;
+}
+.time-input:focus {
+ outline: 2px solid rgba(0, 85, 204, 0.2);
+ border-color: var(--accent);
 }
 .tarrow { color: var(--muted); font-size: 1.1em; }
 
@@ -308,17 +322,18 @@ h1 a { color: var(--text); text-decoration: none; }
 
 /* Date picker */
 #date-input {
- width: 110px;
+ width: 141px;
  background: var(--bg-input);
  border: 1px solid var(--border);
- border-radius: 8px;
+ border-radius: 10px;
  color: var(--text);
- font-size: 0.9em;
- height: 36px;
- padding: 0 6px;
+ font-size: 1em;
+ height: 40px;
+ padding: 0 10px;
  text-align: center;
  -webkit-appearance: none;
  appearance: none;
+ font-variant-numeric: tabular-nums;
 }
 #time-bar { position: relative; flex-wrap: wrap; justify-content: center; gap: 10px; }
 </style>
@@ -334,17 +349,22 @@ h1 a { color: var(--text); text-decoration: none; }
 </header>
 
 <div id="time-bar">
- <input type="date" id="date-input">
- <div class="tg">
-  <button class="tadj" id="sm">−</button>
-  <span class="tval" id="sv">–</span>
-  <button class="tadj" id="sp">+</button>
- </div>
- <span class="tarrow">→</span>
- <div class="tg">
-  <button class="tadj" id="em">−</button>
-  <span class="tval" id="ev">–</span>
-  <button class="tadj" id="ep">+</button>
+ <label class="time-field">
+  <span class="time-label">Date</span>
+  <input type="date" id="date-input">
+ </label>
+ <div class="time-range">
+  <div class="time-group">
+   <label class="time-field">
+    <span class="time-label">Start</span>
+    <input class="time-input" type="time" id="start-time" step="600">
+   </label>
+   <span class="tarrow">→</span>
+   <label class="time-field">
+    <span class="time-label">End</span>
+    <input class="time-input" type="time" id="end-time" step="600">
+   </label>
+  </div>
  </div>
  <button class="tadj" id="refresh-sug" title="Refresh suggestions">↻</button>
 </div>
@@ -472,20 +492,40 @@ subEl.addEventListener('change', () => {
 
 /* ── time bar ───────────────────────────────────────────────── */
 
-const sv = document.getElementById('sv')
-const ev = document.getElementById('ev')
+const startTimeInput = document.getElementById('start-time')
+const endTimeInput = document.getElementById('end-time')
 
-function updateBar() {
- sv.textContent = fmtTime(startDt)
- ev.textContent = fmtTime(endDt)
- const dateStr = pad(endDt.getFullYear()) + '-' + pad(endDt.getMonth()+1) + '-' + pad(endDt.getDate())
- document.getElementById('date-input').value = dateStr
+function fmtTimeInput(d) {
+ if (!d || !d.getHours) return ''
+ return pad(d.getHours()) + ':' + pad(d.getMinutes())
 }
 
-document.getElementById('sm').onclick = () => { startDt = adjMin(startDt, -10); updateBar() }
-document.getElementById('sp').onclick = () => { startDt = adjMin(startDt, +10); updateBar() }
-document.getElementById('em').onclick = () => { endDt = adjMin(endDt, -10);   endAuto = false; updateBar() }
-document.getElementById('ep').onclick = () => { endDt = adjMin(endDt, +10);   endAuto = false; updateBar() }
+function setTimeFromInput(target, value) {
+ const match = /^([0-1]?\d|2[0-3]):([0-5]\d)$/.exec(value || '')
+ if (!match) return target
+ const [hours, minutes] = match.slice(1).map(Number)
+ const date = new Date(target)
+ date.setHours(hours, minutes, 0, 0)
+ return date
+}
+
+function updateBar() {
+ const dateStr = pad(endDt.getFullYear()) + '-' + pad(endDt.getMonth()+1) + '-' + pad(endDt.getDate())
+ document.getElementById('date-input').value = dateStr
+ startTimeInput.value = fmtTimeInput(startDt)
+ endTimeInput.value = fmtTimeInput(endDt)
+}
+
+startTimeInput.addEventListener('input', () => {
+ startDt = setTimeFromInput(startDt, startTimeInput.value)
+ updateBar()
+})
+
+endTimeInput.addEventListener('input', () => {
+ endDt = setTimeFromInput(endDt, endTimeInput.value)
+ endAuto = false
+ updateBar()
+})
 
 document.getElementById('date-input').addEventListener('change', (e) => {
  const parts = e.target.value.split('-')
