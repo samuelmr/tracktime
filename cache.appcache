@@ -1,6 +1,12 @@
 CACHE MANIFEST
 /index.html
 /dashboard.html
+/mobile.html
+/activities.json
+/locations.json
+/guesses.json
+/translations.json
+/translate-element.css
 /favicon.ico
 /manifest.json
 /service-worker.js
