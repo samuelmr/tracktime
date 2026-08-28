@@ -3,6 +3,7 @@
  if (isset($_REQUEST['lang']) && $_REQUEST['lang'] == 'fi') {
   $lang = $_REQUEST['lang'];
  }
+ $view = (isset($_REQUEST['view']) && $_REQUEST['view'] === 'weekly') ? 'weekly' : 'monthly';
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $lang; ?>">
@@ -47,6 +48,32 @@
  }
  #download {
   margin-right: 7em;
+ }
+ #viewswitch {
+  float: right;
+  margin: 1.75em 1em 0.5em 0;
+ }
+ #viewswitch a {
+  background-color: #FFF;
+  border-radius: 0.25em;
+  color: rgb(37, 55, 100);
+  display: block;
+  float: right;
+  margin: 0 0 0 0.5em;
+  padding: 0.5em;
+ }
+ #viewswitch a.selected {
+  background-color: rgb(37, 55, 100);
+  color: #FFF;
+ }
+ td.total.ok {
+  color: #060;
+ }
+ td.total.warning {
+  color: #930;
+ }
+ td.total.overload {
+  color: #600;
  }
  header a {
   background-color: #FFF;
@@ -195,6 +222,17 @@
   <a href="./export.php?<?php echo http_build_query($_REQUEST, '&amp;')?>&format=excel">Export to Excel</a>
   <a href="./export.php?<?php echo http_build_query($_REQUEST, '&amp;')?>&format=json">Export JSON</a>
  </div>
+ <?php
+  $viewParams = $_REQUEST;
+  $viewParams['view'] = 'monthly';
+  $monthlyHref = './?'.http_build_query($viewParams, '&amp;');
+  $viewParams['view'] = 'weekly';
+  $weeklyHref = './?'.http_build_query($viewParams, '&amp;');
+ ?>
+ <div id="viewswitch">
+  <a href="<?php echo $weeklyHref; ?>" class="<?php echo $view == 'weekly' ? 'selected' : ''; ?>"><span lang="en">Weekly</span><span lang="fi">Viikoittain</span></a>
+  <a href="<?php echo $monthlyHref; ?>" class="<?php echo $view == 'monthly' ? 'selected' : ''; ?>"><span lang="en">Monthly</span><span lang="fi">Kuukausittain</span></a>
+ </div>
 </header>
 <?php
  require_once('../dbconfig.php');
@@ -243,6 +281,7 @@
 ?>
 <form method="get" action="./" id="query">
  <input type="hidden" name="lang">
+ <input type="hidden" name="view" value="<?php echo htmlentities($view); ?>">
  <fieldset>
   <legend>
    <label for="subject">Subject</label>
@@ -553,6 +592,246 @@
   return "../dashboard.html?subject=".htmlentities($subject)."#$st,$et";
  }
 
+ # corrects a day's raw duration for entries that were split at midnight by
+ # the previous row's leftover (see the "leftover" carry below); returns
+ # [correctedStartTimestamp, correctedDurationSeconds]
+ function corrected_day_duration(&$leftover, $row) {
+  $subject = $row['subject'];
+  $time = $row['Time'];
+  $start = $row['tstamp'];
+  if (!empty($leftover[$subject])) {
+   $time += $leftover[$subject];
+   $leftover[$subject] = 0;
+   $start = mktime(0, 0, 0, $row['M'], $row['D'], $row['Y']);
+  }
+  $end = $start + $time;
+  $midnight = mktime(0, 0, 0, $row['M'], $row['D']+1, $row['Y']);
+  $time_to_midnight = $midnight - $end;
+  if ($time_to_midnight < 0) {
+   $leftover[$subject] = 0 - $time_to_midnight;
+   $time -= $leftover[$subject];
+  }
+  return array($start, $time);
+ }
+
+ function close_week_row($prevDow, $weekly, $warnHours, $overloadHours) {
+  if ($prevDow < 7) {
+   echo "<td colspan=\"".(7-$prevDow)."\">";
+  }
+  $class = 'ok';
+  if ($weekly > $overloadHours) {
+   $class = 'overload';
+  }
+  elseif ($weekly > $warnHours) {
+   $class = 'warning';
+  }
+  echo '<td class="total '.$class.'">'.
+       str_replace('.', ',', sprintf('%.1f', $weekly)).
+       "</td></tr>\n";
+ }
+
+ function open_week_row($isoWeek, $isoYear, $subject) {
+  $d = new DateTime();
+  $d->setISODate($isoYear, $isoWeek);
+  $d->setTime(0, 0, 0);
+  $sy = (int) $d->format('Y');
+  $sm = (int) $d->format('n');
+  $sd = (int) $d->format('j');
+  $endD = clone $d;
+  $endD->modify('+7 days');
+  $ey = (int) $endD->format('Y');
+  $em = (int) $endD->format('n');
+  $ed = (int) $endD->format('j');
+  $href = mkhref($sy, $sm, $sd, $ey, $em, $ed, $subject);
+  $label = $isoYear.'-W'.sprintf('%02d', $isoWeek);
+  echo "<tr><th><a href=\"$href\">$label</a></th>";
+ }
+
+ # renders one calendar table per subject, one row per month, one column per
+ # day of month
+ function render_monthly($rows, $hsl_base) {
+  $month = 0;
+  $monthnr = 0;
+  $lastmonth = 0;
+  $lastmonthnr = 0;
+  $prev = 0;
+  $prevsub = '';
+  $leftover = array();
+  $monthly = 0;
+  $init = FALSE;
+  $y = null;
+  $m = null;
+  $mday = null;
+  foreach ($rows as $row) {
+   $subject = $row['subject'];
+   if ($subject != $prevsub) {
+    if ($prevsub) {
+     if ($mday < 31) {
+      echo "<td class=\"that\" colspan=\"".(31-$mday)."\"></td>";
+     }
+     $bgcolor = "hsla(".($hsl_base-$monthly/1.35).", 75%, 75%, 100%)";
+     $href = mkhref($y, $m, 1, $y, $m+1, 1, $prevsub);
+     echo '<td class="total" style="background-color: '.$bgcolor.'">'.
+          "<a href=\"$href\">".
+          str_replace('.', ',', sprintf('%.1f', $monthly)).
+          "</a>".
+          "</td></tr></table>\n";
+     $monthly = 0;
+     $monthnr = $month;
+    }
+    echo "<table class=\"days\"><caption>".htmlentities($subject)."</caption>\n";
+    echo "<thead><tr><th>Month</th>";
+    for ($d=1; $d<=31; $d++) {
+      echo "<th>$d</th>";
+    }
+    echo "<th>Total</th></tr></thead><tbody>\n";
+    $init = FALSE;
+    $prevsub = $subject;
+    $prev = 0;
+   }
+   $date = $row['D'].".".$row['M'];
+   $month = $row['M'];
+   list($start, $time) = corrected_day_duration($leftover, $row);
+   $monthnr = date('Ym', $start);
+   $mday = $row['D'];
+   $dur = $time / 60 / 60;
+   $hours = floor($time / 3600);
+   $mins = ($time % 3600)/60;
+   if ($mins < 10) {
+     $mins = '0'.$mins;
+   }
+   $fmtdur = str_replace('.', ',', sprintf('%.1f', $dur));
+   if ($init === FALSE) {
+    $init = TRUE;
+    list ($y, $m) = str_split($monthnr, 4);
+    $href = mkhref($y, $m, 1, $y, $m+1, 1, $subject);
+    echo "<tr><th><a href=\"$href\">$m/$y</a></th>";
+    $lastmonth = $month;
+    $lastmonthnr = $monthnr;
+   }
+   elseif ($monthnr != $lastmonthnr) {
+    if ($prev < 31) {
+      echo "<td class=\"this\" colspan=\"".(31-$prev)."\">";
+    }
+    $bgcolor = "hsla(".($hsl_base-$monthly/1.35).", 75%, 75%, 100%)";
+    $href = mkhref($y, $m, 1, $y, $m+1, 1, $subject);
+    echo '<td class="total" style="background-color: '.$bgcolor.'">'.
+         "<a href=\"$href\">".
+         str_replace('.', ',', sprintf('%.1f', $monthly)).
+         "</a>".
+         "</td></tr>\n";
+    while ($monthnr - $lastmonthnr > 0) {
+     list ($y, $m) = str_split($lastmonthnr, 4);
+     $lastmonth++;
+     $lastmonthnr++;
+     if ($lastmonth > 12) {
+       $lastmonth = 1;
+       $lastmonthnr = sprintf('%02d', intval($y)+1).'01';
+     }
+    }
+    list ($y, $m) = str_split($lastmonthnr, 4);
+    $href = mkhref($y, $m, 1, $y, $m+1, 1, $subject);
+    echo "<tr><th><a href=\"$href\">$m/$y</a></th>";
+    $monthly = 0;
+    $prev = 0;
+    $lastmonth = $month;
+    $lastmonthnr = $monthnr;
+   }
+   if ($diff = ($mday - ($prev + 1))) {
+    echo "<td class=\"diff\" colspan=\"$diff\">&nbsp;</td>";
+   }
+
+   $monthly += $dur;
+   $prev = $mday;
+
+   $bgcolor = "hsla(".($hsl_base-$dur*15).", 75%, 75%, 100%)";
+   $href = mkhref($y, $m, $mday, $y, $m, $mday+1, $subject);
+   if ($dur == 23 || $dur == 24 || $dur == 25) {
+     $bgcolor = "#CCC";
+   }
+   echo "<td title=\"$date: $fmtdur\" style=\"background-color: $bgcolor\">".
+        "<a href=\"$href\">".
+        "$hours:$mins</a></td>\n";
+  }
+  if (count($rows) > 0) {
+   if ($mday < 31) {
+    echo "<td class=\"that\" colspan=\"".(31-$mday)."\"></td>";
+   }
+   $bgcolor = "hsla(".($hsl_base-$monthly/1.35).", 75%, 75%, 100%)";
+   $href = mkhref($y, $m, 1, $y, $m+1, 1, $subject);
+   echo '<td class="total" style="background-color: '.$bgcolor.'">'.
+        "<a href=\"$href\">".
+        str_replace('.', ',', sprintf('%.1f', $monthly)).
+        "</a>".
+        "</td></tr></tbody></table>\n";
+  }
+ }
+
+ # renders one calendar table per subject, one row per ISO-8601 week, one
+ # column per weekday; the total column is color-coded against $warnHours /
+ # $overloadHours so a specific filtered activity's weekly load stands out
+ function render_weekly($rows, $warnHours=7, $overloadHours=20) {
+  $prevsub = null;
+  $weekKey = null;
+  $weekly = 0;
+  $prevDow = 0;
+  $leftover = array();
+  foreach ($rows as $row) {
+   $subject = $row['subject'];
+   list($start, $time) = corrected_day_duration($leftover, $row);
+   $dur = $time / 3600;
+   $dow = (int) date('N', $start); // 1 = Monday .. 7 = Sunday
+   $isoYear = (int) date('o', $start);
+   $isoWeek = (int) date('W', $start);
+   $curWeekKey = sprintf('%04d-W%02d', $isoYear, $isoWeek);
+
+   if ($subject !== $prevsub) {
+    if ($prevsub !== null) {
+     close_week_row($prevDow, $weekly, $warnHours, $overloadHours);
+     echo "</tbody></table>\n";
+    }
+    echo "<table class=\"weeks\"><caption>".htmlentities($subject)."</caption>\n";
+    echo "<thead><tr><th>Week</th><th>Mon</th><th>Tue</th><th>Wed</th>".
+         "<th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th><th>Total</th></tr></thead><tbody>\n";
+    $prevsub = $subject;
+    $weekKey = null;
+    $weekly = 0;
+    $prevDow = 0;
+   }
+
+   if ($weekKey === null) {
+    open_week_row($isoWeek, $isoYear, $subject);
+   }
+   elseif ($curWeekKey !== $weekKey) {
+    close_week_row($prevDow, $weekly, $warnHours, $overloadHours);
+    open_week_row($isoWeek, $isoYear, $subject);
+    $weekly = 0;
+    $prevDow = 0;
+   }
+   $weekKey = $curWeekKey;
+
+   if ($dow - ($prevDow + 1) > 0) {
+    echo "<td colspan=\"".($dow-($prevDow+1))."\">&nbsp;</td>";
+   }
+   $href = mkhref($row['Y'], $row['M'], $row['D'], $row['Y'], $row['M'], $row['D']+1, $subject);
+   $hours = floor($time / 3600);
+   $mins = ($time % 3600) / 60;
+   if ($mins < 10) {
+    $mins = '0'.$mins;
+   }
+   $fmtdur = str_replace('.', ',', sprintf('%.1f', $dur));
+   $date = $row['D'].".".$row['M'].".".$row['Y'];
+   echo "<td title=\"$date: $fmtdur\"><a href=\"$href\">$hours:$mins</a></td>\n";
+
+   $prevDow = $dow;
+   $weekly += $dur;
+  }
+  if ($prevsub !== null) {
+   close_week_row($prevDow, $weekly, $warnHours, $overloadHours);
+   echo "</tbody></table>\n";
+  }
+ }
+
  $select = "SELECT subject, UNIX_TIMESTAMP(starttime) AS `tstamp`".
    ", SUM(UNIX_TIMESTAMP(endtime) - UNIX_TIMESTAMP(starttime)) AS `Time`".
    ", YEAR(starttime) AS `Y`, MONTH(starttime) AS `M`, DAY(starttime) AS `D`".
@@ -628,169 +907,39 @@
  }
  else {
   $days = mysqli_num_rows($stmt) + 1;
-  $total = 0;
-  $totalmonths = 0;
-  $monthly = 0;
-  $month = 0;
-  $monthnr = 0;
-  $lastmonth = 0;
-  $lastmonthnr = 0;
-  $wday = 0;
-  $prev = 0;
-  $prevsub = '';
-  $leftover = array();
+  $rows = array();
   while ($row = mysqli_fetch_assoc($stmt)) {
-   $start = $row['tstamp'];
-   $subject = $row['subject'];
-   if ($subject != $prevsub) {
-    if ($prevsub) {
-     if ($mday < 31) {
-      echo "<td class=\"that\" colspan=\"".(31-$mday)."\"></td>";
-     }
-     $bgcolor = "hsla(".($hsl_base-$monthly/1.35).", 75%, 75%, 100%)";
-     # $ from = "$y-$m-01T00:00:00";
-     # $to = date('Y-m-d\TH:i:s', mktime(0, 0, 0, $m+1, 1, $y));
-     # echo "\n<!-- mktime(0, 0, 0, $m+1, 1, $y) -->";
-     $href = mkhref($y, $m, 1, $y, $m+1, 1, $prevsub);
-     echo '<td class="total" style="background-color: '.$bgcolor.'">'.
-          # "<a href=\"../dashboard.html?subject=".urlencode($subject)."#$from,$to\">".
-          "<a href=\"$href\">".
-          str_replace('.', ',', sprintf('%.1f', $monthly)).
-          "</a>".
-          "</td></tr></table>\n";
-     $monthly = 0;
-     $monthnr = $month;
-    }
-    echo "<table class=\"days\"><caption>$subject</caption>\n";
-    echo "<thead><tr><th>Month</th>";
-    for ($d=1; $d<=31; $d++) {
-      echo "<th>$d</th>";
-    }
-    echo "<th>Total</th></tr></thead><tbody>\n";
-    $init = FALSE;
-    $prevsub = $subject;
-    $prev = 0;
-   }
-   $lastts = $start;
-   $date = $row['D'].".".$row['M'];
-   $year = $row['Y'] - 2000; // simple way of changing year to 2 digit format
-   $month = $row['M'];
-   $monthnr = date('Ym', $start);
-   $mday = $row['D'];
-   $time = $row['Time'];
-   if (isset($leftover[$subject]) && $leftover[$subject]) {
-    $time += $leftover[$subject];
-    $leftover[$subject] = 0;
-    $start = mktime(0, 0, 0, $month, $mday, $row['Y']);
-   }
-   $end = $start + $time;
-   $midnight = mktime(0, 0, 0, $month, $mday+1, $row['Y']);
-   $time_to_midnight = $midnight - $end;
-   if ($time_to_midnight < 0) {
-    $leftover[$subject] = 0 - $time_to_midnight;
-    $time -= $leftover[$subject];
-   }
-   $dur = $time / 60 / 60;
-   $hours = floor($time / 3600);
-   $mins = ($time % 3600)/60;
-   if ($mins < 10) {
-     $mins = '0'.$mins;
-   }
-   $fmtdur = str_replace('.', ',', sprintf('%.1f', $dur));
-   if ($init === FALSE) {
-    $init = TRUE;
-    list ($y, $m) = str_split($monthnr, 4);
-    $firstts = $row['tstamp'];
-    $href = mkhref($y, $m, 1, $y, $m+1, 1, $subject);
-    echo "<tr><th><a href=\"$href\">$m/$y</a></th>";
-    $totalmonths++;
-    $lastmonth = $month;
-    $lastmonthnr = $monthnr;
-   }
-   elseif ($monthnr != $lastmonthnr) {
-    if ($prev < 31) {
-      echo "<td class=\"this\" colspan=\"".(31-$prev)."\">";
-    }
-    $bgcolor = "hsla(".($hsl_base-$monthly/1.35).", 75%, 75%, 100%)";
-    $from = "$y-$m-01T00:00:00";
-    $to = "$y-".sprintf('%02d', $m+1)."-01T00:00:00";
-    $href = mkhref($y, $m, 1, $y, $m+1, 1, $subject);
-    echo '<td class="total" style="background-color: '.$bgcolor.'">'.
-         "<a href=\"$href\">".
-         str_replace('.', ',', sprintf('%.1f', $monthly)).
-         "</a>".
-         "</td></tr>\n";
-    while ($monthnr - $lastmonthnr > 0) {
-     list ($y, $m) = str_split($lastmonthnr, 4);
-     $lastmonth++;
-     $lastmonthnr++;
-     if ($lastmonth > 12) {
-       $lastmonth = 1;
-       $lastmonthnr = sprintf('%02d', intval($y)+1).'01';
-     }
-    }
-    list ($y, $m) = str_split($lastmonthnr, 4);
-    $href = mkhref($y, $m, 1, $y, $m+1, 1, $subject);
-    echo "<tr><th><a href=\"$href\">$m/$y</a></th>";
-    $totalmonths++;
-    $monthly = 0;
-    $prev = 0;
-    $lastmonth = $month;
-    $lastmonthnr = $monthnr;
-   }
-   if ($diff = ($mday - ($prev + 1))) {
-    echo "<td class=\"diff\" colspan=\"$diff\">&nbsp;</td>";
-    # echo "<!-- $diff = ($mday - ($prev + 1)) -->\n";
-   }
+   $rows[] = $row;
+  }
 
-   $monthly += $dur;
-   $total += $dur;
-   $prev = $mday;
-
-   $bgcolor = "hsla(".($hsl_base-$dur*15).", 75%, 75%, 100%)";
-   # $from = "$y-$m-".sprintf('%02d', $mday)."T00:00:00";
-   # $to = date('Y-m-d\TH:i:s', mktime(0, 0, 0, $m, $mday+1, $y));
-   # echo "\n<!-- mktime(0, 0, 0, $m, $d+1, $y) -->";
-   $href = mkhref($y, $m, $mday, $y, $m, $mday+1, $subject);
-   if ($dur == 23 || $dur == 24 || $dur == 25) {
-     $bgcolor = "#CCC";
+  # aggregate stats shared by both views, computed once regardless of which
+  # calendar granularity is displayed
+  $total = 0;
+  $firstts = null;
+  $lastts = null;
+  $totalMonthSet = array();
+  $aggLeftover = array();
+  foreach ($rows as $row) {
+   list($start, $time) = corrected_day_duration($aggLeftover, $row);
+   $total += $time / 3600;
+   $totalMonthSet[$row['subject'].'|'.$row['Y'].'-'.$row['M']] = TRUE;
+   if ($firstts === null || $start < $firstts) {
+    $firstts = $start;
    }
-   # $bgcolor = "#8C8";
-   # if ($dur != 23 && $dur != 24 && $dur != 25) {
-   #  $bgcolor = "#C00";
-   # }
-   echo "<td title=\"$date: $fmtdur\" style=\"background-color: $bgcolor\">".
-        # "<a href=\"../dashboard.html?subject=".urlencode($subject)."#$from,$to\">".
-        "<a href=\"$href\">".
-        # "<span class=\"subject\">".htmlentities($subject)."</span> ".
-        "$hours:$mins</a></td>\n";
-   if ($mday == 31) {
-    $monthnr++;
-    if ($monthnr > 12) {
-     $monthnr = 1;
-     $year++;
-    }
+   if ($lastts === null || $start > $lastts) {
+    $lastts = $start;
    }
   }
-  if ($mday < 31) {
-   echo "<td class=\"that\" colspan=\"".(31-$mday)."\"></td>";
+  $totalmonths = count($totalMonthSet);
+
+  if ($view === 'weekly') {
+   render_weekly($rows);
   }
-  if ($total) {
-   $bgcolor = "hsla(".($hsl_base-$monthly/1.35).", 75%, 75%, 100%)";
-   # $from = "$y-$m-01T00:00:00";
-   # $to = date('Y-m-d\TH:i:s', mktime(0, 0, 0, $m+1, 1, $y));
-   $href = mkhref($y, $m, 1, $y, $m+1, 1, $subject);
-   echo '<td class="total" style="background-color: '.$bgcolor.'">'.
-        # "<a href=\"../dashboard.html?subject=".urlencode($subject)."#$from,$to\">".
-        "<a href=\"$href\">".
-        str_replace('.', ',', sprintf('%.1f', $monthly)).
-        "</a>".
-        "</td></tr></tbody></table>\n";
+  else {
+   render_monthly($rows, $hsl_base);
   }
  }
  if ($days) {
-  $monthly = 0;
-  $monthnr = $month;
   $totaltimespan = $lastts - $firstts;
   $totaldays = ceil($totaltimespan/60/60/24);
   $dayaverage = $total/$totaldays;
