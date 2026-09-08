@@ -3,7 +3,6 @@
  if (isset($_REQUEST['lang']) && $_REQUEST['lang'] == 'fi') {
   $lang = $_REQUEST['lang'];
  }
- $view = (isset($_REQUEST['view']) && $_REQUEST['view'] === 'weekly') ? 'weekly' : 'monthly';
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $lang; ?>">
@@ -22,9 +21,6 @@
 <link rel="manifest" href="../public/manifest.json">
 <title lang="en">Time analysis</title>
 <style>
- *[lang]:not([lang="<?php echo $lang; ?>"]) {
-  display: none !important;
- }
  body {
   background-color: #EEE;
   color: #000;
@@ -75,7 +71,7 @@
  td.total.overload {
   color: #600;
  }
- header a {
+ #download a {
   background-color: #FFF;
   border-radius: 0.25em;
   color: rgb(37, 55, 100);
@@ -88,14 +84,15 @@
   display: flex;
   flex-wrap: wrap;
   margin: 2em 1em 1em 1em;
-  width: 100em;
+  max-width: 100%;
+  width: 103.5em;
  }
  input[type="submit"] {
   border-width: 2px;
   border-radius: 0.5em;
   min-width: 6em;
   height: 2em;
-  margin: 1.5em 0 0 1em;
+  margin: 1.5em 0 0 0.5em;
  }
  table {
   border-collapse: collapse;
@@ -173,7 +170,7 @@
   display: block;
   font-size: x-small;
  }
- #language {
+ translate-element {
   background-color: #CCC;
   border: 1px outset #CCC;
   border-radius: 2em;
@@ -184,12 +181,12 @@
   right: 2em;
   top: 2em;
  }
- #language ul {
+ translate-element ul {
   display: flex;
   margin: 0;
   padding: 0;
  }
- .language-switcher li {
+ translate-element li {
   background-color: #666;
   border: 1px outset #CCC;
   border-color: #CCC;
@@ -206,32 +203,24 @@
   text-align: center;
   width: 2em;
  }
- .language-switcher li.selected {
+ translate-element li.selected {
   background-color: #FFF;
   border-color: #CCC;
   border-style: inset;
   color: #0d0342;
  }
 </style>
+<script src="https://unpkg.com/translate-element/translate-element.js"></script>
+</head>
+<body>
 <header>
- <div id="language"></div>
+ <translate-element></translate-element>
  <h1 lang="en">Time analysis</h1>
  <h1 lang="fi">Aika-analyysi</h1>
  <div id="download">
   <a href="./export.php?<?php echo http_build_query($_REQUEST, '&amp;')?>&format=csv">Export CSV</a>
   <a href="./export.php?<?php echo http_build_query($_REQUEST, '&amp;')?>&format=excel">Export to Excel</a>
   <a href="./export.php?<?php echo http_build_query($_REQUEST, '&amp;')?>&format=json">Export JSON</a>
- </div>
- <?php
-  $viewParams = $_REQUEST;
-  $viewParams['view'] = 'monthly';
-  $monthlyHref = './?'.http_build_query($viewParams, '&amp;');
-  $viewParams['view'] = 'weekly';
-  $weeklyHref = './?'.http_build_query($viewParams, '&amp;');
- ?>
- <div id="viewswitch">
-  <a href="<?php echo $weeklyHref; ?>" class="<?php echo $view == 'weekly' ? 'selected' : ''; ?>"><span lang="en">Weekly</span><span lang="fi">Viikoittain</span></a>
-  <a href="<?php echo $monthlyHref; ?>" class="<?php echo $view == 'monthly' ? 'selected' : ''; ?>"><span lang="en">Monthly</span><span lang="fi">Kuukausittain</span></a>
  </div>
 </header>
 <?php
@@ -278,15 +267,16 @@
  $query['rating'] = (isset($_REQUEST['rating'])) ? $_REQUEST['rating'] : NULL;
  $query['desc'] = (isset($_REQUEST['desc'])) ? $_REQUEST['desc'] : NULL;
  $query['not'] = (isset($_REQUEST['not'])) ? $_REQUEST['not'] : NULL;
+ $query['view'] = (isset($_REQUEST['view'])) ? $_REQUEST['view'] : '';
 ?>
+<nav>
 <form method="get" action="./" id="query">
  <input type="hidden" name="lang">
- <input type="hidden" name="view" value="<?php echo htmlentities($view); ?>">
  <fieldset>
   <legend>
    <label for="subject">Subject</label>
   </legend>
-  <input id="subject" type="text" name="subject" value="<?php echo htmlentities($query['subject']); ?>">
+  <input id="subject" type="text" name="subject" value="<?php echo htmlspecialchars($query['subject']); ?>">
  </fieldset>
  <fieldset>
   <legend>
@@ -318,13 +308,13 @@
   <legend>
    <label for="starttime"><span lang="fi">Alkaen</span><span lang="en">From</span></label>
   </legend>
-  <input id="starttime" name="starttime" type="date" size="10" value="<?php echo htmlentities($query['starttime']); ?>">
+  <input id="starttime" name="starttime" type="date" size="10" value="<?php echo htmlspecialchars($query['starttime']); ?>">
  </fieldset>
  <fieldset class="endtime">
   <legend>
    <label for="endtime"><span lang="fi">Päättyen</span><span lang="en">To</span></label>
   </legend>
-  <input id="endtime" name="endtime" type="date" size="10" value="<?php echo htmlentities($query['endtime']); ?>">
+  <input id="endtime" name="endtime" type="date" size="10" value="<?php echo htmlspecialchars($query['endtime']); ?>">
  </fieldset>
  <fieldset class="with">
   <legend>
@@ -365,13 +355,13 @@
   <legend>
    <label for="desc"><span lang="fi">Kuvaus sisältää</span><span lang="en">Description includes</span></label>
   </legend>
-  <input id="desc" name="desc" type="text" size="30" maxlength="255" value="<?php echo htmlentities($query['desc']); ?>">
+  <input id="desc" name="desc" type="text" size="30" maxlength="255" value="<?php echo htmlspecialchars($query['desc']); ?>">
  </fieldset>
  <fieldset class="extra description">
   <legend>
    <label for="not"><span lang="fi">Kuvaus ei sisällä</span><span lang="en">Description does not include</span></label>
   </legend>
-  <input id="not" name="not" type="text" size="30" maxlength="255" value="<?php echo htmlentities($query['not']); ?>">
+  <input id="not" name="not" type="text" size="30" maxlength="255" value="<?php echo htmlspecialchars($query['not']); ?>">
  </fieldset>
  <fieldset class="rating">
   <legend>
@@ -393,11 +383,25 @@
    <option value="5"<?php echo $query['rating'] == 5 ? ' selected' : ''; ?>>5</option>
   </select>
  </fieldset>
+ <fieldset class="view">
+  <legend>
+   <label for="view"><span lang="fi">Näkymä</span><span lang="en">View</span></label>
+  </legend>
+  <select name="view" id="view">
+   <option lang="fi" value="monthly"<?php echo $query['view'] == 'monthly' ? ' selected' : ''; ?>>Kuukausittain</option>
+   <option lang="en" value="monthly"<?php echo $query['view'] == 'monthly' ? ' selected' : ''; ?>>Monthly</option>
+   <option lang="fi" value="weekly"<?php echo $query['view'] == 'weekly' ? ' selected' : ''; ?>>Viikoittain</option>
+   <option lang="en" value="weekly"<?php echo $query['view'] == 'weekly' ? ' selected' : ''; ?>>Weekly</option>
+  </select>
+ </fieldset>
  <input lang="fi" type="submit" id="submitFi" value="Hae">
  <input lang="en" type="submit" id="submit" value="Get">
 </form>
+</nav>
 <script>
  const languages = ['en', 'fi']
+ const switcher = document.querySelector('translate-element')
+ let currentLanguage = switcher.currentLanguage || 'en'
  const tb = document.getElementById('results')
  const f = document.getElementById('query')
  const et = document.getElementById('endtime')
@@ -414,6 +418,8 @@
  const acts = {'null': '', 'undefined': ''}
  const locs = {}
  const selectedLoc = '<?php echo $query['location'] ?>'
+ const selectedMain = '<?php echo $query['mainaction'] ?>'
+ const selectedSide = '<?php echo $query['sideaction'] ?>'
  let activities = []
  let locations = []
  let guesses = {}
@@ -461,12 +467,21 @@
      }
     }
    }
+   const mainSelector = `[value="${selectedMain}"][lang="${currentLanguage}"]`
+   const mainCandidate = f.mainaction.querySelector(mainSelector)
+   if (mainCandidate) {
+    mainCandidate.selected = true
+   }
+   const sideSelector = `[value="${selectedSide}"][lang="${currentLanguage}"]`
+   const sideCandidate = f.sideaction.querySelector(sideSelector)
+   if (sideCandidate) {
+    sideCandidate.selected = true
+   }
   })())
   filePromises.push((async () => {
    const file = '../locations.json'
    const resp = await fetch(file)
    locations = await resp.json()
-   // console.log(locations)
    for (const cat of locations) {
     const grp = []
     if (cat.options) {
@@ -509,69 +524,14 @@
  catch(e) {
   console.error(e)
  }
- const params = new URLSearchParams(document.location.search)
- let currentLanguage = params.get('lang') || '<?php echo $lang; ?>'
+
  Promise.all(filePromises).then(results => {
-  const maOpt = f.mainaction.querySelector(`option[lang="${currentLanguage}"][value="<?php echo mysqli_real_escape_string($conn, $query['mainaction']); ?>"]`)
-  if (maOpt) maOpt.selected = "selected"
-  const saOpt = f.sideaction.querySelector(`option[lang="${currentLanguage}"][value="<?php echo mysqli_real_escape_string($conn, $query['sideaction']); ?>"]`)
-  if (saOpt) saOpt.selected = "selected"
- })
- const lcontainer = document.querySelector('#language')
- const translatedElementsSelector = '[lang]'
- const switcher = document.createElement('ul')
- const css = document.styleSheets[1]
- switcher.className = 'language-switcher'
- setLanguage(currentLanguage)
- languages.forEach((lang) => {
-  const li = document.createElement('li')
-  li.textContent = lang
-  if (lang == currentLanguage) {
-   li.className = 'selected'
-  }
-  li.onclick = (e) => {
-   params.set('lang', lang)
-   history.replaceState({lang}, '', './?' + params.toString())
-   const prev = switcher.querySelector('li.selected')
-   prev.classList.remove('selected')
-   li.classList.add('selected')
-   setLanguage(lang)
-  }
-  switcher.appendChild(li)
- })
- lcontainer.appendChild(switcher)
- window.addEventListener("popstate", (event) => {
-  const lang = event.state?.lang || '<?php echo $lang; ?>'
-  if (lang) {
-    setLanguage(lang)
+  if (switcher && switcher.setLanguage) {
+   switcher.setLanguage(currentLanguage)
   }
  })
-
- function setLanguage(lang) {
-  currentLanguage = lang
-  f.querySelector('input[name="lang"]').value = currentLanguage
-  const html = document.querySelector(':root')
-   const oldLang = html.lang
-   html.lang = lang
-   for (let i = 0; i < css.cssRules.length; i++) {
-    const rule = css.cssRules[i]
-    if (rule.selectorText == `[lang]:not([lang="${oldLang}"])`) {
-     css.deleteRule(i)
-     css.insertRule(`[lang]:not([lang="${lang}"]) { display: none !important; }`, i)
-    }
-   }
-   const opts = document.querySelectorAll('option[lang]:checked')
-   for (opt of opts) {
-    opt.selected = false
-    const otherOpt = opt.parentNode.parentNode.querySelector(`option[lang="${lang}"][value="${opt.value}"]`)
-    if (otherOpt) {
-     otherOpt.selected = "selected"
-    }
-   }
- }
-
 </script>
-
+<main>
 <?php
 
  function mkhref($sy, $sm, $sd, $ey, $em, $ed, $subject=NULL) {
@@ -589,7 +549,7 @@
 */
   $st = date('Y-m-d\TH:i', mktime(0, 0, 0, $sm, $sd, $sy));
   $et = date('Y-m-d\TH:i', mktime(0, 0, 0, $em, $ed, $ey));
-  return "../dashboard.html?subject=".htmlentities($subject)."#$st,$et";
+  return "../dashboard.html?subject=".htmlspecialchars($subject)."#$st,$et";
  }
 
  # corrects a day's raw duration for entries that were split at midnight by
@@ -679,7 +639,7 @@
      $monthly = 0;
      $monthnr = $month;
     }
-    echo "<table class=\"days\"><caption>".htmlentities($subject)."</caption>\n";
+    echo "<table class=\"days\"><caption>".htmlspecialchars($subject)."</caption>\n";
     echo "<thead><tr><th>Month</th>";
     for ($d=1; $d<=31; $d++) {
       echo "<th>$d</th>";
@@ -788,11 +748,18 @@
    if ($subject !== $prevsub) {
     if ($prevsub !== null) {
      close_week_row($prevDow, $weekly, $warnHours, $overloadHours);
-     echo "</tbody></table>\n";
+     echo "</tbody>\n</table>\n";
     }
-    echo "<table class=\"weeks\"><caption>".htmlentities($subject)."</caption>\n";
-    echo "<thead><tr><th>Week</th><th>Mon</th><th>Tue</th><th>Wed</th>".
-         "<th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th><th>Total</th></tr></thead><tbody>\n";
+    echo "<table class=\"weeks\"><caption>".htmlspecialchars($subject)."</caption>\n<thead>\n  <tr>\n";
+    echo "   <th><span lang=\"fi\">Viikko</span><span lang=\"en\">Week</span></th>\n".
+         "   <th><span lang=\"fi\">Ma</span><span lang=\"en\">Mon</span></th>\n".
+         "   <th><span lang=\"fi\">Ti</span><span lang=\"en\">Tue</span></th>\n".
+         "   <th><span lang=\"fi\">Ke</span><span lang=\"en\">Wed</span></th>\n".
+         "   <th><span lang=\"fi\">To</span><span lang=\"en\">Thu</span></th>\n".
+         "   <th><span lang=\"fi\">Pe</span><span lang=\"en\">Fri</span></th>\n".
+         "   <th><span lang=\"fi\">La</span><span lang=\"en\">Sat</span></th>\n".
+         "   <th><span lang=\"fi\">Su</span><span lang=\"en\">Sun</span></th>\n".
+         "   <th><span lang=\"fi\">Yhteensä</span><span lang=\"en\">Total</span></th>\n  </tr>\n </thead>\n<tbody>\n";
     $prevsub = $subject;
     $weekKey = null;
     $weekly = 0;
@@ -932,10 +899,10 @@
   }
   $totalmonths = count($totalMonthSet);
 
-  if ($view === 'weekly') {
+  if ($query['view'] === 'weekly') {
    render_weekly($rows);
   }
-  else {
+  elseif ($query['view'] === 'monthly') {
    render_monthly($rows, $hsl_base);
   }
  }
@@ -984,5 +951,7 @@
        "</td><td class=\"unit\">h/day</td></tr>\n";
   echo '</table>'."\n";
  }
-
 ?>
+</main>
+</body>
+</html>
